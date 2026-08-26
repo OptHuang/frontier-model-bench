@@ -1,0 +1,41 @@
+name: Validate benchmark data
+
+on:
+  push:
+    paths:
+      - "data/**"
+      - "schemas/**"
+      - "scripts/validate_data.py"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "data/**"
+      - "schemas/**"
+      - "scripts/validate_data.py"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-data-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: JSON contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate data
+        run: python scripts/validate_data.py
+
