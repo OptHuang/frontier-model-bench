@@ -22,6 +22,7 @@ data/models.json            # MVP catalog（模型、benchmark、成绩、来源
 docs/data-contract.md       # 从 seed catalog 迁移到长表 observation 的契约
 scripts/validate_data.py    # 只依赖 Python 标准库的数据检查器
 .github/workflows/validate.yml
+.github/workflows/pages.yml      # GitHub Pages build/deploy
 ```
 
 数据层的长期形态是：
@@ -56,6 +57,6 @@ GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上自�
 
 ## 发布到 GitHub Pages
 
-这是纯静态目录，不需要 Node 或数据库。将仓库推到 GitHub 后，可在 **Settings → Pages → GitHub Actions** 选择静态页面 workflow；也可以把整个目录作为个人主页的 `static/benchmarks/` 构建产物，或仅在主页增加外链。
+这是纯静态目录，不需要 Node 或数据库。当前仓库已配置 GitHub Pages workflow；推送 `main` 会先校验数据，再发布静态产物。也可以把整个目录作为个人主页的 `static/benchmarks/` 构建产物，或仅在主页增加外链。
 
 推荐仓库名：`OptHuang/frontier-model-bench`。个人主页仓库保持独立，避免网站内容和数据抓取权限相互耦合。
