@@ -167,7 +167,9 @@
     const models = filteredModels();
     const benchmarks = state.data.benchmarks || [];
     els.cardsView.innerHTML = models.map((model) => {
-      const ranked = benchmarks.map((bench) => ({ bench, entry: scoreEntry(model, bench.id) })).filter(({ entry }) => entry.value !== null && entry.value !== undefined).sort((a, b) => b.entry.value - a.entry.value).slice(0, 5);
+      // Keep the registry order here.  Sorting raw percentages across
+      // heterogeneous benchmarks would create a misleading mini-ranking.
+      const ranked = benchmarks.map((bench) => ({ bench, entry: scoreEntry(model, bench.id) })).filter(({ entry }) => entry.value !== null && entry.value !== undefined).slice(0, 5);
       const recorded = benchmarks.filter((bench) => scoreEntry(model, bench.id).value !== null && scoreEntry(model, bench.id).value !== undefined).length;
       return `<article class="model-card" data-model="${esc(model.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 详情"><div class="card-top"><div class="model-line"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><span><span class="model-name">${esc(model.name)}</span><span class="model-provider">${esc(model.provider)}</span></span></div><span class="card-score">${recorded}/${benchmarks.length}<small>reported</small></span></div><div class="mini-bars">${ranked.map(({ bench, entry }) => `<div class="mini-bar-row"><span>${esc(bench.short || bench.name)}</span><span class="mini-bar-track"><span style="width:${Math.min(100, Number(entry.value) / Number(bench.scale || 100) * 100)}%"></span></span><strong>${fmt(entry.value)}</strong></div>`).join("")}</div></article>`;
     }).join("");
@@ -178,9 +180,9 @@
     const models = state.data.models || [];
     const signals = benchmarks.map((bench) => {
       const values = models.map((model) => ({ model, entry: scoreEntry(model, bench.id) })).filter(({ entry }) => entry.value !== null && entry.value !== undefined).sort((a, b) => Number(b.entry.value) - Number(a.entry.value));
-      return { bench, best: values[0], count: values.length };
-    }).filter((signal) => signal.best).sort((a, b) => Number(b.best.entry.value) - Number(a.best.entry.value)).slice(0, 3);
-    els.spotlightGrid.innerHTML = signals.map(({ bench, best, count }) => `<article class="spotlight-card"><span class="spotlight-kicker">${esc(bench.familyLabel || bench.family)} / ${esc(bench.short || bench.name)}</span><h3>${esc(best.model.name)}</h3><p><span class="spotlight-number">${fmt(best.entry.value)}${esc(bench.unit || "")}</span> · ${count}/${models.length} models have a recorded observation</p></article>`).join("");
+      return { bench, best: values[0], count: values.length, order: benchmarks.indexOf(bench) };
+    }).filter((signal) => signal.best).sort((a, b) => b.count - a.count || a.order - b.order).slice(0, 3);
+    els.spotlightGrid.innerHTML = signals.map(({ bench, best, count }) => `<article class="spotlight-card"><span class="spotlight-kicker">${esc(bench.familyLabel || bench.family)} / ${esc(bench.short || bench.name)}</span><h3>${esc(best.model.name)}</h3><p><span class="spotlight-number">${fmt(best.entry.value)}${esc(bench.unit || "")}</span> · column leader among ${count}/${models.length} reported observations</p></article>`).join("");
   }
 
   function render() {
@@ -203,7 +205,8 @@
     const entry = benchmark ? scoreEntry(model, benchmark.id) : null;
     const source = entry ? sourceFor(entry.sourceId) : null;
     const benchmarks = state.data.benchmarks || [];
-    const recorded = benchmarks.map((bench) => ({ bench, entry: scoreEntry(model, bench.id) })).filter(({ entry: value }) => value.value !== null && value.value !== undefined).sort((a, b) => Number(b.entry.value) - Number(a.entry.value));
+    // Preserve benchmark registry order; values use different metrics/scales.
+    const recorded = benchmarks.map((bench) => ({ bench, entry: scoreEntry(model, bench.id) })).filter(({ entry: value }) => value.value !== null && value.value !== undefined);
     const mainScore = entry || (recorded[0] ? recorded[0].entry : null);
     const mainBench = benchmark || (recorded[0] ? recorded[0].bench : null);
     const status = mainScore ? statusLabel(mainScore) : "未报告";
