@@ -19,9 +19,8 @@ import argparse
 import hashlib
 import json
 import sys
-from datetime import date
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Mapping, Sequence
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -749,7 +748,6 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     as_of = str(meta_legacy.get("asOf") or "2026-08-27")
     last_updated = str(meta_legacy.get("lastUpdated") or f"{as_of}T00:00:00Z")
     site_benchmarks = [benchmark_for_site(item, source_by_id, as_of) for item in canonical_benchmarks]
-    site_benchmark_by_id = {item["id"]: item for item in site_benchmarks}
 
     scored_models: list[dict[str, Any]] = []
     catalog_models: list[dict[str, Any]] = []
@@ -785,10 +783,21 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         for row in sorted(registered_rows, key=lambda item: (str(item.get("observed_at") or ""), str(item.get("id"))), reverse=True)
     ]
     featured_ids = [item["id"] for item in site_benchmarks if item.get("featured")]
-    numeric_count = sum(
-        1 for row in registered_rows
-        if isinstance(row.get("value"), (int, float)) and not isinstance(row.get("value"), bool)
-    )
+    numeric_rows = [
+        row
+        for row in registered_rows
+        if isinstance(row.get("value"), (int, float))
+        and not isinstance(row.get("value"), bool)
+    ]
+    # Coverage is a matrix property, not a row count.  A model can have many
+    # historical observations (or several harness runs) for one cell; those
+    # rows must not inflate the percentage beyond what the atlas can display.
+    direct_cells = {
+        (str(row.get("model_id")), str(row.get("benchmark_id")))
+        for row in numeric_rows
+        if is_model_observation(row)
+    }
+    numeric_count = len(numeric_rows)
     total_possible = len(canonical_models) * len(canonical_benchmarks)
     stats = {
         "catalogModels": len(catalog_models),
@@ -800,10 +809,12 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "harnesses": len(canonical_harnesses),
         "presets": len(canonical_presets),
         "runs": len(site_runs),
+        "systemRuns": sum(1 for row in registered_rows if not is_model_observation(row)),
         "observations": len(registered_rows),
         "numericObservations": numeric_count,
-        "coverage": round(numeric_count / total_possible, 4) if total_possible else 0,
-        "coveragePct": round(100 * numeric_count / total_possible, 1) if total_possible else 0,
+        "observedCells": len(direct_cells),
+        "coverage": round(len(direct_cells) / total_possible, 4) if total_possible else 0,
+        "coveragePct": round(100 * len(direct_cells) / total_possible, 1) if total_possible else 0,
         "legacyMigrated": sum(1 for row in registered_rows if row.get("legacy_migrated")),
     }
     meta = {

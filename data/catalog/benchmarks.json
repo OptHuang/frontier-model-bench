@@ -42,6 +42,27 @@
     "featured": true
   },
   {
+    "id": "aime-2026",
+    "short": "AIME 2026",
+    "name": "AIME 2026",
+    "category": "math",
+    "family": "reasoning",
+    "family_label": "数学",
+    "owner": "MathArena / AIME",
+    "description": "AIME 2026 题集；题目窗口、采样次数、工具和答案抽取方式必须明确。",
+    "source_ids": ["hf-aime-2026", "src-hmmt"],
+    "versions": [{"id": "aime-2026@v1", "label": "2026", "status": "active"}],
+    "default_version_id": "aime-2026@v1",
+    "metrics": [{"id": "pass@1", "label": "Pass@1", "unit": "percent", "scale": {"min": 0, "max": 100}, "direction": "higher"}],
+    "default_metric_id": "pass@1",
+    "metric": "pass@1",
+    "metricLabel": "Pass@1",
+    "scale": 100,
+    "unit": "%",
+    "direction": "higher",
+    "featured": true
+  },
+  {
     "id": "frontiermath",
     "short": "FrontierMath",
     "name": "FrontierMath T1–T3",
@@ -71,9 +92,12 @@
     "family_label": "数学",
     "owner": "HMMT",
     "description": "数学竞赛题；应区分年份、赛季和 avg@k 设置。",
-    "source_ids": ["src-hmmt"],
-    "versions": [{"id": "hmmt@2025", "label": "2025", "status": "active"}],
-    "default_version_id": "hmmt@2025",
+    "source_ids": ["src-hmmt", "hf-hmmt-2026"],
+    "versions": [
+      {"id": "hmmt@2025", "label": "2025", "status": "legacy"},
+      {"id": "hmmt@2026", "label": "February 2026", "status": "active"}
+    ],
+    "default_version_id": "hmmt@2026",
     "metrics": [{"id": "pass@1", "label": "Pass@1", "unit": "percent", "scale": {"min": 0, "max": 100}, "direction": "higher"}],
     "default_metric_id": "pass@1",
     "metric": "pass@1",

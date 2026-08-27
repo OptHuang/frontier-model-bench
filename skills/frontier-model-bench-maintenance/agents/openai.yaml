@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontier Model Bench Maintenance"
+  short_description: "Audit and refresh benchmark data safely"
+  default_prompt: "Audit the Frontier Model Bench for missing or stale observations, run safe public-source adapters, and prepare a validated candidate update."

@@ -13,7 +13,7 @@
     "label": "Latest vs previous",
     "description": "同一 family 的最新 release 与上一代；保留历史而不让旧模型占默认榜。",
     "model_filter": {"include_tags": ["旗舰", "上一代"]},
-    "benchmark_ids": ["gpqa-diamond", "aime-2025", "mmlu-pro", "livecodebench", "swebench-verified"],
+    "benchmark_ids": ["gpqa-diamond", "aime-2026", "aime-2025", "mmlu-pro", "livecodebench", "swebench-verified"],
     "sort": "family_release"
   },
   {
@@ -37,7 +37,7 @@
     "id": "math-science",
     "label": "Math / science",
     "description": "数学与研究生科学推理；保留 pass@k、工具和采样设置。",
-    "benchmark_ids": ["aime-2025", "hmmt", "frontiermath", "gpqa-diamond", "hle"],
+    "benchmark_ids": ["aime-2026", "aime-2025", "hmmt", "frontiermath", "gpqa-diamond", "hle"],
     "model_filter": {"include_tags": ["推理", "数学"]},
     "sort": "benchmark_column"
   },

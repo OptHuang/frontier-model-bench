@@ -1031,7 +1031,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         nargs="?",
         type=Path,
         default=None,
-        help=f"待校验 JSON（默认检查 canonical bundle；显式传文件则检查 legacy shape）",
+        help="待校验 JSON（默认检查 canonical bundle；显式传文件则检查 legacy shape）",
     )
     parser.add_argument(
         "--canonical",

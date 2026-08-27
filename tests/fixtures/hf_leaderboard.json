@@ -1,0 +1,18 @@
+[
+  {
+    "rank": 1,
+    "modelId": "org/Model-1",
+    "value": 87.5,
+    "verified": true,
+    "filename": ".eval_results/example.yaml",
+    "source": {"url": "https://huggingface.co/org/Model-1", "name": "Model card"},
+    "pullRequest": 12
+  },
+  {
+    "rank": 2,
+    "modelId": "org/Model-2",
+    "value": null,
+    "verified": false,
+    "source": {"url": "https://huggingface.co/org/Model-2", "name": "Model card"}
+  }
+]

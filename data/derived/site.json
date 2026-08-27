@@ -14,6 +14,7 @@
     "defaultBenchmarkIds": [
       "gpqa-diamond",
       "aime-2025",
+      "aime-2026",
       "mmlu-pro",
       "hle",
       "swebench-verified",
@@ -129,6 +130,53 @@
       "featured": true
     },
     {
+      "id": "aime-2026",
+      "canonicalId": "aime-2026",
+      "short": "AIME 2026",
+      "name": "AIME 2026",
+      "family": "reasoning",
+      "category": "math",
+      "familyLabel": "数学",
+      "evaluationMode": "direct",
+      "comparisonKey": "aime-2026:aime-2026@v1:pass@1",
+      "metric": "pass@1",
+      "metricLabel": "Pass@1",
+      "scale": 100,
+      "unit": "%",
+      "direction": "higher",
+      "version": "2026",
+      "versionId": "aime-2026@v1",
+      "description": "AIME 2026 题集；题目窗口、采样次数、工具和答案抽取方式必须明确。",
+      "owner": "MathArena / AIME",
+      "source": "https://huggingface.co/api/datasets/MathArena/aime_2026/leaderboard",
+      "sourceLabel": "Hugging Face · AIME leaderboard API",
+      "sourceIds": [
+        "hf-aime-2026",
+        "src-hmmt"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "aime-2026@v1",
+          "label": "2026",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "pass@1",
+          "label": "Pass@1",
+          "unit": "percent",
+          "scale": {
+            "min": 0,
+            "max": 100
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": true
+    },
+    {
       "id": "frontiermath",
       "canonicalId": "frontiermath",
       "short": "FrontierMath",
@@ -183,26 +231,32 @@
       "category": "math",
       "familyLabel": "数学",
       "evaluationMode": "direct",
-      "comparisonKey": "hmmt:hmmt@2025:pass@1",
+      "comparisonKey": "hmmt:hmmt@2026:pass@1",
       "metric": "pass@1",
       "metricLabel": "Pass@1",
       "scale": 100,
       "unit": "%",
       "direction": "higher",
-      "version": "2025",
-      "versionId": "hmmt@2025",
+      "version": "February 2026",
+      "versionId": "hmmt@2026",
       "description": "数学竞赛题；应区分年份、赛季和 avg@k 设置。",
       "owner": "HMMT",
       "source": "https://www.hmmt.org/",
       "sourceLabel": "HMMT benchmark",
       "sourceIds": [
-        "src-hmmt"
+        "src-hmmt",
+        "hf-hmmt-2026"
       ],
       "lastVerified": "2026-08-27",
       "versions": [
         {
           "id": "hmmt@2025",
           "label": "2025",
+          "status": "legacy"
+        },
+        {
+          "id": "hmmt@2026",
+          "label": "February 2026",
           "status": "active"
         }
       ],
@@ -3199,6 +3253,130 @@
       "url": "https://cybergym.ai/",
       "default_evidence_level": "C",
       "staleness_after_days": 120
+    },
+    {
+      "id": "hf-swebench-verified",
+      "label": "Hugging Face · SWE-bench Verified leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / SWE-bench",
+      "url": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Verified/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 14,
+      "adapter_id": "hf-swebench-verified",
+      "license_note": "Store candidate metadata and hashes; verify dataset/model-card redistribution terms before saving payload."
+    },
+    {
+      "id": "hf-swebench-pro",
+      "label": "Hugging Face · SWE-bench Pro leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / Scale",
+      "url": "https://huggingface.co/api/datasets/ScaleAI/SWE-bench_Pro/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-swebench-pro"
+    },
+    {
+      "id": "hf-hle",
+      "label": "Hugging Face · Humanity's Last Exam leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / HLE",
+      "url": "https://huggingface.co/api/datasets/cais/hle/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-hle"
+    },
+    {
+      "id": "hf-mmlu-pro",
+      "label": "Hugging Face · MMLU-Pro leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / TIGER-Lab",
+      "url": "https://huggingface.co/api/datasets/TIGER-Lab/MMLU-Pro/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-mmlu-pro"
+    },
+    {
+      "id": "hf-gpqa",
+      "label": "Hugging Face · GPQA leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / GPQA",
+      "url": "https://huggingface.co/api/datasets/Idavidrein/gpqa/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 90,
+      "adapter_id": "hf-gpqa"
+    },
+    {
+      "id": "hf-terminal-bench",
+      "label": "Hugging Face · Terminal-Bench leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / Harbor",
+      "url": "https://huggingface.co/api/datasets/harborframework/terminal-bench-2.0/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-terminal-bench"
+    },
+    {
+      "id": "hf-aime-2026",
+      "label": "Hugging Face · AIME leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / MathArena",
+      "url": "https://huggingface.co/api/datasets/MathArena/aime_2026/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-aime-2026"
+    },
+    {
+      "id": "hf-hmmt-2026",
+      "label": "Hugging Face · HMMT leaderboard API",
+      "kind": "official_api",
+      "publisher": "Hugging Face / MathArena",
+      "url": "https://huggingface.co/api/datasets/MathArena/hmmt_feb_2026/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 30,
+      "adapter_id": "hf-hmmt-2026"
+    },
+    {
+      "id": "livebench-official",
+      "label": "LiveBench · official dated release table",
+      "kind": "official_repository",
+      "publisher": "LiveBench",
+      "url": "https://github.com/LiveBench/new-livebench",
+      "api_url": "https://api.github.com/repos/LiveBench/new-livebench/git/trees/main?recursive=1",
+      "default_evidence_level": "A",
+      "staleness_after_days": 14,
+      "adapter_id": "livebench-official"
+    },
+    {
+      "id": "helm-capabilities",
+      "label": "Stanford HELM · capabilities release artifact",
+      "kind": "official_artifact",
+      "publisher": "Stanford CRFM",
+      "url": "https://crfm.stanford.edu/helm/capabilities/latest/config.js",
+      "default_evidence_level": "A",
+      "staleness_after_days": 90,
+      "adapter_id": "helm-capabilities"
+    },
+    {
+      "id": "helm-lite",
+      "label": "Stanford HELM · lite release artifact",
+      "kind": "official_artifact",
+      "publisher": "Stanford CRFM",
+      "url": "https://crfm.stanford.edu/helm/lite/latest/config.js",
+      "default_evidence_level": "A",
+      "staleness_after_days": 90,
+      "adapter_id": "helm-lite"
+    },
+    {
+      "id": "lmsys-arena",
+      "label": "LMArena / Chatbot Arena · metadata only",
+      "kind": "unstable_web_app",
+      "publisher": "LMArena / LMSYS",
+      "url": "https://arena.ai/leaderboard",
+      "default_evidence_level": "C",
+      "staleness_after_days": 14,
+      "adapter_id": "lmsys-arena",
+      "enabled": false,
+      "license_note": "No undocumented endpoint scraping; add a dated, auditable export before ingesting Elo."
     }
   ],
   "catalogModels": [
@@ -9043,6 +9221,7 @@
       },
       "benchmark_ids": [
         "gpqa-diamond",
+        "aime-2026",
         "aime-2025",
         "mmlu-pro",
         "livecodebench",
@@ -9101,6 +9280,7 @@
       "label": "Math / science",
       "description": "数学与研究生科学推理；保留 pass@k、工具和采样设置。",
       "benchmark_ids": [
+        "aime-2026",
         "aime-2025",
         "hmmt",
         "frontiermath",
@@ -9295,16 +9475,18 @@
     "catalogModels": 49,
     "scoredModels": 9,
     "catalogOnlyModels": 40,
-    "benchmarks": 29,
-    "featuredBenchmarks": 11,
-    "sources": 54,
+    "benchmarks": 30,
+    "featuredBenchmarks": 12,
+    "sources": 66,
     "harnesses": 11,
     "presets": 15,
     "runs": 47,
+    "systemRuns": 18,
     "observations": 47,
     "numericObservations": 47,
-    "coverage": 0.0331,
-    "coveragePct": 3.3,
+    "observedCells": 29,
+    "coverage": 0.0197,
+    "coveragePct": 2.0,
     "legacyMigrated": 32
   }
 }

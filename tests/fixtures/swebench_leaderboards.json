@@ -1,0 +1,19 @@
+{
+  "leaderboards": [
+    {
+      "name": "Verified",
+      "results": [
+        {
+          "name": "mini-SWE + Model-1",
+          "model_display": "Model-1",
+          "resolved": 72.4,
+          "date": "2026-08-20",
+          "agent": "mini-SWE-agent",
+          "os_system": true,
+          "os_model": false,
+          "checked": true
+        }
+      ]
+    }
+  ]
+}

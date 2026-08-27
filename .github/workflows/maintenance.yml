@@ -1,0 +1,119 @@
+name: Scheduled maintenance candidates
+
+on:
+  # 02:17 UTC = 10:17 Asia/Shanghai.  The report is deliberately a little
+  # offset from the hour so it does not synchronize with every other cron job.
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+    inputs:
+      check_sources:
+        description: "Probe source landing pages in addition to candidate adapters"
+        required: false
+        type: boolean
+        default: true
+
+# The job is read-only by design: it can upload an artifact, but cannot push a
+# candidate into the approved catalog or open/merge a PR on its own.
+permissions:
+  contents: read
+
+concurrency:
+  group: maintenance-candidates
+  cancel-in-progress: true
+
+jobs:
+  report:
+    name: Discover gaps and stale sources
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate approved data
+        id: validate
+        # Keep this as a separate gate.  A malformed registry makes the job
+        # fail, while the following report step still runs and uploads context.
+        run: |
+          python scripts/build_derived.py
+          python scripts/validate_data.py --strict
+
+      - name: Generate read-only candidate report
+        if: always()
+        env:
+          CHECK_SOURCES: ${{ github.event_name == 'schedule' || inputs.check_sources == true }}
+        run: |
+          mkdir -p artifacts/maintenance
+          if [ "$CHECK_SOURCES" = "true" ]; then
+            python scripts/maintenance_report.py \
+              --root . \
+              --output-dir artifacts/maintenance \
+              --check-sources \
+              --timeout 8 \
+              --max-sources 80
+          else
+            python scripts/maintenance_report.py \
+              --root . \
+              --output-dir artifacts/maintenance \
+              --max-sources 80
+          fi
+
+      - name: Fetch public leaderboard candidates (dry-run)
+        if: always()
+        # ``fetch.py check`` parses public adapters in memory and writes only
+        # candidate artifacts.  It never imports rows into approved data.
+        run: |
+          python scripts/fetch.py check \
+            --root . \
+            --output-dir artifacts/fetch \
+            --dry-run \
+            --timeout 20 \
+            --max-bytes 16777216 \
+            --max-candidates 5000
+
+      - name: Add maintenance summary
+        if: always()
+        run: |
+          for summary in artifacts/maintenance/summary.md artifacts/fetch/summary.md; do
+            if [ -f "$summary" ]; then
+              cat "$summary" >> "$GITHUB_STEP_SUMMARY"
+              echo "" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [ ! -f artifacts/maintenance/summary.md ] && [ ! -f artifacts/fetch/summary.md ]; then
+            echo "Maintenance report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Annotate candidate health
+        if: always()
+        run: |
+          if [ -f artifacts/maintenance/health.json ]; then
+            STATUS=$(python -c 'import json; print(json.load(open("artifacts/maintenance/health.json"))["status"])')
+            CANDIDATES=$(python -c 'import json; print(json.load(open("artifacts/maintenance/health.json"))["candidates"]["total"])')
+            if [ "$STATUS" = "amber" ]; then
+              echo "::warning title=Maintenance candidates::$CANDIDATES candidate/stale item(s) need review; approved data was not changed."
+            elif [ "$STATUS" = "red" ]; then
+              echo "::error title=Maintenance report::The canonical data could not be assessed."
+            fi
+          fi
+          if [ -f artifacts/fetch/summary.json ]; then
+            FETCH_CANDIDATES=$(python -c 'import json; print(json.load(open("artifacts/fetch/summary.json"))["candidates"]["written"])')
+            echo "::notice title=Adapter candidates::$FETCH_CANDIDATES parsed candidate row(s) are available for review; none were promoted automatically."
+          fi
+
+      - name: Upload maintenance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontier-model-bench-maintenance-${{ github.run_id }}
+          path: |
+            artifacts/maintenance/
+            artifacts/fetch/
+          if-no-files-found: warn
+          retention-days: 30

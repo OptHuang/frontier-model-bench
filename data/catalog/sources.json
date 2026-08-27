@@ -484,5 +484,129 @@
     "url": "https://cybergym.ai/",
     "default_evidence_level": "C",
     "staleness_after_days": 120
+  },
+  {
+    "id": "hf-swebench-verified",
+    "label": "Hugging Face · SWE-bench Verified leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / SWE-bench",
+    "url": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Verified/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 14,
+    "adapter_id": "hf-swebench-verified",
+    "license_note": "Store candidate metadata and hashes; verify dataset/model-card redistribution terms before saving payload."
+  },
+  {
+    "id": "hf-swebench-pro",
+    "label": "Hugging Face · SWE-bench Pro leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / Scale",
+    "url": "https://huggingface.co/api/datasets/ScaleAI/SWE-bench_Pro/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-swebench-pro"
+  },
+  {
+    "id": "hf-hle",
+    "label": "Hugging Face · Humanity's Last Exam leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / HLE",
+    "url": "https://huggingface.co/api/datasets/cais/hle/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-hle"
+  },
+  {
+    "id": "hf-mmlu-pro",
+    "label": "Hugging Face · MMLU-Pro leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / TIGER-Lab",
+    "url": "https://huggingface.co/api/datasets/TIGER-Lab/MMLU-Pro/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-mmlu-pro"
+  },
+  {
+    "id": "hf-gpqa",
+    "label": "Hugging Face · GPQA leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / GPQA",
+    "url": "https://huggingface.co/api/datasets/Idavidrein/gpqa/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "adapter_id": "hf-gpqa"
+  },
+  {
+    "id": "hf-terminal-bench",
+    "label": "Hugging Face · Terminal-Bench leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / Harbor",
+    "url": "https://huggingface.co/api/datasets/harborframework/terminal-bench-2.0/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-terminal-bench"
+  },
+  {
+    "id": "hf-aime-2026",
+    "label": "Hugging Face · AIME leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / MathArena",
+    "url": "https://huggingface.co/api/datasets/MathArena/aime_2026/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-aime-2026"
+  },
+  {
+    "id": "hf-hmmt-2026",
+    "label": "Hugging Face · HMMT leaderboard API",
+    "kind": "official_api",
+    "publisher": "Hugging Face / MathArena",
+    "url": "https://huggingface.co/api/datasets/MathArena/hmmt_feb_2026/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "hf-hmmt-2026"
+  },
+  {
+    "id": "livebench-official",
+    "label": "LiveBench · official dated release table",
+    "kind": "official_repository",
+    "publisher": "LiveBench",
+    "url": "https://github.com/LiveBench/new-livebench",
+    "api_url": "https://api.github.com/repos/LiveBench/new-livebench/git/trees/main?recursive=1",
+    "default_evidence_level": "A",
+    "staleness_after_days": 14,
+    "adapter_id": "livebench-official"
+  },
+  {
+    "id": "helm-capabilities",
+    "label": "Stanford HELM · capabilities release artifact",
+    "kind": "official_artifact",
+    "publisher": "Stanford CRFM",
+    "url": "https://crfm.stanford.edu/helm/capabilities/latest/config.js",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "adapter_id": "helm-capabilities"
+  },
+  {
+    "id": "helm-lite",
+    "label": "Stanford HELM · lite release artifact",
+    "kind": "official_artifact",
+    "publisher": "Stanford CRFM",
+    "url": "https://crfm.stanford.edu/helm/lite/latest/config.js",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "adapter_id": "helm-lite"
+  },
+  {
+    "id": "lmsys-arena",
+    "label": "LMArena / Chatbot Arena · metadata only",
+    "kind": "unstable_web_app",
+    "publisher": "LMArena / LMSYS",
+    "url": "https://arena.ai/leaderboard",
+    "default_evidence_level": "C",
+    "staleness_after_days": 14,
+    "adapter_id": "lmsys-arena",
+    "enabled": false,
+    "license_note": "No undocumented endpoint scraping; add a dated, auditable export before ingesting Elo."
   }
 ]

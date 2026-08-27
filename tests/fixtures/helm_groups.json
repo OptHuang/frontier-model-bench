@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Accuracy",
+    "header": [
+      {"value": "Model"},
+      {"value": "Mean win rate"},
+      {"value": "MMLU - EM", "description": "Exact match"}
+    ],
+    "rows": [
+      [
+        {"value": "Model-1"},
+        {"value": 0.75},
+        {"value": 0.82}
+      ]
+    ]
+  }
+]
