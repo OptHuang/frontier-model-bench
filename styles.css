@@ -237,11 +237,16 @@ select:focus { border-color: var(--accent); }
 .matrix-tools-copy { min-width: 0; display: flex; align-items: baseline; gap: 10px; color: var(--muted-2); font: 9px var(--mono); }
 .matrix-tools-kicker { flex: 0 0 auto; color: var(--accent); font-size: 9px; letter-spacing: .11em; }
 .matrix-tools-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+.matrix-scope-wrap select { width: 96px; min-width: 96px; height: 34px; border-radius: 8px; font: 9px var(--mono); }
 .density-switcher { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
 .density-button, .matrix-home-button { height: 28px; border: 0; border-radius: 6px; padding: 0 9px; background: transparent; color: var(--muted-2); font: 9px var(--mono); cursor: pointer; }
 .density-button:hover, .matrix-home-button:hover { color: var(--text); }
 .density-button.active { color: var(--text); background: var(--surface); box-shadow: 0 2px 8px rgba(0, 0, 0, .15); }
 .matrix-jump-wrap select { width: min(235px, 24vw); min-width: 170px; height: 34px; border-radius: 8px; font: 10px var(--mono); }
+.matrix-page-controls { display: inline-flex; gap: 2px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.matrix-page-button { width: 29px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: 13px var(--mono); cursor: pointer; }
+.matrix-page-button:hover:not(:disabled) { background: var(--surface); color: var(--accent); }
+.matrix-page-button:disabled { opacity: .3; cursor: default; }
 .matrix-home-button { height: 34px; border: 1px solid var(--line); background: var(--surface); }
 
 .matrix-frame { --model-column-width: 215px; --metric-column-width: 108px; --score-row-height: 73px; position: relative; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); box-shadow: 0 22px 70px rgba(0, 0, 0, .22); }
@@ -302,6 +307,9 @@ select:focus { border-color: var(--accent); }
 .score-missing { color: var(--muted-2); }
 .score-missing .score-value { color: var(--muted-2); font-size: 18px; }
 .score-missing .score-setting { color: var(--muted-2); }
+.score-variant { background: color-mix(in srgb, var(--yellow) 6%, var(--surface)); }
+.score-variant .score-value { color: var(--yellow); font-size: 12px; }
+.score-variant .score-value small { color: var(--muted-2); }
 .matrix-frame[data-density="compact"] .matrix-table thead th { height: 51px; padding: 7px 5px; }
 .matrix-frame[data-density="compact"] .bench-head strong { max-width: 76px; overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .matrix-frame[data-density="compact"] .bench-head small { max-width: 76px; overflow: hidden; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
@@ -525,8 +533,9 @@ select:focus { border-color: var(--accent); }
   #matrix .control-bar { padding: 9px; }
   .matrix-tools { padding: 9px; }
   .matrix-tools-copy { width: 100%; align-items: flex-start; justify-content: space-between; }
-  .matrix-tools-actions { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; }
-  .matrix-jump-wrap { min-width: 0; }
+  .matrix-tools-actions { display: flex; flex-wrap: wrap; }
+  .matrix-scope-wrap { flex: 0 0 auto; }
+  .matrix-jump-wrap { min-width: 0; flex: 1 1 170px; }
   .matrix-jump-wrap select { min-width: 0; }
   .matrix-home-button { padding-inline: 8px; }
   .matrix-frame { --model-column-width: 188px; }

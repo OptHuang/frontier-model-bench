@@ -23,11 +23,50 @@
 及其 `unmapped-summary.json` 审计索引和维护 artifact，但不会被猜测成另一个
 canonical release。
 
+## 为什么原矩阵“前稀后密”
+
+2026-08-28 对旧版 147 个平铺列做了逐列审计：人工置顶的前 20 列只有
+**276 / 2,000 = 13.8%** 非空，其中第 9–20 列仅 **3.58%**；第 21–100 列则是
+**27.85%**。这不是 benchmark 越靠后越常测，而是三个显示结构叠加造成的：
+
+1. canonical 主口径被固定放在最前，即使它暂时没有安全映射值；
+2. 同一 benchmark 的 `score`、`mean_score`、版本和 subtask 被建成子切片，并被排到后面；
+3. source-specific 版本（例如 Epoch、HELM、不同 SWE scaffold）也被平铺成独立列。
+
+页面现已默认改为 **92 个语义分组**，按重要度层级、再按组内去重覆盖排序，并且每次只
+渲染 24 列。当前前 20 组有 **543 / 2,000 = 27.15%** 模型存在主口径或相关切片；若
+主口径为空但子切片有数据，单元格显示 `N variants`，点击后逐条查看。不同 benchmark
+版本、metric 或 harness **不会被合并成一个数值**。需要审计原始结构时仍可切换到
+“全部切片”。纯空白现在写作“本站未收录”，不再暗示“外界没有测试”。
+
+## SWE-bench 空白到底是不是真的
+
+大部分不是“没有人测”，而是证据层级或协议不同：当前 canonical 中 SWE-bench Pro
+只有 1 条，Verified 与 Multilingual 都是 0；但公开证据层已经分别有 **18、77、11 条**
+可映射披露行。SWE-bench 官方机器可读榜当前共有 370 行，其中 Verified 180、Lite 84、
+Bash-only 47、Test 24、Multimodal 22、Multilingual 13。这里很多是旧模型或不同
+agent/scaffold，不能把同名模型的任意最高分直接填进一个裸模型单元格。
+
+最新版模型还有另一类情况：分数存在于 provider 模型卡，但尚未进入 SWE 官方统一榜。
+例如 [OpenAI GPT-5.6](https://openai.com/index/gpt-5-6/) 披露了 SWE-bench Pro，
+[Anthropic 最新系统卡](https://www.anthropic.com/system-cards) 披露了 Verified、Pro 与
+Multilingual，[Gemini 3.1 Pro 模型卡](https://deepmind.google/models/model-cards/gemini-3-1-pro/)
+也披露了自建 scaffold 下的 Verified/Pro。它们可以作为 `provider-reported · 未复现`
+进入相关切片，但必须保留 dataset revision、harness、effort、采样次数、turn/token/cost
+上限；不能静默当成同协议结果。
+
+少数空白目前确实成立：例如 [Gemini 3.7 Flash](https://deepmind.google/models/model-cards/gemini-3-7-flash/)
+当前官方模型卡没有标准 SWE-bench 结果；Kimi K3、GLM-5.3、DeepSeek V4 的部分正式
+checkpoint 也只报告 DeepSWE、FrontierSWE 等近邻 benchmark，不能继承 preview 或旧
+checkpoint 的 SWE 分数。同样的“公开有值但未进入主口径”还出现在 Terminal-Bench、
+BrowseComp、OSWorld 等 system benchmark，因此修复必须是通用的 group + protocol
+建模，而不是只手工补 SWE 一列。
+
 ## 当前精确快照
 
 统计对象不同，数字会不同，不能把它们混为“已经收录的成绩数”：
 
-- 目录有 **100 个模型 / 配置条目、53 个 canonical benchmark 定义、88 个来源、15 个 harness**（另有 19 个比较预设）；Benchmarks 页面还从公开证据生成 **73 个 public-only slices**，合计可浏览 **126 项**。
+- 目录有 **100 个模型 / 配置条目、53 个 canonical benchmark 定义、110 个来源、15 个 harness**（另有 19 个比较预设）；Evaluation 前端从公开证据再生成 **73 个 public source/version slices** 与 **21 个 metric slices**，共 147 个严格切片，并折叠为 92 个默认语义分组。
 - canonical 文件当前有 **15 行**；构建后的站点索引包含 **47 个 runs/observations**（其中 **32 行**是兼容旧 schema 的 legacy 记录）。
 - 有数值的 canonical 已观察模型为 **9 个**，仅目录模型为 **91 个**；已观察的模型×benchmark 单元为 **29 个**，按全目录口径覆盖率为 **0.5%**。维护报告按 active 集合和 freshness 口径计算时可能显示不同百分比，这是分母不同，不是数据丢失。
 - 公开层本次 union 合并 **21,227 条去重报告行**（18 个来源、128 个 raw benchmark 切片；其中 99 个切片出现在 mapped rows、724 个 source×原始模型名键）；其中 **21,129 条**带数值，**6,461 条**能以 exact/heuristic/curated alias 映射到目录（alias registry 当前 **129 条**显式 source-scoped 规则，产生 **2,830 条**curated rows）。这些 mapped rows 以本地默认 `--max-per-key 0` **全部载入** `public.json`/`evidence.jsonl`，覆盖 **2,750 个** mapped model×benchmark 单元（细分为 **3,064 个** model×benchmark×metric slices；270 条 telemetry 原始行对应 **240 个**仅证据 metric 单元，实际 performance slices 为 **2,824**）；**14,766 条**未安全映射行完整保存在 gitignored `data/public/unmapped.jsonl`，并由 `data/public/unmapped-summary.json` 按来源原名聚合索引（**1,591 个**原名组）。因默认不设上限，`alternatives.jsonl` 当前为空；需要轻量预览时可显式传入正数 cap。这不是删除，而是把无法安全归属的记录与可展示记录分层。

@@ -4,6 +4,8 @@ const assert = require("assert");
 const fs = require("fs");
 const vm = require("vm");
 
+const performanceMode = process.argv.includes("--performance");
+
 class ClassList {
   constructor() { this.values = new Set(); }
   add(value) { this.values.add(value); }
@@ -129,6 +131,15 @@ const runs = [
     value: 80,
     notes: "harness-marker",
   },
+  {
+    id: "group-child-model-only",
+    modelId: "acme/model@1",
+    modelName: "Acme Model",
+    benchmarkId: "group-child",
+    harnessId: "model-only",
+    subjectType: "model",
+    value: 75,
+  },
 ];
 for (let index = 0; index < 61; index += 1) {
   runs.push({
@@ -150,6 +161,9 @@ const fixture = {
     { id: "direct-bench", name: "Direct Bench", evaluationMode: "direct", metric: "score", displayPriority: 20 },
     { id: "system-bench", name: "System Bench", evaluationMode: "system", metric: "score", displayPriority: 10 },
     { id: "arena-text", name: "Arena Text", evaluationMode: "direct", metric: "arena_score_bt", displayPriority: 30 },
+    { id: "group-main", name: "Grouped Benchmark", evaluationMode: "direct", metric: "score", displayPriority: 21 },
+    { id: "group-child", name: "Grouped Benchmark v2", evaluationMode: "direct", metric: "score", displayGroup: "group-main", displayPriority: 22 },
+    { id: "blank-bench", name: "Blank Benchmark", evaluationMode: "direct", metric: "score", displayPriority: 23 },
   ],
   harnesses: [
     { id: "model-only", name: "Model only", kind: "model" },
@@ -202,6 +216,29 @@ const fixture = {
   sources: [],
 };
 
+if (performanceMode) {
+  for (let index = 0; index < 99; index += 1) {
+    fixture.models.push({
+      id: `perf/model-${index}@1`,
+      name: `Perf Model ${index}`,
+      provider: "Perf",
+      status: "active",
+    });
+  }
+  // The real public-coverage snapshot currently expands to 147 columns. Keep
+  // that exact order of magnitude in the regression fixture so a future
+  // change cannot accidentally rebuild the full 100 × 147 DOM on every
+  // filter interaction.
+  for (let index = 0; index < 142; index += 1) {
+    fixture.benchmarks.push({
+      id: `perf-bench-${index}`,
+      name: `Perf Bench ${index}`,
+      evaluationMode: "direct",
+      metric: "score",
+    });
+  }
+}
+
 const storage = new Map();
 const context = {
   console,
@@ -221,12 +258,52 @@ context.window = context;
 
 async function main() {
   const appPath = process.argv[2];
+  const startedAt = Date.now();
   vm.runInNewContext(fs.readFileSync(appPath, "utf8"), context, { filename: appPath });
   await new Promise((resolve) => setImmediate(resolve));
   await new Promise((resolve) => setImmediate(resolve));
 
+  if (performanceMode) {
+    const headerCount = (elements.matrixHead.innerHTML.match(/data-benchmark-col=/g) || []).length;
+    const cellCount = (elements.matrixBody.innerHTML.match(/class="score-cell/g) || []).length;
+    assert(headerCount <= 24, `matrix eagerly rendered ${headerCount} benchmark columns`);
+    assert(cellCount <= 2400, `matrix eagerly rendered ${cellCount} score cells`);
+    assert(Date.now() - startedAt < 2500, "synthetic matrix boot exceeded 2.5 seconds");
+    return;
+  }
+
   assert.strictEqual(elements.runTableBody.innerHTML, "", "atlas mode must not build the hidden run table");
   assert.strictEqual(elements.runCardsView.innerHTML, "", "atlas mode must not build hidden run cards");
+  assert(
+    !elements.matrixHead.innerHTML.includes('data-benchmark-col="helm-mean-score--efficiency-score"'),
+    "grouped overview leaked a secondary metric into the global header",
+  );
+  assert(
+    elements.benchmarkJump.innerHTML.includes("slices"),
+    "grouped overview did not disclose that related slices are available",
+  );
+  assert(
+    elements.matrixBody.innerHTML.includes('data-benchmark-group="group-main" data-variant-count="1"'),
+    "a scored child slice did not make the empty headline cell inspectable",
+  );
+  assert(
+    elements.matrixBody.innerHTML.includes("本站未收录"),
+    "an empty site cell was presented as proof that no public result was reported",
+  );
+  documentClick({
+    closest(selector) {
+      if (selector === "a" || selector === "[data-run-page]" || selector === "[data-run]") return null;
+      if (selector === "[data-model][data-benchmark]") return { dataset: { model: "acme/model@1", benchmark: "group-main" } };
+      return null;
+    },
+  });
+  assert(
+    elements.drawerContent.innerHTML.includes("Related benchmark slices") && elements.drawerContent.innerHTML.includes("Grouped Benchmark v2"),
+    "grouped placeholder did not expose its related scored slice in the detail drawer",
+  );
+
+  elements.matrixScope.value = "slices";
+  elements.matrixScope.emit("change");
   assert(
     elements.matrixBody.innerHTML.includes('data-benchmark="helm-mean-score--efficiency-score"'),
     "legacy HELM Efficiency/score row collided with Accuracy/score",

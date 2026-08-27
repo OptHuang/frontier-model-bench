@@ -159,6 +159,13 @@
               <span id="matrixNavigationStatus">热门与高覆盖 benchmark 优先</span>
             </div>
             <div class="matrix-tools-actions">
+              <label class="matrix-scope-wrap">
+                <span class="sr-only">矩阵列范围</span>
+                <select id="matrixScope" aria-label="矩阵列范围">
+                  <option value="groups" selected>分组概览</option>
+                  <option value="slices">全部切片</option>
+                </select>
+              </label>
               <div class="density-switcher" role="group" aria-label="矩阵显示密度">
                 <button class="density-button active" type="button" data-matrix-density="compact" aria-pressed="true">紧凑</button>
                 <button class="density-button" type="button" data-matrix-density="standard" aria-pressed="false">标准</button>
@@ -169,7 +176,11 @@
                   <option value="">定位 benchmark…</option>
                 </select>
               </label>
-              <button id="matrixHome" class="matrix-home-button" type="button" title="滚动到模型列">回到模型列</button>
+              <div class="matrix-page-controls" role="group" aria-label="矩阵列分页">
+                <button id="matrixPrev" class="matrix-page-button" type="button" title="上一组 benchmark" aria-label="上一组 benchmark">←</button>
+                <button id="matrixNext" class="matrix-page-button" type="button" title="下一组 benchmark" aria-label="下一组 benchmark">→</button>
+              </div>
+              <button id="matrixHome" class="matrix-home-button" type="button" title="回到热门 benchmark">热门首组</button>
             </div>
           </div>
 
@@ -286,6 +297,6 @@
     </aside>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=20260828-public17" defer></script>
+    <script src="app.js?v=20260828-performance1" defer></script>
   </body>
 </html>

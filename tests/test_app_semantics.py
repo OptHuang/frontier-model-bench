@@ -23,6 +23,25 @@ class AppSemanticsTests(unittest.TestCase):
             msg=f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
         )
 
+    def test_large_matrix_is_column_windowed(self) -> None:
+        completed = subprocess.run(
+            [
+                "node",
+                str(ROOT / "tests" / "app_semantics_harness.js"),
+                str(ROOT / "app.js"),
+                "--performance",
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(
+            completed.returncode,
+            0,
+            msg=f"stdout:\n{completed.stdout}\nstderr:\n{completed.stderr}",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
