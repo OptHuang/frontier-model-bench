@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Frontier Model Bench benchmark catalog：了解每个 benchmark 测什么、怎么测，以及分数如何比较。" />
+    <meta name="theme-color" content="#0c111d" />
+    <title>Benchmarks · Frontier Model Bench</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="benchmarks.css" />
+  </head>
+  <body class="benchmark-catalog-page">
+    <div class="app-shell bench-app-shell">
+      <header class="topbar bench-topbar">
+        <a class="brand" href="index.html" aria-label="Frontier Model Bench 首页">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <span class="brand-name">Frontier Model Bench</span>
+            <span class="brand-caption">一个可追溯的模型评测索引</span>
+          </span>
+        </a>
+        <nav class="topnav bench-nav" aria-label="主导航">
+          <a href="index.html#matrix">Evaluations</a>
+          <a class="active" href="benchmarks.html" aria-current="page">Benchmarks</a>
+          <a href="models.html">Models</a>
+          <a href="data/derived/site.json" target="_blank" rel="noreferrer">Data ↗</a>
+        </nav>
+        <div class="top-actions">
+          <span id="catalogFreshness" class="freshness-pill"><span class="status-dot"></span><span>catalog snapshot</span></span>
+          <button id="themeToggle" class="icon-button" type="button" aria-label="切换颜色主题" title="切换颜色主题">☼</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="bench-hero" aria-labelledby="benchPageTitle">
+          <div class="bench-hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span>BENCHMARK CATALOG / 002</p>
+            <h1 id="benchPageTitle">先认识<br /><em>尺子。</em></h1>
+            <p class="bench-hero-lede">每一个分数背后都有一套题目、协议和判定器。这里把评测本身拆开讲清楚：它测什么、适合回答什么问题，以及哪些结果不能直接横比。</p>
+            <div class="bench-hero-actions">
+              <a class="accent-button" href="#catalog">浏览全部 benchmark <span>↓</span></a>
+              <a class="quiet-link" href="index.html#matrix">回到评测矩阵 <span>↗</span></a>
+            </div>
+          </div>
+          <div class="bench-hero-aside">
+            <div class="catalog-signal-card">
+              <div class="catalog-signal-top"><span class="signal-label">CATALOG PRINCIPLE</span><span class="catalog-signal-mark">01</span></div>
+              <strong>定义先于排名</strong>
+              <p>目录记录 benchmark 的身份与口径；矩阵才展示模型成绩。不同版本、指标和 harness 默认不合并。</p>
+            </div>
+            <div class="catalog-mini-note"><span class="mini-rule"></span><span>点击卡片查看完整 profile、来源与比较提醒。</span></div>
+          </div>
+        </section>
+
+        <section class="bench-stat-grid" aria-label="benchmark 目录摘要">
+          <article class="bench-stat-card bench-stat-primary"><span class="stat-kicker">TRACKED BENCHMARKS</span><strong id="catalogCount">—</strong><span>已登记的评测</span></article>
+          <article class="bench-stat-card"><span class="stat-kicker">CAPABILITY AREAS</span><strong id="familyCount">—</strong><span>能力面 / 家族</span></article>
+          <article class="bench-stat-card"><span class="stat-kicker">PUBLIC SOURCES</span><strong id="sourceCount">—</strong><span>可追溯来源</span></article>
+          <article class="bench-stat-card"><span class="stat-kicker">ACTIVE VERSIONS</span><strong id="activeVersionCount">—</strong><span>当前版本</span></article>
+        </section>
+
+        <section id="catalog" class="bench-catalog-section" aria-labelledby="catalogTitle">
+          <div class="section-heading bench-heading">
+            <div>
+              <p class="section-index">01 / CATALOG</p>
+              <h2 id="catalogTitle">Benchmark directory</h2>
+              <p class="section-subtitle">按能力面、评估模式或指标筛选；卡片中的数字只是目录信息，不是跨 benchmark 的总排名。</p>
+            </div>
+            <div class="catalog-count-wrap"><strong id="visibleCount">—</strong><span> / <span id="totalCount">—</span> benchmarks</span></div>
+          </div>
+
+          <div class="bench-toolbar" aria-label="benchmark 筛选与排序">
+            <label class="bench-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="benchSearch" type="search" placeholder="搜索名称、描述、owner 或标签…" autocomplete="off" /><kbd>/</kbd></label>
+            <label class="select-wrap"><span class="sr-only">能力面</span><select id="categoryFilter"><option value="all">所有能力面</option></select></label>
+            <label class="select-wrap"><span class="sr-only">评估模式</span><select id="modeFilter"><option value="all">所有评估模式</option></select></label>
+            <label class="select-wrap"><span class="sr-only">主指标</span><select id="metricFilter"><option value="all">所有指标</option></select></label>
+            <label class="select-wrap"><span class="sr-only">排序</span><select id="sortFilter"><option value="featured">先看重点</option><option value="name">按名称</option><option value="family">按能力面</option><option value="evidence">按公开记录</option><option value="sources">按来源数量</option></select></label>
+            <label class="bench-toggle"><input id="featuredOnly" type="checkbox" /><span class="toggle-ui"></span><span>重点评测</span></label>
+            <button id="resetFilters" class="text-button" type="button">重置</button>
+          </div>
+
+          <div id="activeFilters" class="bench-active-filters" aria-live="polite"></div>
+
+          <div class="bench-catalog-layout">
+            <aside class="family-rail" aria-label="能力面快速筛选">
+              <div class="family-rail-label">CAPABILITY MAP</div>
+              <button class="family-chip active" type="button" data-family="all"><span>全部</span><b id="familyAllCount">—</b></button>
+              <div id="familyRail"></div>
+              <div class="family-rail-note"><span class="rail-dot"></span><span>共用同一族的 benchmark 仍可能使用完全不同的题型和指标。</span></div>
+            </aside>
+            <div class="bench-results">
+              <div id="benchmarkGrid" class="benchmark-grid" aria-live="polite"></div>
+              <div id="emptyState" class="bench-empty" hidden>
+                <span class="empty-icon">∅</span>
+                <h3>没有匹配的 benchmark</h3>
+                <p>试试清空搜索词，或放宽筛选条件。</p>
+                <button id="emptyReset" class="outline-button" type="button">清空筛选</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="bench-reading-section" aria-labelledby="readingTitle">
+          <div class="bench-reading-copy">
+            <p class="section-index">02 / HOW TO READ</p>
+            <h2 id="readingTitle">别把不同的尺子<br /><em>刻度相加。</em></h2>
+            <p>准确率、Pass@1、Elo、成功率和 Agent 系统得分回答的是不同问题。详情页会把评测对象（模型还是系统）、版本、指标方向、工具和 harness 条件放在同一处，方便你在比较前先检查口径。</p>
+            <div class="method-tags"><span>model ≠ system</span><span>versioned</span><span>metric-aware</span><span>missing ≠ zero</span></div>
+          </div>
+          <div class="bench-reading-flow" aria-label="阅读 benchmark 详情的三个步骤">
+            <div class="reading-step"><span>01</span><strong>Identify</strong><small>版本 / split / owner</small></div><div class="flow-arrow">→</div>
+            <div class="reading-step"><span>02</span><strong>Compare</strong><small>metric / protocol / harness</small></div><div class="flow-arrow">→</div>
+            <div class="reading-step"><span>03</span><strong>Inspect</strong><small>来源 / snapshot / caveat</small></div>
+          </div>
+        </section>
+
+        <footer class="footer bench-footer">
+          <span>Frontier Model Bench <span class="muted">· benchmark catalog</span></span>
+          <span id="footerStatus">目录是可更新的索引；点击卡片查看来源与比较边界。</span>
+          <a href="README.md">Update guide ↗</a>
+        </footer>
+      </main>
+    </div>
+
+    <div id="drawerBackdrop" class="bench-drawer-backdrop" hidden></div>
+    <aside id="detailDrawer" class="bench-detail-drawer" aria-labelledby="drawerTitle" aria-hidden="true">
+      <div class="bench-drawer-head"><span class="drawer-kicker">BENCHMARK PROFILE</span><button id="closeDrawer" class="close-button" type="button" aria-label="关闭详情">×</button></div>
+      <div id="drawerContent" class="bench-drawer-content"></div>
+    </aside>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="benchmarks.js?v=20260827" defer></script>
+  </body>
+</html>

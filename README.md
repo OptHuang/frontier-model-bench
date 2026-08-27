@@ -16,7 +16,9 @@ python3 -m http.server 8765
 ## 页面和目录
 
 ```text
-index.html                 # 页面结构
+index.html                 # Evaluations / Matrix + System Runs
+benchmarks.html            # benchmark 目录与逐项 profile
+models.html                # model release 目录与逐项 profile
 styles.css / app.js        # 无构建依赖的静态前端
 data/catalog/               # models / benchmarks / sources / harnesses / presets 注册表
 data/observations/results.jsonl # 追加式 canonical observation 长表
@@ -38,6 +40,8 @@ skills/frontier-model-bench-maintenance/ # 可复用维护 skill
 .github/workflows/pages.yml      # GitHub Pages build/deploy
 .github/workflows/maintenance.yml # 定时 source health + candidate artifact
 ```
+
+站点有三个并列入口：`Evaluations` 看模型 / system 的成绩，`Benchmarks` 先解释每把“尺子”，`Models` 先解释每个 release 的身份与能力边界。三个页面共享同一份 `site.json`，目录页不会复制或另行维护分数。
 
 数据层的形态是：
 

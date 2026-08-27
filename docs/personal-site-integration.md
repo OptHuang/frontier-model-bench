@@ -10,6 +10,14 @@
 </a>
 ```
 
+三个并列入口也可以单独链接：
+
+```html
+<a href="https://opthuang.github.io/frontier-model-bench/">Evaluations / Matrix</a>
+<a href="https://opthuang.github.io/frontier-model-bench/benchmarks.html">Benchmark directory</a>
+<a href="https://opthuang.github.io/frontier-model-bench/models.html">Model directory</a>
+```
+
 ## iframe（希望保留在主页视觉流中时）
 
 ```html
@@ -22,4 +30,3 @@
 ```
 
 iframe 适合展示，但会牺牲站点导航、分享 URL 和移动端高度控制；正式接入前应在个人主页的浅色/深色主题中各检查一次。若以后需要同域路径，可把本仓库构建产物复制到 Hugo 的 `static/benchmarks/`，仍然让本仓库负责数据更新。
-

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Frontier Model Bench 的前沿模型目录：版本、能力、开放权重、上下文与来源。" />
+    <meta name="theme-color" content="#0c111d" />
+    <title>Models · Frontier Model Bench</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="models.css" />
+  </head>
+  <body class="models-page">
+    <div class="app-shell models-shell">
+      <header class="topbar models-topbar">
+        <a class="brand" href="index.html#top" aria-label="Frontier Model Bench 首页">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <span class="brand-name">Frontier Model Bench</span>
+            <span class="brand-caption">一个可追溯的模型评测索引</span>
+          </span>
+        </a>
+        <nav class="topnav models-nav" aria-label="主导航">
+          <a href="index.html#matrix">Evaluations</a>
+          <a href="benchmarks.html">Benchmarks</a>
+          <a class="active" href="models.html">Models</a>
+          <a href="data/derived/site.json" target="_blank" rel="noreferrer">Data ↗</a>
+        </nav>
+        <div class="top-actions">
+          <span id="freshnessPill" class="freshness-pill"><span class="status-dot"></span><span>loading snapshot</span></span>
+          <button id="themeToggle" class="icon-button" type="button" aria-label="切换颜色主题" title="切换颜色主题">☼</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="models-hero" aria-labelledby="modelsTitle">
+          <div class="models-hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span>MODEL DIRECTORY / 003</p>
+            <h1 id="modelsTitle">Frontier models,<br /><em>with context.</em></h1>
+            <p class="models-hero-lede">一张独立的模型目录：把 release、能力、开放权重与上下文窗口放在同一张地图里。这里是“模型是什么”，评测页回答“模型表现如何”。</p>
+            <div class="hero-meta">
+              <span class="meta-item"><span class="meta-label">SNAPSHOT</span><strong id="asOfLabel">—</strong></span>
+              <span class="meta-divider"></span>
+              <span class="meta-item"><span class="meta-label">CATALOG</span><strong id="catalogVersion">—</strong></span>
+            </div>
+          </div>
+          <div class="models-hero-aside" aria-label="模型目录摘要">
+            <div class="directory-signal-card">
+              <div class="directory-signal-top"><span class="signal-label">MODEL MAP</span><span class="signal-value" id="heroModelCount">—</span></div>
+              <div class="directory-signal-track"><span id="heroActiveBar"></span></div>
+              <p><strong id="heroActiveCount">—</strong> 个当前条目 · <strong id="heroProviderCount">—</strong> 家 provider · <strong id="heroOpenCount">—</strong> 个开放权重</p>
+              <p class="directory-signal-public"><strong id="heroPublicCount">—</strong> 条 public reported · 未复现</p>
+            </div>
+            <div class="quick-links">
+              <a href="index.html#matrix">打开评测矩阵 <span>↗</span></a>
+              <a href="benchmarks.html">浏览 benchmark <span>↗</span></a>
+            </div>
+          </div>
+        </section>
+
+        <section class="models-stats" aria-label="模型目录统计">
+          <article class="stat-card stat-primary"><span class="stat-kicker">MODELS</span><strong id="modelCount">—</strong><span class="stat-note">目录中的 model release</span></article>
+          <article class="stat-card"><span class="stat-kicker">PROVIDERS</span><strong id="providerCount">—</strong><span class="stat-note">覆盖的组织 / provider</span></article>
+          <article class="stat-card"><span class="stat-kicker">CURRENT</span><strong id="activeCount">—</strong><span class="stat-note">active / preview / restricted</span></article>
+          <article class="stat-card"><span class="stat-kicker">OPEN WEIGHTS</span><strong id="openCount">—</strong><span class="stat-note">目录标注为开放权重</span></article>
+        </section>
+
+        <section id="directory" class="models-directory" aria-labelledby="directoryTitle">
+          <div class="section-heading models-section-heading">
+            <div>
+              <p class="section-index">01 / DIRECTORY</p>
+              <h2 id="directoryTitle">Model catalog</h2>
+              <p class="section-subtitle">先按 release 与能力筛选，再打开一张卡片查看来源、相关成绩和系统运行。</p>
+            </div>
+            <div class="directory-view-switcher" role="tablist" aria-label="模型目录视图">
+              <button class="directory-view-tab active" type="button" role="tab" aria-selected="true" data-view="cards">Cards</button>
+              <button class="directory-view-tab" type="button" role="tab" aria-selected="false" data-view="table">Table</button>
+            </div>
+          </div>
+
+          <div class="models-control-bar" aria-label="模型筛选与排序">
+            <label class="search-box models-search-box">
+              <span class="search-icon" aria-hidden="true">⌕</span>
+              <input id="searchInput" type="search" placeholder="搜索模型、别名、provider 或标签…" autocomplete="off" />
+              <kbd>/</kbd>
+            </label>
+            <label class="select-wrap"><span class="sr-only">Provider</span><select id="providerFilter"><option value="all">所有 provider</option></select></label>
+            <label class="select-wrap"><span class="sr-only">状态</span><select id="statusFilter"><option value="all">所有状态</option></select></label>
+            <label class="select-wrap"><span class="sr-only">模型族</span><select id="familyFilter"><option value="all">所有模型族</option></select></label>
+            <label class="select-wrap"><span class="sr-only">模态</span><select id="modalityFilter"><option value="all">所有模态</option></select></label>
+            <label class="select-wrap"><span class="sr-only">排序</span><select id="sortSelect">
+              <option value="recent">按发布日期</option>
+              <option value="name">按名称</option>
+              <option value="provider">按 provider</option>
+              <option value="context">按上下文</option>
+              <option value="params">按参数量</option>
+              <option value="scores">按已收录成绩</option>
+            </select></label>
+            <label class="select-wrap"><span class="sr-only">权重</span><select id="weightsFilter"><option value="all">权重：全部</option><option value="open">开放权重</option><option value="closed">闭源 / 未注明</option></select></label>
+            <label class="toggle-control models-toggle"><input id="currentOnly" type="checkbox" /><span class="toggle-ui"></span><span>仅当前</span></label>
+            <label class="toggle-control models-toggle"><input id="withScoresOnly" type="checkbox" /><span class="toggle-ui"></span><span>仅有成绩</span></label>
+            <button id="resetFilters" class="text-button" type="button">重置</button>
+          </div>
+          <div id="activeFilters" class="active-filters" aria-live="polite"></div>
+          <p id="directoryNote" class="coverage-note" aria-live="polite"></p>
+
+          <div id="modelGrid" class="model-directory-grid" aria-live="polite"></div>
+          <div id="modelTableWrap" class="model-table-wrap" hidden>
+            <div class="matrix-scroll">
+              <table class="model-table">
+                <caption class="sr-only">模型目录表格。点击一行查看模型详情。</caption>
+                <thead><tr><th>MODEL</th><th>STATUS</th><th>MODALITIES</th><th>CONTEXT</th><th>PARAMS</th><th>WEIGHTS</th><th title="c = canonical / curated · r = public reported">SCORES<br /><small>c / r</small></th></tr></thead>
+                <tbody id="modelTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="emptyState" class="models-empty-state" hidden>
+            <div class="empty-icon">∅</div>
+            <h3>没有匹配的模型</h3>
+            <p>试试清空搜索词，或放宽筛选条件。</p>
+            <button id="emptyReset" class="outline-button" type="button">清空筛选</button>
+          </div>
+        </section>
+
+        <section class="models-method" aria-labelledby="modelMethodTitle">
+          <div class="method-copy">
+            <p class="section-index">02 / READING GUIDE</p>
+            <h2 id="modelMethodTitle">目录不是排名，release 也不是一次运行。</h2>
+            <p>模型卡里的参数量、上下文和模态是产品 / 发布信息；成绩在这里仅作为带来源的 canonical 或公开披露信号预览，跨模型比较仍回到评测矩阵。点击模型可以看到两者如何连接，也能看到哪些字段仍然是“未注明”，而不是被猜测填补。</p>
+            <div class="method-tags"><span>release-aware</span><span>source-linked</span><span>catalog-first</span><span>missing ≠ unknown</span></div>
+          </div>
+          <div class="model-field-legend" aria-label="字段说明">
+            <div><span class="legend-mark">01</span><p><strong>Profile</strong><small>family / release / access</small></p></div>
+            <div><span class="legend-mark">02</span><p><strong>Capabilities</strong><small>modalities / reasoning / context</small></p></div>
+            <div><span class="legend-mark">03</span><p><strong>Evidence</strong><small>sources / scores / runs</small></p></div>
+          </div>
+        </section>
+
+        <footer class="footer models-footer">
+          <span>Frontier Model Bench <span class="muted">· model directory</span></span>
+          <span id="footerStatus">目录字段来自 catalog；成绩仍以评测页的 protocol 为准。</span>
+          <a href="README.md">Update guide ↗</a>
+        </footer>
+      </main>
+    </div>
+
+    <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
+    <aside id="detailDrawer" class="detail-drawer model-detail-drawer" aria-labelledby="drawerTitle" aria-hidden="true">
+      <div class="drawer-head">
+        <span class="drawer-kicker">MODEL DETAIL</span>
+        <button id="closeDrawer" class="close-button" type="button" aria-label="关闭详情">×</button>
+      </div>
+      <div id="drawerContent" class="drawer-content"></div>
+    </aside>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="models.js?v=20260827-public3" defer></script>
+  </body>
+</html>
