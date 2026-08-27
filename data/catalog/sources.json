@@ -380,11 +380,15 @@
   {
     "id": "src-bfcl",
     "label": "Berkeley Function Calling Leaderboard",
-    "kind": "benchmark",
+    "kind": "official_artifact",
     "publisher": "Berkeley Gorilla Lab",
     "url": "https://gorilla.cs.berkeley.edu/leaderboard",
+    "api_url": "https://gorilla.cs.berkeley.edu/data_overall.csv",
+    "download_url": "https://gorilla.cs.berkeley.edu/data_overall.csv",
     "default_evidence_level": "A",
-    "staleness_after_days": 60
+    "staleness_after_days": 60,
+    "adapter_id": "src-bfcl",
+    "license_note": "Official BFCL V4 aggregate CSV; retain model link, calling mode, evaluator commit and category-level fields."
   },
   {
     "id": "src-taubench",
@@ -622,5 +626,34 @@
     "enabled": true,
     "license": "cc-by-4.0",
     "license_note": "Arena dataset card declares CC-BY-4.0; preserve attribution and retain source locator."
+  },
+  {
+    "id": "agents-last-exam",
+    "label": "Agents' Last Exam · ALE-V1 leaderboard API",
+    "kind": "official_api",
+    "publisher": "UC Berkeley RDI",
+    "url": "https://agents-last-exam.org/api/demo/leaderboard",
+    "web_url": "https://agents-last-exam.org/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 14,
+    "adapter_id": "agents-last-exam",
+    "enabled": true,
+    "license": "cc-by-4.0",
+    "license_note": "ALE site states the dataset is CC BY 4.0; retain endpoint, row locator, split and harness attribution."
+  },
+  {
+    "id": "src-ale-bench",
+    "label": "SakanaAI · ALE-Bench leaderboard artifact (catalog only)",
+    "kind": "official_artifact",
+    "publisher": "SakanaAI",
+    "url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/",
+    "api_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/data/results_summary.json",
+    "download_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/download_results_json.sh",
+    "default_evidence_level": "A",
+    "staleness_after_days": 120,
+    "enabled": false,
+    "license": "cc-by-nd-4.0",
+    "license_note": "Catalog-only for now; leaderboard data is CC BY-ND 4.0 and must be checked before redistribution or automated ingestion.",
+    "notes": "Distinct from Agents' Last Exam (ALE-V1): this ALE-Bench measures long-horizon algorithm engineering on AtCoder Heuristic Contests."
   }
 ]

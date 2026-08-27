@@ -1,0 +1,5 @@
+Rank,Overall Acc,Model,Model Link,Total Cost ($),Latency Mean (s),Latency Standard Deviation (s),Latency 95th Percentile (s),Non-Live AST Acc,Non-Live Simple AST,Live Acc,Multi Turn Acc,Web Search Acc,Memory Acc,Relevance Detection,Irrelevance Detection,Format Sensitivity Max Delta,Organization,License
+1,77.47%,Claude-Opus-4-5-20251101 (FC),https://www.anthropic.com/news/claude-4,86.55,4.38,3.13,7.56,88.58%,76.83%,79.79%,68.38%,84.50%,73.76%,62.50%,84.72%,N/A,Anthropic,Proprietary
+2,72.51%,Gemini-3-Pro-Preview (Prompt),https://deepmind.google/technologies/gemini/pro/,298.47,12.08,21.30,32.73,90.65%,79.58%,83.12%,60.75%,80.00%,61.72%,68.75%,85.59%,0.5,Google,Proprietary
+3,68.00%,Tiny-Tool-Model (FC thinking),,N/A,N/A,,N/A,70.00%,N/A,72.00%,N/A,65.00%,N/A,N/A,N/A,N/A,Example Org,Apache-2.0
+4,N/A,No-Mode-Model,,,,,,,,,,,,,,,Example Org,Unknown

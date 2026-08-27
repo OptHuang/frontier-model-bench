@@ -36,7 +36,7 @@
     harnessFilter: $("harnessFilter"), runBenchmarkFilter: $("runBenchmarkFilter"), sortSelect: $("sortSelect"),
     harnessFilterWrap: $("harnessFilterWrap"), runBenchmarkFilterWrap: $("runBenchmarkFilterWrap"),
     searchInput: $("searchInput"), availableOnly: $("availableOnly"), showCatalog: $("showCatalog"),
-    activeFilters: $("activeFilters"), presetHint: $("presetHint"),
+    activeFilters: $("activeFilters"), presetHint: $("presetHint"), coverageNote: $("coverageNote"),
     matrixHead: $("matrixHead"), matrixBody: $("matrixBody"), matrixView: $("matrixView"), cardsView: $("cardsView"),
     emptyState: $("emptyState"), spotlightGrid: $("spotlightGrid"), spotlightSection: $("spotlightSection"),
     atlasLegend: $("atlasLegend"), runsView: $("runsView"), runTableFrame: $("runTableFrame"),
@@ -639,6 +639,11 @@
     }
     if (els.asOfLabel) els.asOfLabel.textContent = state.data?.meta?.asOf || state.data?.meta?.lastUpdated?.slice?.(0, 10) || "—";
     if (els.cadenceLabel) els.cadenceLabel.textContent = state.data?.meta?.updateCadence || state.data?.meta?.update_cadence || "—";
+    if (els.coverageNote) {
+      const stats = state.data?.stats || {};
+      const candidateHint = stats.candidateRows ? `；另有 ${fmt(stats.candidateRows, 0)} 条公开候选待审` : "；公开榜单候选由日常维护任务另行审阅";
+      els.coverageNote.innerHTML = `矩阵空白表示尚未进入 approved 核验层，不代表没人测试${candidateHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
+    }
     const status = String(state.data?.meta?.status || "curated").toLowerCase();
     const isDemo = ["demo", "illustrative", "seed"].includes(status);
     if (els.freshnessPill) els.freshnessPill.innerHTML = `<span class="status-dot"></span><span>${isDemo ? "seed snapshot" : "curated snapshot"}</span>`;

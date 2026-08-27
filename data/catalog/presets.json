@@ -143,5 +143,23 @@
     "harness_ids": ["arena-agent", "arena-human-preference"],
     "sort": "benchmark_column",
     "dimensions": ["ips", "rating", "confidence_interval", "observation_count", "session_count"]
+  },
+  {
+    "id": "ale-workflows",
+    "label": "ALE / professional agent workflows",
+    "description": "Agents' Last Exam ALE-V1；按 split、source harness、effort、pass rate、partial score、成本、运行时间和 token 细节比较，不将 system run 当作裸模型分数。",
+    "mode": "runs",
+    "benchmark_ids": ["agents-last-exam"],
+    "harness_ids": ["agents-last-exam", "codex", "claude-code", "kimi-code"],
+    "sort": "benchmark_column",
+    "dimensions": ["pass_rate", "avg_score", "split", "harness", "harness_variant", "runs", "tasks", "passes", "cost", "runtime", "tokens"]
+  },
+  {
+    "id": "algorithm-engineering",
+    "label": "Algorithm engineering",
+    "description": "ALE-Bench 的长程、连续评分算法工程；独立于 Agents' Last Exam 的专业工作流 pass rate。",
+    "benchmark_ids": ["ale-bench"],
+    "sort": "benchmark_column",
+    "dimensions": ["performance", "rank", "self_refine", "cost", "total_tokens"]
   }
 ]

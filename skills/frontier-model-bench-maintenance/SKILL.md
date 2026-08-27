@@ -30,6 +30,7 @@ Use this skill when the user asks to refresh the Frontier Model Bench, fill miss
 - Human-preference Arena/Elo is a separate metric family, not an accuracy score and not part of a cross-benchmark total. Record arena date, category, vote/sample information, rating method and source snapshot.
 - If a site has no stable public API/export, do not scrape interactive or authenticated pages. Record a blocked/stale source and leave a candidate task for manual export or an approved snapshot.
 - Third-party aggregators are discovery inputs only unless their methodology, license and snapshot provenance are explicit; use a lower evidence tier and `conditional` comparability.
+- Agents' Last Exam (ALE-V1) is a system benchmark: keep the source harness, effort/variant, environment track and split with each Pass Rate/partial-Score candidate. Do not collapse it into a model-only cell. ALE-Bench (SakanaAI) is a separate algorithm-engineering benchmark and must use a different catalog id.
 
 ## Verification and handoff
 

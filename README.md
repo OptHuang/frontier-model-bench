@@ -86,7 +86,7 @@ python3 scripts/fetch.py check --sources lmarena-hf-dataset \
 
 候选必须经过来源定位、model/benchmark/version/protocol/evidence 审阅后，才通过 PR 追加到 `data/observations/results.jsonl`；详见 [`docs/maintenance-plan.md`](docs/maintenance-plan.md) 和 [data candidate issue template](.github/ISSUE_TEMPLATE/data-candidate.md)。
 
-目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release、Stanford HELM artifacts，以及 Arena 官方 Hugging Face leaderboard dataset；`scripts/fetch.py list` 会显示完整清单。LMArena 互动页面仍只登记为 metadata-only，不抓取未文档化接口；`lmarena-hf-dataset` 只读取官方发布的版本化 dataset rows 并生成候选。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
+目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release、Stanford HELM artifacts、Arena 官方 Hugging Face leaderboard dataset、BFCL V4 官方 CSV，以及 Agents' Last Exam（ALE-V1）公开 JSON endpoint；`scripts/fetch.py list` 会显示完整清单。BFCL 会保留 native FC / Prompt、固定 evaluator commit、成本、延迟和分类子指标；ALE 会按 `model × source harness × effort variant × split` 生成两项指标（Pass Rate / partial Score），二者都只进入候选审阅，不会伪装成未经协议说明的 model-only 分数。LMArena 互动页面仍只登记为 metadata-only，不抓取未文档化接口；`lmarena-hf-dataset` 只读取官方发布的版本化 dataset rows 并生成候选。SakanaAI 的 ALE-Bench 是独立的 algorithm-engineering benchmark，目前只登记 catalog，不与 Agents' Last Exam 合并。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
 
 ## 设计边界
 

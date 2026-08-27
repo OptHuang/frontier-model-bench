@@ -1,0 +1,55 @@
+{
+  "rows": [
+    {
+      "split": "full",
+      "harness": "codex",
+      "model": "GPT-5.6-Sol",
+      "harnessVariant": "reasoning-xhigh",
+      "runs": 301,
+      "tasks": 152,
+      "splitTasks": 152,
+      "passes": 93,
+      "passRate": 0.3059210526315789,
+      "avgScore": 0.5361628463309976,
+      "totalDurationS": 340729.6965,
+      "totalInputTokens": 762936773.1667,
+      "totalOutputTokens": 3798417.8333,
+      "totalCostUsd": 771.62,
+      "costSource": "db+list",
+      "flags": ["official"]
+    },
+    {
+      "split": "full/last-exam",
+      "harness": "claude_code",
+      "model": "anthropic-claude-fable-5",
+      "harnessVariant": "reasoning-xhigh",
+      "runs": 150,
+      "tasks": 38,
+      "splitTasks": 38,
+      "passes": 4,
+      "passRate": 0.10526315789473684,
+      "avgScore": 0.241291868854736,
+      "totalDurationS": 12000,
+      "totalInputTokens": 1000000,
+      "totalOutputTokens": 200000,
+      "totalCostUsd": null,
+      "costSource": "official"
+    },
+    {
+      "split": "linux_only",
+      "harness": "ale_claw",
+      "model": "gpt-5-5",
+      "harnessVariant": "reasoning-high",
+      "runs": 105,
+      "tasks": 105,
+      "splitTasks": 105,
+      "passes": 23,
+      "passRate": 0.21904761904761905,
+      "avgScore": 0.458,
+      "runtime": 4321,
+      "tokens": 123456,
+      "cost": 12.5,
+      "costSource": "list"
+    }
+  ]
+}

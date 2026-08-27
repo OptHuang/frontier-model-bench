@@ -137,6 +137,9 @@ h2 { margin-bottom: 8px; font-size: clamp(25px, 3vw, 38px); line-height: 1.05; l
 .run-only-control[hidden], .preset-hint[hidden] { display: none; }
 .preset-select select { min-width: 168px; }
 .preset-hint { margin: -3px 0 13px; color: var(--muted-2); font: 10px var(--mono); line-height: 1.6; }
+.coverage-note { margin: -1px 0 15px; color: var(--muted-2); font: 10px var(--mono); line-height: 1.7; }
+.coverage-note a { color: var(--accent); text-decoration: none; }
+.coverage-note a:hover { text-decoration: underline; }
 .catalog-badge { color: var(--yellow); border-color: color-mix(in srgb, var(--yellow) 34%, transparent); }
 .system-run-badge { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
 .catalog-only-card { border-style: dashed; }

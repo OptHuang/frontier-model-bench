@@ -141,5 +141,27 @@
     "description": "Arena Agent published IPS (tau-hat) score; not interchangeable with Bradley-Terry Elo or model-only runs.",
     "tools": ["agent-session", "human-signal"],
     "source_ids": ["lmarena-hf-dataset"]
+  },
+  {
+    "id": "agents-last-exam",
+    "name": "Agents' Last Exam evaluator",
+    "label": "ALE",
+    "kind": "agent-eval",
+    "status": "active",
+    "owner": "UC Berkeley RDI",
+    "description": "ALE-V1 sandbox/evaluator; source agent harness (Codex, Claude Code, Kimi Code, ALE-Claw and others) and effort variant remain in each run's protocol.",
+    "tools": ["sandbox", "desktop", "terminal", "grader"],
+    "source_ids": ["agents-last-exam"]
+  },
+  {
+    "id": "bfcl-eval",
+    "name": "Berkeley Function Calling evaluator",
+    "label": "BFCL evaluator",
+    "kind": "tool-use-eval",
+    "status": "active",
+    "owner": "Berkeley Gorilla Lab",
+    "description": "BFCL V4 evaluator；必须区分 native function calling（FC）与 prompt workaround，并记录固定 evaluator commit。",
+    "tools": ["function-calling", "prompt", "tool-schema"],
+    "source_ids": ["src-bfcl"]
   }
 ]

@@ -706,8 +706,8 @@
       "family": "agents",
       "category": "tool-use",
       "familyLabel": "工具调用",
-      "evaluationMode": "system",
-      "comparisonKey": "bfcl:bfcl@v4:accuracy",
+      "evaluationMode": "hybrid",
+      "comparisonKey": "bfcl@v4:accuracy:calling_mode:evaluator_commit",
       "metric": "accuracy",
       "metricLabel": "准确率",
       "scale": 100,
@@ -715,7 +715,7 @@
       "direction": "higher",
       "version": "V4",
       "versionId": "bfcl@v4",
-      "description": "函数调用、并行调用和多轮 Agent 任务；需区分 native FC 与 prompt workaround。",
+      "description": "函数调用、并行调用和多轮 Agent 任务；需区分 native FC 与 prompt workaround，并把 evaluator/tool protocol 视为系统条件。",
       "owner": "Berkeley Gorilla Lab",
       "source": "https://gorilla.cs.berkeley.edu/leaderboard",
       "sourceLabel": "Berkeley Function Calling Leaderboard",
@@ -1722,6 +1722,121 @@
         }
       ],
       "featured": false
+    },
+    {
+      "id": "agents-last-exam",
+      "canonicalId": "agents-last-exam",
+      "short": "ALE",
+      "name": "Agents' Last Exam",
+      "family": "agents",
+      "category": "agent-workflow",
+      "familyLabel": "Agent 工作流",
+      "evaluationMode": "system",
+      "comparisonKey": "agents-last-exam:agents-last-exam@v1:pass_rate",
+      "metric": "pass_rate",
+      "metricLabel": "Pass rate",
+      "scale": 100,
+      "unit": "%",
+      "direction": "higher",
+      "version": "ALE-V1 (public leaderboard)",
+      "versionId": "agents-last-exam@v1",
+      "description": "ALE-V1 的长程、可验证专业工作流；按 full、near-term、full-spectrum、last-exam、licensed/unlicensed 和 ALE-CLI tracks 保留 split，不把不同 harness 混成裸模型分数。",
+      "owner": "UC Berkeley RDI",
+      "source": "https://agents-last-exam.org/api/demo/leaderboard",
+      "sourceLabel": "Agents' Last Exam · ALE-V1 leaderboard API",
+      "sourceIds": [
+        "agents-last-exam"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "agents-last-exam@v1",
+          "label": "ALE-V1 (public leaderboard)",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "pass_rate",
+          "label": "Pass rate",
+          "unit": "percent",
+          "scale": {
+            "min": 0,
+            "max": 100
+          },
+          "direction": "higher"
+        },
+        {
+          "id": "avg_score",
+          "label": "Average score",
+          "unit": "percent",
+          "scale": {
+            "min": 0,
+            "max": 100
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "ale-bench",
+      "canonicalId": "ale-bench",
+      "short": "ALE-Bench",
+      "name": "ALE-Bench",
+      "family": "coding",
+      "category": "algorithm-engineering",
+      "familyLabel": "算法工程",
+      "evaluationMode": "system",
+      "comparisonKey": "ale-bench:ale-bench@v1.2.1:performance",
+      "metric": "performance",
+      "metricLabel": "Performance score",
+      "scale": {
+        "min": -1000000,
+        "max": 10000000
+      },
+      "unit": "score",
+      "direction": "higher",
+      "version": "v1.2.1",
+      "versionId": "ale-bench@v1.2.1",
+      "description": "基于 AtCoder Heuristic Contest 任务的长程、目标驱动算法工程；连续 performance/rank 不能与 pass/fail coding benchmark 直接合并。当前仅登记官方 leaderboard artifact，未启用自动抓取。",
+      "owner": "SakanaAI",
+      "source": "https://sakanaai.github.io/ALE-Bench-Leaderboard/",
+      "sourceLabel": "SakanaAI · ALE-Bench leaderboard artifact (catalog only)",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "ale-bench@v1.2.1",
+          "label": "v1.2.1",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "performance",
+          "label": "Performance score",
+          "unit": "score",
+          "scale": {
+            "min": -1000000,
+            "max": 10000000
+          },
+          "direction": "higher"
+        },
+        {
+          "id": "rank",
+          "label": "Contest rank",
+          "unit": "rank",
+          "scale": {
+            "min": 1,
+            "max": 100000
+          },
+          "direction": "lower"
+        }
+      ],
+      "featured": false
     }
   ],
   "models": [
@@ -2542,7 +2657,8 @@
       "status": "active",
       "availability": "api",
       "aliases": [
-        "gemini-3.1-pro"
+        "gemini-3.1-pro",
+        "gemini-3-1-pro-preview"
       ],
       "tags": [
         "多模态",
@@ -3428,11 +3544,15 @@
     {
       "id": "src-bfcl",
       "label": "Berkeley Function Calling Leaderboard",
-      "kind": "benchmark",
+      "kind": "official_artifact",
       "publisher": "Berkeley Gorilla Lab",
       "url": "https://gorilla.cs.berkeley.edu/leaderboard",
+      "api_url": "https://gorilla.cs.berkeley.edu/data_overall.csv",
+      "download_url": "https://gorilla.cs.berkeley.edu/data_overall.csv",
       "default_evidence_level": "A",
-      "staleness_after_days": 60
+      "staleness_after_days": 60,
+      "adapter_id": "src-bfcl",
+      "license_note": "Official BFCL V4 aggregate CSV; retain model link, calling mode, evaluator commit and category-level fields."
     },
     {
       "id": "src-taubench",
@@ -3670,6 +3790,35 @@
       "enabled": true,
       "license": "cc-by-4.0",
       "license_note": "Arena dataset card declares CC-BY-4.0; preserve attribution and retain source locator."
+    },
+    {
+      "id": "agents-last-exam",
+      "label": "Agents' Last Exam · ALE-V1 leaderboard API",
+      "kind": "official_api",
+      "publisher": "UC Berkeley RDI",
+      "url": "https://agents-last-exam.org/api/demo/leaderboard",
+      "web_url": "https://agents-last-exam.org/leaderboard",
+      "default_evidence_level": "A",
+      "staleness_after_days": 14,
+      "adapter_id": "agents-last-exam",
+      "enabled": true,
+      "license": "cc-by-4.0",
+      "license_note": "ALE site states the dataset is CC BY 4.0; retain endpoint, row locator, split and harness attribution."
+    },
+    {
+      "id": "src-ale-bench",
+      "label": "SakanaAI · ALE-Bench leaderboard artifact (catalog only)",
+      "kind": "official_artifact",
+      "publisher": "SakanaAI",
+      "url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/",
+      "api_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/data/results_summary.json",
+      "download_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/download_results_json.sh",
+      "default_evidence_level": "A",
+      "staleness_after_days": 120,
+      "enabled": false,
+      "license": "cc-by-nd-4.0",
+      "license_note": "Catalog-only for now; leaderboard data is CC BY-ND 4.0 and must be checked before redistribution or automated ingestion.",
+      "notes": "Distinct from Agents' Last Exam (ALE-V1): this ALE-Bench measures long-horizon algorithm engineering on AtCoder Heuristic Contests."
     }
   ],
   "catalogModels": [
@@ -3882,7 +4031,8 @@
       "status": "active",
       "availability": "api",
       "aliases": [
-        "gpt-5.5"
+        "gpt-5.5",
+        "gpt-5-5"
       ],
       "tags": [
         "推理",
@@ -3964,7 +4114,8 @@
       "status": "active",
       "availability": "api",
       "aliases": [
-        "gpt-5.4"
+        "gpt-5.4",
+        "gpt-5-4"
       ],
       "tags": [
         "通用",
@@ -4365,7 +4516,8 @@
       "status": "restricted",
       "availability": "restricted",
       "aliases": [
-        "claude-fable-5"
+        "claude-fable-5",
+        "anthropic-claude-fable-5"
       ],
       "tags": [
         "前沿",
@@ -4618,7 +4770,8 @@
       "status": "active",
       "availability": "api",
       "aliases": [
-        "qwen3.8-max"
+        "qwen3.8-max",
+        "qwen-3-8-max"
       ],
       "tags": [
         "旗舰",
@@ -4770,7 +4923,8 @@
       "status": "active",
       "availability": "open_weights",
       "aliases": [
-        "Qwen3.8-27B"
+        "Qwen3.8-27B",
+        "qwen-3-8-27b"
       ],
       "tags": [
         "小模型",
@@ -5543,7 +5697,8 @@
       "status": "previous",
       "availability": "api",
       "aliases": [
-        "kimi-k2.6"
+        "kimi-k2.6",
+        "kimi-k2-6"
       ],
       "tags": [
         "上一代",
@@ -5666,7 +5821,8 @@
       "status": "previous",
       "availability": "open_weights",
       "aliases": [
-        "glm-5.2"
+        "glm-5.2",
+        "glm-5-2"
       ],
       "tags": [
         "上一代",
@@ -5706,7 +5862,8 @@
       "status": "previous",
       "availability": "api",
       "aliases": [
-        "glm-5.1"
+        "glm-5.1",
+        "glm-5-1"
       ],
       "tags": [
         "上一代",
@@ -5829,7 +5986,8 @@
       "availability": "api",
       "aliases": [
         "MiniMax-M2.7",
-        "m2.7"
+        "m2.7",
+        "minimax-m2-7"
       ],
       "tags": [
         "上一代",
@@ -5994,7 +6152,8 @@
       "availability": "api",
       "aliases": [
         "MiMo-V2.5",
-        "mimo-v2.5"
+        "mimo-v2.5",
+        "mimo-v2-5"
       ],
       "tags": [
         "多模态",
@@ -6081,7 +6240,8 @@
       "status": "active",
       "availability": "api",
       "aliases": [
-        "gemini-3.1-pro"
+        "gemini-3.1-pro",
+        "gemini-3-1-pro-preview"
       ],
       "tags": [
         "多模态",
@@ -6864,6 +7024,41 @@
       ],
       "source_ids": [
         "lmarena-hf-dataset"
+      ]
+    },
+    {
+      "id": "agents-last-exam",
+      "name": "Agents' Last Exam evaluator",
+      "label": "ALE",
+      "kind": "agent-eval",
+      "status": "active",
+      "owner": "UC Berkeley RDI",
+      "description": "ALE-V1 sandbox/evaluator; source agent harness (Codex, Claude Code, Kimi Code, ALE-Claw and others) and effort variant remain in each run's protocol.",
+      "tools": [
+        "sandbox",
+        "desktop",
+        "terminal",
+        "grader"
+      ],
+      "source_ids": [
+        "agents-last-exam"
+      ]
+    },
+    {
+      "id": "bfcl-eval",
+      "name": "Berkeley Function Calling evaluator",
+      "label": "BFCL evaluator",
+      "kind": "tool-use-eval",
+      "status": "active",
+      "owner": "Berkeley Gorilla Lab",
+      "description": "BFCL V4 evaluator；必须区分 native function calling（FC）与 prompt workaround，并记录固定 evaluator commit。",
+      "tools": [
+        "function-calling",
+        "prompt",
+        "tool-schema"
+      ],
+      "source_ids": [
+        "src-bfcl"
       ]
     }
   ],
@@ -9834,23 +10029,68 @@
         "observation_count",
         "session_count"
       ]
+    },
+    {
+      "id": "ale-workflows",
+      "label": "ALE / professional agent workflows",
+      "description": "Agents' Last Exam ALE-V1；按 split、source harness、effort、pass rate、partial score、成本、运行时间和 token 细节比较，不将 system run 当作裸模型分数。",
+      "mode": "runs",
+      "benchmark_ids": [
+        "agents-last-exam"
+      ],
+      "harness_ids": [
+        "agents-last-exam",
+        "codex",
+        "claude-code",
+        "kimi-code"
+      ],
+      "sort": "benchmark_column",
+      "dimensions": [
+        "pass_rate",
+        "avg_score",
+        "split",
+        "harness",
+        "harness_variant",
+        "runs",
+        "tasks",
+        "passes",
+        "cost",
+        "runtime",
+        "tokens"
+      ]
+    },
+    {
+      "id": "algorithm-engineering",
+      "label": "Algorithm engineering",
+      "description": "ALE-Bench 的长程、连续评分算法工程；独立于 Agents' Last Exam 的专业工作流 pass rate。",
+      "benchmark_ids": [
+        "ale-bench"
+      ],
+      "sort": "benchmark_column",
+      "dimensions": [
+        "performance",
+        "rank",
+        "self_refine",
+        "cost",
+        "total_tokens"
+      ]
     }
   ],
   "stats": {
     "catalogModels": 49,
     "scoredModels": 9,
     "catalogOnlyModels": 40,
-    "benchmarks": 36,
+    "benchmarks": 38,
     "featuredBenchmarks": 12,
-    "sources": 67,
-    "harnesses": 13,
-    "presets": 17,
+    "sources": 69,
+    "harnesses": 15,
+    "presets": 19,
     "runs": 47,
     "systemRuns": 18,
     "observations": 47,
     "numericObservations": 47,
     "observedCells": 29,
-    "coverage": 0.0164,
+    "coverage": 0.0156,
     "coveragePct": 1.6,
     "legacyMigrated": 32
   }

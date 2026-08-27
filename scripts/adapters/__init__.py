@@ -6,7 +6,14 @@ package performs no network requests.
 
 from typing import Sequence
 
+from .ale import (
+    ALEV1Adapter,
+    ALELeaderboardAdapter,
+    AgentsLastExamAdapter,
+    build_ale_adapters,
+)
 from .arena import ArenaHFDatasetAdapter, ArenaMetadataAdapter, build_arena_adapters
+from .bfcl import BFCLAdapter, BFCLOfficialAdapter, build_bfcl_adapters
 from .helm import build_helm_adapters
 from .huggingface import build_huggingface_adapters
 from .livebench import LiveBenchAdapter
@@ -23,6 +30,8 @@ def all_adapters(
     adapters["swebench-official"] = SWEbenchOfficialAdapter()
     adapters["livebench-official"] = LiveBenchAdapter()
     adapters.update(build_helm_adapters())
+    adapters.update(build_ale_adapters())
+    adapters.update(build_bfcl_adapters())
     adapters.update(
         build_arena_adapters(
             configs=arena_configs, max_rows_per_config=arena_max_rows
@@ -31,4 +40,14 @@ def all_adapters(
     return adapters
 
 
-__all__ = ["all_adapters", "ArenaHFDatasetAdapter", "ArenaMetadataAdapter"]
+__all__ = [
+    "all_adapters",
+    "AgentsLastExamAdapter",
+    "ALELeaderboardAdapter",
+    "ALEV1Adapter",
+    "BFCLOfficialAdapter",
+    "BFCLAdapter",
+    "build_bfcl_adapters",
+    "ArenaHFDatasetAdapter",
+    "ArenaMetadataAdapter",
+]

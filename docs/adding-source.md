@@ -87,6 +87,8 @@ python3 scripts/fetch.py check --sources <adapter-id> \
 - LiveBench official repository：通过 GitHub tree 选择最新日期 CSV，记录 release date 和 task 列。
 - Stanford HELM：从公开 `config.js` 解析最新 release，再读取 JSON artifact；保留 HELM 原生 fraction/seconds 等单位，不强行改成百分比。
 - LMArena / Chatbot Arena：互动页面仍是 metadata-only、`enabled=false`；新增的 `lmarena-hf-dataset` 从 Arena 官方发布的 Hugging Face `leaderboard-dataset` 读取 `latest` split，按 Dataset Viewer 每页最多 100 行分页覆盖 `text`、`vision`、`webdev`、`search`、`document`、`agent`，默认每个 config 只抓一页（超出总量会显式 warning/truncated，避免 429；人工刷新可显式提高上限）。它保留 Elo/IPS、95% CI、votes/observations、category、发布日期和 row locator。互动页面没有稳定 API，仍不要抓取临时前端 bundle、截图或猜 Elo。
+- Agents' Last Exam（ALE-V1）：官方页面当前使用公开 JSON endpoint `/api/demo/leaderboard`；适配器保留 `full`、`linux_only`、`near-term`、`full-spectrum`、`last-exam` 及 licensed/unlicensed split，并将每行的 Pass Rate 与 partial Score 分成两个候选 metric。ALE 是 `system` benchmark，source harness（如 Codex、Claude Code、ALE-Claw）和 effort variant 必须留在 protocol；接口没有稳定的 published date 时只记录 retrieved time/hash，不把抓取时间冒充 observed date。SakanaAI 的 ALE-Bench 另有 catalog 条目，因许可证与 judge/hardware 口径不同暂不自动抓取。
+- Berkeley Function Calling Leaderboard（BFCL-V4）：官方 `data_overall.csv` 可机器读取；适配器保留 native `FC` 与 `Prompt` workaround、固定 evaluator commit、overall accuracy、成本、均值/标准差/P95 latency 及分类子指标。BFCL 设为 hybrid/tool-use benchmark；不同 calling mode、版本或 evaluator 不能合并排名，所有新行先进入 candidate。
 
 ## 从 candidate 晋升为 approved observation
 
