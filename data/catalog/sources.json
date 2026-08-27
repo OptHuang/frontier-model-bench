@@ -608,5 +608,19 @@
     "adapter_id": "lmsys-arena",
     "enabled": false,
     "license_note": "No undocumented endpoint scraping; add a dated, auditable export before ingesting Elo."
+  },
+  {
+    "id": "lmarena-hf-dataset",
+    "label": "Arena · official Hugging Face leaderboard dataset",
+    "kind": "official_dataset_api",
+    "publisher": "Arena / LMArena",
+    "url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+    "api_url": "https://datasets-server.huggingface.co/rows",
+    "default_evidence_level": "A",
+    "staleness_after_days": 14,
+    "adapter_id": "lmarena-hf-dataset",
+    "enabled": true,
+    "license": "cc-by-4.0",
+    "license_note": "Arena dataset card declares CC-BY-4.0; preserve attribution and retain source locator."
   }
 ]

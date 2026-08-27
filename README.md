@@ -29,6 +29,7 @@ scripts/build_derived.py    # catalog + observations → site index
 scripts/validate_data.py    # 只依赖 Python 标准库的数据检查器
 scripts/maintenance_report.py # 只读健康检查与缺失/刷新候选
 scripts/fetch.py            # 公开 leaderboard adapter → candidate artifact
+scripts/review_candidates.py # candidate artifact → 可审阅 Markdown/JSON（不晋升）
 skills/frontier-model-bench-maintenance/ # 可复用维护 skill
 .github/workflows/validate.yml
 .github/workflows/pages.yml      # GitHub Pages build/deploy
@@ -74,11 +75,18 @@ GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上先�
 python3 scripts/maintenance_report.py --root . --output-dir /tmp/fmb-maintenance --check-sources
 # 可选：运行已注册公开来源 adapter（只写 candidate artifact）
 python3 scripts/fetch.py check --dry-run --root . --output-dir /tmp/fmb-fetch
+# 可选：整理候选为去重/分级审阅包，不修改 approved 数据
+python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \
+  --output-dir /tmp/fmb-review --limit 50
+# Arena 人工分批扩展；定时任务默认只取 core subset 的一页
+python3 scripts/fetch.py check --sources lmarena-hf-dataset \
+  --arena-configs text,text_style_control --arena-max-rows 500 \
+  --output-dir /tmp/fmb-arena-refresh
 ```
 
 候选必须经过来源定位、model/benchmark/version/protocol/evidence 审阅后，才通过 PR 追加到 `data/observations/results.jsonl`；详见 [`docs/maintenance-plan.md`](docs/maintenance-plan.md) 和 [data candidate issue template](.github/ISSUE_TEMPLATE/data-candidate.md)。
 
-目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release 和 Stanford HELM artifacts；`scripts/fetch.py list` 会显示完整清单。LMArena / Chatbot Arena 只登记为 metadata-only，不抓取互动页面或未文档化接口。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
+目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release、Stanford HELM artifacts，以及 Arena 官方 Hugging Face leaderboard dataset；`scripts/fetch.py list` 会显示完整清单。LMArena 互动页面仍只登记为 metadata-only，不抓取未文档化接口；`lmarena-hf-dataset` 只读取官方发布的版本化 dataset rows 并生成候选。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
 
 ## 设计边界
 

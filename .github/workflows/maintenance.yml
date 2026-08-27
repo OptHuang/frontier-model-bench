@@ -77,10 +77,21 @@ jobs:
             --max-bytes 16777216 \
             --max-candidates 5000
 
+      - name: Build candidate review packet
+        if: always()
+        # This is a read-only queue for a maintainer.  The helper refuses
+        # canonical data paths and emits only pending decisions.
+        run: |
+          python scripts/review_candidates.py \
+            --root . \
+            --input-dir artifacts/fetch \
+            --output-dir artifacts/review \
+            --limit 100
+
       - name: Add maintenance summary
         if: always()
         run: |
-          for summary in artifacts/maintenance/summary.md artifacts/fetch/summary.md; do
+          for summary in artifacts/maintenance/summary.md artifacts/fetch/summary.md artifacts/review/review.md; do
             if [ -f "$summary" ]; then
               cat "$summary" >> "$GITHUB_STEP_SUMMARY"
               echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -115,5 +126,6 @@ jobs:
           path: |
             artifacts/maintenance/
             artifacts/fetch/
+            artifacts/review/
           if-no-files-found: warn
           retention-days: 30

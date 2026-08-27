@@ -4,3 +4,4 @@ __pycache__/
 .preview.png
 artifacts/maintenance/
 artifacts/fetch/
+artifacts/review/

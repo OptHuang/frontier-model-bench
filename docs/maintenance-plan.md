@@ -30,6 +30,7 @@ build_derived.py → validate_data.py --strict → Pages
    - `candidates.json`：缺失/刷新候选队列；
    - `source-status.json`：逐来源健康状态。
    - `artifacts/fetch/`：已注册公开 adapter 的 manifest、解析候选和汇总（`check --dry-run`，不保存原始 payload）。
+   - `artifacts/review/`：由 `review_candidates.py` 生成的去重/分级审阅包；其中每条决策都保持 `pending`，不写入 approved 数据。
 
 本地等价命令：
 
@@ -39,6 +40,13 @@ python3 scripts/maintenance_report.py --root . --output-dir /tmp/fmb-maintenance
 python3 scripts/maintenance_report.py --root . --output-dir /tmp/fmb-maintenance --check-sources
 # 读取已注册的公开 adapters，只写候选 artifact，不保存原始 payload：
 python3 scripts/fetch.py check --dry-run --root . --output-dir /tmp/fmb-fetch
+# 将候选整理成可逐条核对的 Markdown/JSON（仍是 candidate-only）
+python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \
+  --output-dir /tmp/fmb-review --limit 50
+# Arena 人工分批扩展（定时任务仍使用 core/100 的安全默认）
+python3 scripts/fetch.py check --sources lmarena-hf-dataset \
+  --arena-configs text,text_style_control --arena-max-rows 500 \
+  --output-dir /tmp/fmb-arena-refresh
 python3 scripts/build_derived.py
 python3 scripts/validate_data.py --strict
 ```
@@ -54,7 +62,7 @@ python3 scripts/validate_data.py --strict
 - 查看最近一次 `maintenance.yml` 的 `summary.md`。
 - 先处理 `high`：当前/preview 模型的 featured benchmark 缺口、来源失效、协议冲突和明显撤回。
 - 检查 source probe 的 4xx/5xx、重定向到登录页、robots/许可证变化；不要把 HTTP 200 当成数据解析成功。
-- 将可确认的事实放入一个小 PR；无法确认的只留在 candidate artifact，不手工“猜”分数。
+- 用 `review.md`/`review.json` 逐条核对可确认事实，再放入一个小 PR；无法确认的只留在 candidate artifact，不手工“猜”分数。
 
 ### 每周：补全和冲突审阅
 
@@ -94,7 +102,7 @@ python3 scripts/validate_data.py --strict
 建议逐步为以下来源写 adapter（先做快照/解析，再做人工审阅）：
 
 - 官方与 benchmark owner：OpenAI、Anthropic、Google、Qwen、DeepSeek、Kimi、GLM、MiniMax、MiMo、HELM、SWE-bench、Terminal-Bench、LiveCodeBench、Humanity’s Last Exam、FrontierMath、BFCL、τ-bench、Toolathlon、OSWorld、CyberGym。
-- Arena/聚合观察：LMSYS Chatbot Arena（Elo）、Artificial Analysis、Hugging Face Open LLM Leaderboard、LiveBench、SuperCLUE 等。
+- Arena/聚合观察：Arena 官方 `lmarena-hf-dataset`（HF `leaderboard-dataset` 的 text/vision/webdev/search/document/agent latest rows；默认每 config 100 行安全上限，超量显式标记 truncated）、Artificial Analysis、Hugging Face Open LLM Leaderboard、LiveBench、SuperCLUE 等；互动 Arena 页面仍禁用抓取。
 
 Arena 的 Elo、聚合榜的 intelligence index 与 benchmark accuracy 是不同 metric；必须单独登记 benchmark/version/metric，不能合成一个“综合分”。聚合站可以帮助发现缺口，但若原始协议、采样和版本不完整，最多标 `conditional`，不冒充 exact。
 

@@ -176,6 +176,18 @@ benchmark suite/version/split
 - **选择**：只收官方 source-backed `params_total`；同时列 active、architecture、license、context。
 - **规则**：未知参数排最后；1T、2T、3T 等可做筛选，`10T` 只有在出现可核验事实后才启用，不为占位模型补数字。
 
+### P15 · Arena / human preference
+
+- **主体**：`model`；Text、Vision、Document 等 Arena 子集分别列出。
+- **指标**：Bradley–Terry rating、95% CI、votes、category 和 leaderboard snapshot date；rating 不是 accuracy，也不与其他 benchmark 合成总分。
+- **来源**：优先使用 Arena 官方发布的 Hugging Face `leaderboard-dataset`；互动页面不做未文档化抓取。
+
+### P16 · Arena / agent workflows
+
+- **主体**：`system`（model + Arena workflow/harness）。
+- **指标**：Agent Arena IPS 与 WebDev/Search rating 分开；保留 observation/session counts、CI、category 和日期。
+- **规则**：固定 harness、工具策略和 snapshot 后再比较；候选数据必须先人工核对 model release 与 protocol。
+
 ## 5. UI 与更新约定
 
 - preset URL 应可分享，例如 `?preset=coding-agent&version=terminal-bench@2.1`；筛选状态不写回 observation。

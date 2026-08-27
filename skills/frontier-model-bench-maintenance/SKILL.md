@@ -1,6 +1,6 @@
 ---
 name: frontier-model-bench-maintenance
-description: Maintain the Frontier Model Bench registry and evidence-backed benchmark data: audit missing or stale observations, run public-source adapters, prepare candidate diffs, and validate the static index without silently changing approved history.
+description: "Maintain the Frontier Model Bench registry and evidence-backed benchmark data: audit missing or stale observations, run public-source adapters, prepare candidate diffs, and validate the static index without silently changing approved history."
 ---
 
 # Frontier Model Bench Maintenance
@@ -22,7 +22,7 @@ Use this skill when the user asks to refresh the Frontier Model Bench, fill miss
 
 1. **Audit** — run the validator and derived builder; report catalog-only models, missing benchmark cells, stale sources, conflicts, invalid aliases and coverage changes. This mode is read-only.
 2. **Fetch** — use the repository adapters (`python3 scripts/fetch.py list` and `python3 scripts/fetch.py check --dry-run` when available). Prefer official APIs, official Git repositories/raw JSON, and reproducible benchmark exports. Save immutable raw metadata and candidate records; do not edit approved observations in place.
-3. **Review/promotion** — compare candidate rows against the source locator and protocol. Promote only source-backed rows after human review, with a small auditable diff. Keep provider self-reports at the appropriate evidence tier and mark cross-protocol comparisons conditional.
+3. **Review/promotion** — first make a bounded review packet with `python3 scripts/review_candidates.py --input-dir artifacts/fetch --output-dir artifacts/review --limit 50`. Compare candidate rows against the source locator and protocol. The packet is a read-only scaffold with `decision: pending`; it never promotes a row. Promote only source-backed rows after human review, with a small auditable diff. Keep provider self-reports at the appropriate evidence tier and mark cross-protocol comparisons conditional.
 4. **Catalog maintenance** — add a concrete release/endpoint only when an official identity source exists. Keep aliases and speed/reasoning variants explicit; do not inflate family counts by treating an alias as a new model.
 
 ## Arena and leaderboard policy

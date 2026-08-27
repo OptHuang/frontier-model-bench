@@ -125,5 +125,23 @@
     "benchmark_ids": ["gpqa-diamond", "frontiermath", "swebench-pro", "terminal-bench"],
     "sort": "params_total",
     "note": "total parameters and active parameters are separate fields; unknown is not zero"
+  },
+  {
+    "id": "arena-preference",
+    "label": "Arena / human preference",
+    "description": "Arena 人类偏好 rating 单独展示；按 arena category、snapshot date、votes 与 CI 比较，不与 accuracy 混合。",
+    "benchmark_ids": ["arena-text", "arena-vision", "arena-document"],
+    "sort": "benchmark_column",
+    "dimensions": ["rating", "rating_ci", "vote_count", "category", "snapshot_date"]
+  },
+  {
+    "id": "arena-agent",
+    "label": "Arena / agent workflows",
+    "description": "Agent Arena IPS 与 WebDev/Search system runs；固定 harness/context 后比较，不能当作裸模型分数。",
+    "mode": "runs",
+    "benchmark_ids": ["arena-agent", "arena-webdev", "arena-search"],
+    "harness_ids": ["arena-agent", "arena-human-preference"],
+    "sort": "benchmark_column",
+    "dimensions": ["ips", "rating", "confidence_interval", "observation_count", "session_count"]
   }
 ]

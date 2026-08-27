@@ -1,0 +1,61 @@
+{
+  "dataset": "lmarena-ai/leaderboard-dataset",
+  "split": "latest",
+  "configs": ["text", "agent"],
+  "pages": [
+    {
+      "config": "text",
+      "split": "latest",
+      "offset": 0,
+      "request_url": "https://datasets-server.huggingface.co/rows?config=text&split=latest&offset=0&length=100",
+      "response": {
+        "num_rows_total": 1,
+        "rows": [
+          {
+            "row_idx": 0,
+            "row": {
+              "model_name": "fixture-text-model",
+              "organization": "fixture-org",
+              "license": "Apache-2.0",
+              "rating": 1450.5,
+              "rating_lower": 1440.0,
+              "rating_upper": 1461.0,
+              "variance": 28.0,
+              "vote_count": 1234,
+              "rank": 1,
+              "category": "overall",
+              "leaderboard_publish_date": "2026-08-27"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "config": "agent",
+      "split": "latest",
+      "offset": 0,
+      "request_url": "https://datasets-server.huggingface.co/rows?config=agent&split=latest&offset=0&length=100",
+      "response": {
+        "num_rows_total": 1,
+        "rows": [
+          {
+            "row_idx": 0,
+            "row": {
+              "model_name": "Fixture Agent",
+              "organization": "fixture-org",
+              "license": "Proprietary",
+              "score": 0.125,
+              "score_ci_lower": 0.110,
+              "score_ci_upper": 0.140,
+              "observation_count": 9000,
+              "session_count": 100,
+              "rank": 1,
+              "category": "overall",
+              "leaderboard_publish_date": "2026-08-27"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

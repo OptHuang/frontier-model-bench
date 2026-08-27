@@ -1443,6 +1443,285 @@
         }
       ],
       "featured": false
+    },
+    {
+      "id": "arena-text",
+      "canonicalId": "arena-text",
+      "short": "Arena Text",
+      "name": "Arena Text",
+      "family": "arena",
+      "category": "preference",
+      "familyLabel": "人类偏好",
+      "evaluationMode": "direct",
+      "comparisonKey": "arena-text:arena-text@latest:elo",
+      "metric": "elo",
+      "metricLabel": "Arena rating",
+      "scale": 3000,
+      "unit": "elo",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-text@latest",
+      "description": "Text Arena Bradley–Terry rating；按 category 和发布日期保留快照。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-text@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "elo",
+          "label": "Arena rating",
+          "unit": "elo",
+          "scale": {
+            "min": 0,
+            "max": 3000
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "arena-vision",
+      "canonicalId": "arena-vision",
+      "short": "Arena Vision",
+      "name": "Arena Vision",
+      "family": "arena",
+      "category": "preference",
+      "familyLabel": "人类偏好",
+      "evaluationMode": "direct",
+      "comparisonKey": "arena-vision:arena-vision@latest:elo",
+      "metric": "elo",
+      "metricLabel": "Arena rating",
+      "scale": 3000,
+      "unit": "elo",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-vision@latest",
+      "description": "Vision Arena Bradley–Terry rating；与 Text Arena 分开比较。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-vision@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "elo",
+          "label": "Arena rating",
+          "unit": "elo",
+          "scale": {
+            "min": 0,
+            "max": 3000
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "arena-webdev",
+      "canonicalId": "arena-webdev",
+      "short": "Arena WebDev",
+      "name": "Arena WebDev",
+      "family": "arena",
+      "category": "coding-agent",
+      "familyLabel": "代码 / 应用构建",
+      "evaluationMode": "system",
+      "comparisonKey": "arena-webdev:arena-webdev@latest:elo",
+      "metric": "elo",
+      "metricLabel": "Arena rating",
+      "scale": 3000,
+      "unit": "elo",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-webdev@latest",
+      "description": "Code/WebDev Arena rating；模型名可能包含 endpoint 或 effort tier。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-webdev@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "elo",
+          "label": "Arena rating",
+          "unit": "elo",
+          "scale": {
+            "min": 0,
+            "max": 3000
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "arena-search",
+      "canonicalId": "arena-search",
+      "short": "Arena Search",
+      "name": "Arena Search",
+      "family": "arena",
+      "category": "tool-use",
+      "familyLabel": "搜索 / 工具",
+      "evaluationMode": "system",
+      "comparisonKey": "arena-search:arena-search@latest:elo",
+      "metric": "elo",
+      "metricLabel": "Arena rating",
+      "scale": 3000,
+      "unit": "elo",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-search@latest",
+      "description": "Search Arena rating；与无搜索的 Text Arena 不直接合并。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-search@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "elo",
+          "label": "Arena rating",
+          "unit": "elo",
+          "scale": {
+            "min": 0,
+            "max": 3000
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "arena-document",
+      "canonicalId": "arena-document",
+      "short": "Arena Document",
+      "name": "Arena Document",
+      "family": "arena",
+      "category": "multimodal",
+      "familyLabel": "文档理解",
+      "evaluationMode": "direct",
+      "comparisonKey": "arena-document:arena-document@latest:elo",
+      "metric": "elo",
+      "metricLabel": "Arena rating",
+      "scale": 3000,
+      "unit": "elo",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-document@latest",
+      "description": "Document Arena rating；保留 category、votes 和置信区间。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-document@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "elo",
+          "label": "Arena rating",
+          "unit": "elo",
+          "scale": {
+            "min": 0,
+            "max": 3000
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
+    },
+    {
+      "id": "arena-agent",
+      "canonicalId": "arena-agent",
+      "short": "Agent Arena",
+      "name": "Agent Arena",
+      "family": "agents",
+      "category": "coding-agent",
+      "familyLabel": "Agent 系统",
+      "evaluationMode": "system",
+      "comparisonKey": "arena-agent:arena-agent@latest:ips",
+      "metric": "ips",
+      "metricLabel": "IPS score",
+      "scale": {
+        "min": -1,
+        "max": 1
+      },
+      "unit": "fraction",
+      "direction": "higher",
+      "version": "latest snapshot",
+      "versionId": "arena-agent@latest",
+      "description": "Agent Arena 的 IPS (τ̂) 分数；不是 Bradley–Terry Elo，单独作为 system run。",
+      "owner": "Arena / LMArena",
+      "source": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "lastVerified": "2026-08-27",
+      "versions": [
+        {
+          "id": "arena-agent@latest",
+          "label": "latest snapshot",
+          "status": "active"
+        }
+      ],
+      "metrics": [
+        {
+          "id": "ips",
+          "label": "IPS score",
+          "unit": "fraction",
+          "scale": {
+            "min": -1,
+            "max": 1
+          },
+          "direction": "higher"
+        }
+      ],
+      "featured": false
     }
   ],
   "models": [
@@ -3377,6 +3656,20 @@
       "adapter_id": "lmsys-arena",
       "enabled": false,
       "license_note": "No undocumented endpoint scraping; add a dated, auditable export before ingesting Elo."
+    },
+    {
+      "id": "lmarena-hf-dataset",
+      "label": "Arena · official Hugging Face leaderboard dataset",
+      "kind": "official_dataset_api",
+      "publisher": "Arena / LMArena",
+      "url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+      "api_url": "https://datasets-server.huggingface.co/rows",
+      "default_evidence_level": "A",
+      "staleness_after_days": 14,
+      "adapter_id": "lmarena-hf-dataset",
+      "enabled": true,
+      "license": "cc-by-4.0",
+      "license_note": "Arena dataset card declares CC-BY-4.0; preserve attribution and retain source locator."
     }
   ],
   "catalogModels": [
@@ -6541,6 +6834,37 @@
       "description": "厂商模型卡中的默认评测设置；作为 reported/conditional，不推断具体 agent。",
       "tools": null,
       "source_ids": []
+    },
+    {
+      "id": "arena-human-preference",
+      "name": "Arena human-preference rating",
+      "label": "Arena human preference",
+      "kind": "preference-eval",
+      "status": "active",
+      "owner": "Arena / LMArena",
+      "description": "Arena pairwise human-vote aggregation; rating, CI, votes and category stay attached to each snapshot.",
+      "tools": [
+        "human-vote"
+      ],
+      "source_ids": [
+        "lmarena-hf-dataset"
+      ]
+    },
+    {
+      "id": "arena-agent",
+      "name": "Arena Agent IPS evaluator",
+      "label": "Arena Agent IPS",
+      "kind": "agent-eval",
+      "status": "active",
+      "owner": "Arena / LMArena",
+      "description": "Arena Agent published IPS (tau-hat) score; not interchangeable with Bradley-Terry Elo or model-only runs.",
+      "tools": [
+        "agent-session",
+        "human-signal"
+      ],
+      "source_ids": [
+        "lmarena-hf-dataset"
+      ]
     }
   ],
   "runs": [
@@ -9469,24 +9793,65 @@
       ],
       "sort": "params_total",
       "note": "total parameters and active parameters are separate fields; unknown is not zero"
+    },
+    {
+      "id": "arena-preference",
+      "label": "Arena / human preference",
+      "description": "Arena 人类偏好 rating 单独展示；按 arena category、snapshot date、votes 与 CI 比较，不与 accuracy 混合。",
+      "benchmark_ids": [
+        "arena-text",
+        "arena-vision",
+        "arena-document"
+      ],
+      "sort": "benchmark_column",
+      "dimensions": [
+        "rating",
+        "rating_ci",
+        "vote_count",
+        "category",
+        "snapshot_date"
+      ]
+    },
+    {
+      "id": "arena-agent",
+      "label": "Arena / agent workflows",
+      "description": "Agent Arena IPS 与 WebDev/Search system runs；固定 harness/context 后比较，不能当作裸模型分数。",
+      "mode": "runs",
+      "benchmark_ids": [
+        "arena-agent",
+        "arena-webdev",
+        "arena-search"
+      ],
+      "harness_ids": [
+        "arena-agent",
+        "arena-human-preference"
+      ],
+      "sort": "benchmark_column",
+      "dimensions": [
+        "ips",
+        "rating",
+        "confidence_interval",
+        "observation_count",
+        "session_count"
+      ]
     }
   ],
   "stats": {
     "catalogModels": 49,
     "scoredModels": 9,
     "catalogOnlyModels": 40,
-    "benchmarks": 30,
+    "benchmarks": 36,
     "featuredBenchmarks": 12,
-    "sources": 66,
-    "harnesses": 11,
-    "presets": 15,
+    "sources": 67,
+    "harnesses": 13,
+    "presets": 17,
     "runs": 47,
     "systemRuns": 18,
     "observations": 47,
     "numericObservations": 47,
     "observedCells": 29,
-    "coverage": 0.0197,
-    "coveragePct": 2.0,
+    "coverage": 0.0164,
+    "coveragePct": 1.6,
     "legacyMigrated": 32
   }
 }

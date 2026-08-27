@@ -14,9 +14,11 @@ Examples
 
 The adapters use only public, bounded HTTP requests.  ``--dry-run`` means no
 raw payload is persisted (the response is still parsed in memory); it is the
-recommended mode for scheduled jobs.  The disabled Arena adapter is included
-in ``list`` and can be selected for an explicit metadata-only audit, but it
-does not scrape the interactive site or emit scores.
+recommended mode for scheduled jobs.  The interactive Arena adapter remains a
+disabled metadata-only sentinel, while ``lmarena-hf-dataset`` reads Arena's
+official dataset export.  Its scheduled-safe default is one 100-row page per
+subset; explicit local runs can choose a subset list and a larger cap with
+``--arena-configs``/``--arena-max-rows``.
 """
 
 from __future__ import annotations
@@ -32,10 +34,12 @@ from typing import Any, Iterable, Mapping, Sequence
 
 try:  # ``python scripts/fetch.py``
     from adapters import all_adapters
+    from adapters.arena import ArenaHFDatasetAdapter
     from adapters.base import AdapterRun, PARSER_VERSION, utc_now
     from adapters.http import HttpClient
 except ImportError:  # ``python -m scripts.fetch``
     from scripts.adapters import all_adapters
+    from scripts.adapters.arena import ArenaHFDatasetAdapter
     from scripts.adapters.base import AdapterRun, PARSER_VERSION, utc_now
     from scripts.adapters.http import HttpClient
 
@@ -271,8 +275,30 @@ def list_adapters(as_json: bool = False) -> int:
     return 0
 
 
+def parse_arena_configs(value: str | None) -> tuple[str, ...] | None:
+    """Parse an optional Arena config list for explicit local refreshes."""
+
+    if not value or value.strip().lower() in {"core", "default"}:
+        return None
+    if value.strip().lower() in {"all", "*"}:
+        return ArenaHFDatasetAdapter.ALL_CONFIGS
+    configs = tuple(dict.fromkeys(item.strip() for item in value.split(",") if item.strip()))
+    if not configs:
+        raise ValueError("--arena-configs must contain at least one config")
+    unknown = sorted(set(configs) - set(ArenaHFDatasetAdapter.ALL_CONFIGS))
+    if unknown:
+        raise ValueError(
+            "unknown Arena config(s): " + ", ".join(unknown)
+        )
+    return configs
+
+
 def fetch_adapters(args: argparse.Namespace) -> int:
-    adapters = all_adapters()
+    arena_configs = parse_arena_configs(args.arena_configs)
+    adapters = all_adapters(
+        arena_configs=arena_configs,
+        arena_max_rows=args.arena_max_rows,
+    )
     selected = source_ids(args.sources, adapters)
     if not selected:
         print("fetch: at least one adapter must be selected", file=sys.stderr)
@@ -460,6 +486,20 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--max-bytes", type=int, default=64 * 1024 * 1024)
         command.add_argument("--max-candidates", type=int, default=10000)
         command.add_argument(
+            "--arena-configs",
+            default="core",
+            help=(
+                "Arena HF configs for an explicit refresh: core (default), "
+                "all, or a comma-separated subset"
+            ),
+        )
+        command.add_argument(
+            "--arena-max-rows",
+            type=int,
+            default=100,
+            help="per-config Arena row cap (keep the scheduled default at 100)",
+        )
+        command.add_argument(
             "--retrieved-at",
             help="override retrieval timestamp (ISO datetime; useful for fixtures)",
         )
@@ -494,8 +534,17 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command in {"fetch", "check"}:
-        if args.timeout <= 0 or args.max_bytes <= 0 or args.max_candidates < 0:
-            print("fetch: timeout/max-bytes must be positive and max-candidates >= 0", file=sys.stderr)
+        if (
+            args.timeout <= 0
+            or args.max_bytes <= 0
+            or args.max_candidates < 0
+            or args.arena_max_rows <= 0
+        ):
+            print(
+                "fetch: timeout/max-bytes/arena-max-rows must be positive "
+                "and max-candidates >= 0",
+                file=sys.stderr,
+            )
             return 2
         if args.retrieved_at:
             try:

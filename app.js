@@ -148,9 +148,15 @@
       familyLabel: text(first(benchmark.familyLabel, benchmark.family_label, benchmark.categoryLabel, benchmark.family), "其他"),
       metric: text(first(benchmark.metric, benchmark.metricName, benchmark.metric_name), "score"),
       metricLabel: text(first(benchmark.metricLabel, benchmark.metric_label, benchmark.metric), "score"),
+      // Keep an explicit lower bound when a metric is not zero-based (for
+      // example Arena IPS).  Older seed data still uses a numeric max.
       scale: (() => {
         const rawScale = first(benchmark.scale, benchmark.max, 100);
-        if (rawScale && typeof rawScale === "object") return Number(first(rawScale.max, rawScale.maximum, 100)) || 100;
+        if (rawScale && typeof rawScale === "object") {
+          const min = Number(first(rawScale.min, rawScale.minimum, 0));
+          const max = Number(first(rawScale.max, rawScale.maximum, 100));
+          return Number.isFinite(min) && Number.isFinite(max) && max > min ? { min, max } : 100;
+        }
         return Number(rawScale) || 100;
       })(),
       unit: (() => {

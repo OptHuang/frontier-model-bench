@@ -26,6 +26,38 @@ python3 scripts/fetch.py fetch --sources livebench-official --save-payload
 `--retrieved-at` 可固定时间，便于 fixture 测试。`--max-bytes` 和
 `--max-candidates` 始终保留上限，避免来源失控。
 
+Arena 适配器的定时默认值是每个 config 读取一页（100 行），以避免 Dataset
+Viewer 限流；需要人工分批补全时可以显式指定范围和上限，例如：
+
+```bash
+python3 scripts/fetch.py check --sources lmarena-hf-dataset \
+  --arena-configs text,text_style_control --arena-max-rows 500 \
+  --output-dir /tmp/fmb-arena-refresh
+```
+
+`--arena-configs all` 可发现数据集中的全部 Arena subset，但应分批运行并检查
+`429`/`truncated` 警告。
+
+## 生成 candidate 审阅包
+
+抓取完成后可以用只读审阅 helper 把各来源的 `candidates.jsonl` 汇总成一个
+去重、分级的 Markdown/JSON 队列：
+
+```bash
+python3 scripts/review_candidates.py \
+  --root . \
+  --input-dir artifacts/fetch \
+  --output-dir artifacts/review \
+  --limit 50
+```
+
+`review.json` 会记录每个候选的 exact-alias 建议、canonical reference/protocol/
+evidence 检查、来源 manifest 定位和 `decision: pending`；`review.md` 适合在
+PR/Issue 中逐条核对。`--limit 0` 可输出全部候选，摘要仍按去重后的全量统计。
+输出目录不得位于 `data/` 或输入 artifact 内；helper 永远不会把候选写进
+`data/observations/results.jsonl`。接受某一行后，维护者仍需手工核对并追加
+canonical observation，再运行构建和 strict 校验。
+
 ## 新适配器最小要求
 
 在 `scripts/adapters/` 新增模块并注册到 `all_adapters()`：
@@ -54,7 +86,7 @@ python3 scripts/fetch.py check --sources <adapter-id> \
 - SWE-bench official JSON：保留 Verified/Lite/Test/Multilingual/Multimodal 等 variant，并标出 agent/scaffold 与 checked 状态。
 - LiveBench official repository：通过 GitHub tree 选择最新日期 CSV，记录 release date 和 task 列。
 - Stanford HELM：从公开 `config.js` 解析最新 release，再读取 JSON artifact；保留 HELM 原生 fraction/seconds 等单位，不强行改成百分比。
-- LMArena / Chatbot Arena：当前仅 metadata-only、`enabled=false`。Arena 页面没有稳定、文档化的公开 score API；不要抓取临时前端 bundle、截图或猜 Elo。若以后获得可审计、可再分发的版本化快照，应新建显式 adapter 和 fixture。
+- LMArena / Chatbot Arena：互动页面仍是 metadata-only、`enabled=false`；新增的 `lmarena-hf-dataset` 从 Arena 官方发布的 Hugging Face `leaderboard-dataset` 读取 `latest` split，按 Dataset Viewer 每页最多 100 行分页覆盖 `text`、`vision`、`webdev`、`search`、`document`、`agent`，默认每个 config 只抓一页（超出总量会显式 warning/truncated，避免 429；人工刷新可显式提高上限）。它保留 Elo/IPS、95% CI、votes/observations、category、发布日期和 row locator。互动页面没有稳定 API，仍不要抓取临时前端 bundle、截图或猜 Elo。
 
 ## 从 candidate 晋升为 approved observation
 

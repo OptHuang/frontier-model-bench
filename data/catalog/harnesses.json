@@ -119,5 +119,27 @@
     "description": "厂商模型卡中的默认评测设置；作为 reported/conditional，不推断具体 agent。",
     "tools": null,
     "source_ids": []
+  },
+  {
+    "id": "arena-human-preference",
+    "name": "Arena human-preference rating",
+    "label": "Arena human preference",
+    "kind": "preference-eval",
+    "status": "active",
+    "owner": "Arena / LMArena",
+    "description": "Arena pairwise human-vote aggregation; rating, CI, votes and category stay attached to each snapshot.",
+    "tools": ["human-vote"],
+    "source_ids": ["lmarena-hf-dataset"]
+  },
+  {
+    "id": "arena-agent",
+    "name": "Arena Agent IPS evaluator",
+    "label": "Arena Agent IPS",
+    "kind": "agent-eval",
+    "status": "active",
+    "owner": "Arena / LMArena",
+    "description": "Arena Agent published IPS (tau-hat) score; not interchangeable with Bradley-Terry Elo or model-only runs.",
+    "tools": ["agent-session", "human-signal"],
+    "source_ids": ["lmarena-hf-dataset"]
   }
 ]
