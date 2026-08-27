@@ -51,8 +51,9 @@ const ids = [
   "runBenchmarkFilter", "sortSelect", "harnessFilterWrap",
   "runBenchmarkFilterWrap", "searchInput", "availableOnly", "showCatalog",
   "activeFilters", "presetHint", "coverageNote", "matrixHead", "matrixBody",
-  "matrixView", "cardsView", "emptyState", "spotlightGrid", "spotlightSection",
-  "atlasLegend", "publicEvidenceSection", "publicEvidenceCount",
+  "matrixView", "matrixScroll", "matrixTools", "matrixNavigationStatus",
+  "benchmarkJump", "matrixHome", "cardsView", "emptyState", "spotlightGrid", "spotlightSection",
+  "atlasLegend", "publicEvidenceSection", "publicEvidenceToggle", "publicEvidenceBody", "publicEvidenceCount",
   "publicEvidenceList", "publicAliasLedger", "runsView", "runTableFrame",
   "runTableHead", "runTableBody", "runCardsView", "runEmptyState",
   "runCountLabel", "atlasViewSwitcher", "runViewSwitcher", "matrixTitle",
@@ -77,6 +78,11 @@ const runTabs = ["table", "cards"].map((view) => {
   element.dataset.runView = view;
   return element;
 });
+const densityButtons = ["compact", "standard"].map((density) => {
+  const element = new Element(`density-${density}`);
+  element.dataset.matrixDensity = density;
+  return element;
+});
 const documentListeners = new Map();
 const document = {
   activeElement: null,
@@ -89,6 +95,7 @@ const document = {
     if (selector === ".mode-tab") return modeTabs;
     if (selector === ".view-tab[data-view]") return atlasTabs;
     if (selector === ".view-tab[data-run-view]") return runTabs;
+    if (selector === "[data-matrix-density]") return densityButtons;
     if (selector === ".stat-card") return [];
     return [];
   },
@@ -140,8 +147,9 @@ const fixture = {
   meta: { status: "curated", asOf: "2026-08-28" },
   models: [{ id: "acme/model@1", name: "Acme Model", provider: "Acme", status: "active" }],
   benchmarks: [
-    { id: "direct-bench", name: "Direct Bench", evaluationMode: "direct", metric: "score" },
-    { id: "system-bench", name: "System Bench", evaluationMode: "system", metric: "score" },
+    { id: "direct-bench", name: "Direct Bench", evaluationMode: "direct", metric: "score", displayPriority: 20 },
+    { id: "system-bench", name: "System Bench", evaluationMode: "system", metric: "score", displayPriority: 10 },
+    { id: "arena-text", name: "Arena Text", evaluationMode: "direct", metric: "arena_score_bt", displayPriority: 30 },
   ],
   harnesses: [
     { id: "model-only", name: "Model only", kind: "model" },
@@ -178,6 +186,16 @@ const fixture = {
       unit: "count",
       sourceId: "helm-capabilities",
       protocol: { harness: "helm", table: "Efficiency", direction: "lower" },
+    },
+    {
+      id: "arena-old-source-name",
+      canonicalModelId: "acme/model@1",
+      benchmarkId: "arena-text",
+      metricId: "elo",
+      value: 1450,
+      unit: "elo",
+      sourceId: "lmarena-hf-dataset",
+      protocol: { harness: "arena-human-preference", rating_method: "bradley-terry" },
     },
   ],
   presets: [],
@@ -218,9 +236,35 @@ async function main() {
     "token telemetry leaked into the Atlas matrix",
   );
   assert(
+    elements.matrixBody.innerHTML.includes('data-benchmark="arena-text"') && !elements.matrixBody.innerHTML.includes('data-benchmark="arena-text--elo"'),
+    "legacy Arena source field was not mapped into the Bradley-Terry headline metric",
+  );
+  assert.strictEqual(elements.matrixView.dataset.density, "compact", "matrix must default to the compact density");
+  assert(
+    elements.matrixHead.innerHTML.indexOf('data-benchmark-col="system-bench"') < elements.matrixHead.innerHTML.indexOf('data-benchmark-col="direct-bench"'),
+    "displayPriority did not control the stable left-to-right benchmark order",
+  );
+  assert(
+    elements.matrixHead.innerHTML.indexOf('data-benchmark-col="direct-bench"') < elements.matrixHead.innerHTML.indexOf('data-benchmark-col="helm-mean-score--efficiency-score"'),
+    "a secondary public metric slice inherited priority and displaced canonical columns",
+  );
+  assert(elements.benchmarkJump.innerHTML.includes("System Bench"), "benchmark quick navigation was not populated");
+  assert.strictEqual(elements.publicEvidenceBody.hidden, true, "evidence audit details must default to collapsed");
+  assert.strictEqual(elements.publicEvidenceList.innerHTML, "", "collapsed evidence audit eagerly rendered its representative rows");
+  assert(elements.publicEvidenceCount.textContent.includes("个来源"), "collapsed evidence summary omitted source count");
+  assert.strictEqual(elements.publicEvidenceToggle["aria-expanded"], "false", "collapsed audit toggle has incorrect accessibility state");
+
+  elements.publicEvidenceToggle.emit("click");
+  assert.strictEqual(elements.publicEvidenceBody.hidden, false, "audit toggle did not reveal the evidence body");
+  assert.strictEqual(elements.publicEvidenceToggle["aria-expanded"], "true", "expanded audit toggle has incorrect accessibility state");
+  assert(
     elements.publicEvidenceList.innerHTML.includes("telemetry · 仅证据"),
     "excluded telemetry disappeared from the inspectable evidence ledger",
   );
+
+  densityButtons.find((button) => button.dataset.matrixDensity === "standard").emit("click");
+  assert.strictEqual(elements.matrixView.dataset.density, "standard", "density switch did not update matrix layout state");
+  assert.strictEqual(storage.get("fmb-matrix-density"), "standard", "density preference was not persisted");
 
   modeTabs.find((tab) => tab.dataset.mode === "runs").emit("click");
   assert(!elements.runTableBody.innerHTML.includes("direct-model-only"), "System Runs leaked a model-only row");

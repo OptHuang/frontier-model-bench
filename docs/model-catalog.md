@@ -83,6 +83,7 @@ Agent benchmark 的被测对象应是 `model + endpoint + harness + tools + envi
 | `context_window` | 否 | 记录单位 token、native/extended 和扩展方法；不同限制写在 endpoint facts |
 | `params_total` | 否 | source-backed 总参数；未知为 `null`，绝不由规模猜测 |
 | `params_active` | 否 | 每 token 激活参数；dense 模型可等于 total，但仍建议明确写出 |
+| `params_approximate` | 否 | 厂商仅披露“约 N”时为 `true`；页面保留 `≈`，不能伪装成精确计数 |
 | `params_extra` | 否 | 例如 N-gram embedding；不得静默加进 `params_total` |
 | `architecture` | 否 | dense、MoE、hybrid 等，仅在来源明确时填写 |
 | `license` | 否 | 只登记原始权重许可证，不把“可试用”当开源 |
@@ -94,6 +95,19 @@ Agent benchmark 的被测对象应是 `model + endpoint + harness + tools + envi
 `last_checked`。architecture、reasoning modes、context/parameter note、license
 等字段只在来源明确时填写；未知值保留 `null` 或 `[]`。profile 的 `fact_source_ids`
 会与模型的 `source_ids` 合并显示，方便从详情页直接打开具体官方页面。
+
+闭源模型若有可复核的独立分析，可在 profile 的 `parameter_estimates` 中登记，
+但必须与 canonical 参数严格分层：每条估计需给出 `kind`、点估计、区间、方法
+`basis`、置信度、日期、来源和明确 caveat。当前支持的 `ikp_effective` 表示“与多大
+开放模型相当的长尾知识容量”，不是实际权重数；因此它不会写入或参与
+`params_total` / `params_active` 的筛选、排序和“10T 模型”分组。页面以“第三方估计”
+单独展示，且区间必须与点估计同时出现。
+
+底座或衍生关系使用 profile 的 `parameter_evidence`：必须标出 `base_checkpoint`
+或 `base_lineage`、total/active 的适用对象、来源、confidence 和 caveat。这类数字只在
+详情页的 “PARAMETER PROVENANCE” 中显示，不写入当前 hosted endpoint 的 canonical
+参数，也不参与参数排序。厂商对 exact model 只给约数时可写入 canonical 数值，但必须
+同时设置 `params_approximate: true`，例如 MiniMax M3 的约 428B / 23B。
 
 ### 3.3 Endpoint、variant 与 system
 
@@ -110,6 +124,7 @@ Agent benchmark 的被测对象应是 `model + endpoint + harness + tools + envi
 4. 参数数字必须带 `parameter_scope`（例如 `model_only`、`model_plus_embedding`）、`as_of`、单位和 evidence locator。不同来源冲突时保留多条 fact，不取平均。
 5. 量化（FP8、FP4、GGUF 等）改变部署占用，不改变基础模型参数量；量化信息进入 deployment fact。
 6. `10T` 不是默认类别。只有来源给出可定位、可解释的总参数才进入 scale watchlist；未知值排在末尾，不参加“规模最大”排名。
+7. 黑盒行为分析得到的 effective-capacity estimate 不能替代总参数。即使点估计看似精确，也必须显示其方法名、预测区间和“非实际权重”提示。
 
 ## 5. 首批目录（截至 2026-08-28）
 
@@ -144,7 +159,7 @@ GPT-5.6 Pro、Daybreak/Cyber 等产品层或专项安全模型，先作为 `vari
 
 | canonical release | 展示名 | status | availability / endpoint | 已核验元数据 | 官方来源与备注 |
 | --- | --- | --- | --- | --- | --- |
-| `qwen/qwen@3.8-max` | Qwen3.8-Max | `active` | `api/hosted`; Qwen Studio/QwenCloud 名称 | text/image；参数、架构与 context 待该 endpoint 的逐型号一手资料 | [Qwen model terms](https://chat.qwen.ai/legal-agreement/models) |
+| `qwen/qwen@3.8-max` | Qwen3.8-Max | `active` | `api/hosted`; Qwen Studio/QwenCloud 名称 | 1M hosted context；2.4T MoE total；95B active 仅按 base-checkpoint lineage 展示 | [Qwen Cloud specification](https://docs.qwencloud.com/developer-guides/getting-started/latest-model)；[base checkpoint](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B) |
 | `qwen/qwen@3.8-2.4t-a95b` | Qwen3.8-Max open release | `active` | `open-weights`; `Qwen/Qwen3.8-2.4T-A95B` | 2.4T total / 95B active；262K native / ~1.01M extended | [official model card](https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B)；[Qwen3.8 repository](https://github.com/QwenLM/Qwen3.8) |
 | `qwen/qwen@3.8-flash-next` | Qwen3.8-Flash-Next | `active` | `open-weights`; hosted production name `qwen3.8-flash`（API 状态另核验） | 125B main、6B active、51B N-gram；262K native / 1M YaRN | [Flash-Next release](https://qwen.ai/blog?id=qwen3.8-flash-next) |
 | `qwen/qwen@3.8-27b` | Qwen3.8-27B | `active` | `open-weights`; `Qwen/Qwen3.8-27B` | 27B dense | [Qwen3.8-27B](https://qwen.ai/blog?id=qwen3.8-27b) |

@@ -39,7 +39,24 @@
       ],
       "architecture": null,
       "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
-      "parameter_note": "参数量未公开。",
+      "parameter_note": "官方未披露实际权重数；下方第三方估计衡量的是 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 1930,
+          "range_b": [
+            559,
+            6700
+          ],
+          "interval": "90%",
+          "basis": "attempted",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；表示与约 1.93T 平均开放模型相当的长尾知识容量，不能表述为该模型拥有 1.93T 权重。"
+        }
+      ],
       "knowledge_cutoff": "2026-02-16",
       "max_output_tokens": 128000,
       "license": null,
@@ -49,7 +66,8 @@
       ],
       "fact_source_ids": [
         "src-openai-models",
-        "src-openai-gpt56"
+        "src-openai-gpt56",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -86,7 +104,24 @@
       ],
       "architecture": null,
       "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
-      "parameter_note": "参数量未公开。",
+      "parameter_note": "官方未披露实际权重数；下方第三方估计衡量的是 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 702,
+          "range_b": [
+            204,
+            2400
+          ],
+          "interval": "90%",
+          "basis": "attempted",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；表示与约 702B 平均开放模型相当的长尾知识容量，不能表述为该模型拥有 702B 权重。"
+        }
+      ],
       "knowledge_cutoff": "2026-02-16",
       "max_output_tokens": 128000,
       "license": null,
@@ -95,7 +130,8 @@
       ],
       "fact_source_ids": [
         "src-openai-models",
-        "src-openai-gpt56"
+        "src-openai-gpt56",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -132,7 +168,24 @@
       ],
       "architecture": null,
       "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
-      "parameter_note": "参数量未公开。",
+      "parameter_note": "官方未披露实际权重数；下方第三方估计衡量的是 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 744,
+          "range_b": [
+            216,
+            2600
+          ],
+          "interval": "90%",
+          "basis": "attempted",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；表示与约 744B 平均开放模型相当的长尾知识容量，不能表述为该模型拥有 744B 权重。"
+        }
+      ],
       "knowledge_cutoff": "2026-02-16",
       "max_output_tokens": 128000,
       "license": null,
@@ -141,7 +194,8 @@
       ],
       "fact_source_ids": [
         "src-openai-models",
-        "src-openai-gpt56"
+        "src-openai-gpt56",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -173,17 +227,18 @@
         "pro"
       ],
       "architecture": null,
-      "context_note": "发布页注明 API 1M context；具体 endpoint/配额随 rollout 变化。",
+      "context_note": "官方 endpoint 规格记录 1,050,000-token context；具体配额仍可能随 rollout 变化。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "knowledge_cutoff": "2025-12-01",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "GPT-5.5 与 GPT-5.5 Pro 是产品/计算 tier；不要把 Pro 当作独立权重而忽略 endpoint。",
         "发布页中的内部评测和公开 benchmark 需区分。"
       ],
       "fact_source_ids": [
-        "src-openai-gpt55"
+        "src-openai-gpt55",
+        "src-openai-gpt55-spec"
       ],
       "last_checked": "2026-08-27"
     },
@@ -213,17 +268,18 @@
         "pro"
       ],
       "architecture": null,
-      "context_note": "发布页注明 API 1M context；API rollout 和价格可能变化。",
+      "context_note": "官方 endpoint 规格记录 1,050,000-token context；API rollout 和价格可能变化。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "knowledge_cutoff": "2025-12-01",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "这是高计算 serving tier；不能与默认 GPT-5.5 的结果直接混排。",
         "模型页当前将其作为独立 endpoint 记录，以保留可追溯性。"
       ],
       "fact_source_ids": [
-        "src-openai-gpt55"
+        "src-openai-gpt55",
+        "src-openai-gpt55-pro-spec"
       ],
       "last_checked": "2026-08-27"
     },
@@ -259,9 +315,9 @@
         "xhigh"
       ],
       "architecture": null,
-      "context_note": "发布页注明标准 context 约 272K，并提供 Codex 1M experimental context；不要把两者混为一个限制。",
+      "context_note": "当前官方 API endpoint 规格记录 1,050,000-token context；历史产品面与 Codex 配置不能直接代入其他 endpoint。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
+      "knowledge_cutoff": "2025-08-31",
       "max_output_tokens": null,
       "license": null,
       "caveats": [
@@ -269,7 +325,8 @@
         "Pro 是独立 serving tier，需单独记录。"
       ],
       "fact_source_ids": [
-        "src-openai-models"
+        "src-openai-models",
+        "src-openai-gpt54-spec"
       ],
       "last_checked": "2026-08-27"
     },
@@ -299,16 +356,17 @@
         "high"
       ],
       "architecture": null,
-      "context_note": "当前公开目录未给出稳定的 context 数值；保留未注明。",
+      "context_note": "官方 endpoint 规格记录 400,000-token context。",
       "parameter_note": "参数量未公开；mini 是产品 tier，不等于公开权重规模。",
-      "knowledge_cutoff": null,
+      "knowledge_cutoff": "2025-08-31",
       "max_output_tokens": null,
       "license": null,
       "caveats": [
         "不要用 GPT-5.4 主模型的 benchmark 分数代填 mini。"
       ],
       "fact_source_ids": [
-        "src-openai-models"
+        "src-openai-models",
+        "src-openai-gpt54-mini-spec"
       ],
       "last_checked": "2026-08-27"
     },
@@ -374,9 +432,26 @@
       ],
       "architecture": null,
       "context_note": "目录记录 1M context；Fast mode 约为默认速度的 2.5 倍，属于 serving mode。",
-      "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "parameter_note": "官方未披露实际权重数；下方第三方估计是经拒答校正的 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 2100,
+          "range_b": [
+            609,
+            7200
+          ],
+          "interval": "90%",
+          "basis": "sol-imputed",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；作者用 GPT-5.6 Sol 对拒答样本做 imputation。区间尚未计入 imputation 的额外不确定性，不能当作实际权重数。"
+        }
+      ],
+      "knowledge_cutoff": "2026-05",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "Fast mode 改变延迟/价格，不应与默认模式合并为单一分数。",
@@ -384,7 +459,9 @@
       ],
       "fact_source_ids": [
         "src-anthropic-opus5",
-        "src-anthropic-system-cards"
+        "src-anthropic-system-cards",
+        "src-anthropic-models-overview",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -450,9 +527,26 @@
       ],
       "architecture": null,
       "context_note": "目录记录 1M context；具体 trusted-access 配额未统一公开。",
-      "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "parameter_note": "官方未披露实际权重数；下方第三方估计是经拒答校正的 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 2100,
+          "range_b": [
+            609,
+            7200
+          ],
+          "interval": "90%",
+          "basis": "sol-imputed",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；作者用 GPT-5.6 Sol 对拒答样本做 imputation。区间尚未计入 imputation 的额外不确定性，不能当作实际权重数。"
+        }
+      ],
+      "knowledge_cutoff": "2026-01",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "安全分类器可能 fallback 到 Opus 4.8；评测必须记录是否发生 fallback。",
@@ -460,7 +554,9 @@
       ],
       "fact_source_ids": [
         "src-anthropic-fable5",
-        "src-anthropic-system-cards"
+        "src-anthropic-system-cards",
+        "src-anthropic-models-overview",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -528,9 +624,26 @@
       ],
       "architecture": null,
       "context_note": "目录记录 1M context；不同 API/hosted surface 的输出上限需单独核验。",
-      "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "parameter_note": "官方未披露实际权重数；下方第三方估计是经拒答校正的 IKP-effective 知识容量，不是 total / active 参数。",
+      "parameter_estimates": [
+        {
+          "kind": "ikp_effective",
+          "label": "IKP-effective knowledge capacity",
+          "point_b": 972,
+          "range_b": [
+            282,
+            3400
+          ],
+          "interval": "90%",
+          "basis": "sol-imputed",
+          "confidence": "method-dependent",
+          "source_id": "src-eigenigma-ikp-frontier-2026-07-31",
+          "as_of": "2026-07-31",
+          "note": "第三方黑盒容量估计；作者用 GPT-5.6 Sol 对拒答样本做 imputation。区间尚未计入 imputation 的额外不确定性，不能当作实际权重数。"
+        }
+      ],
+      "knowledge_cutoff": "2026-01",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "adaptive thinking 是运行模式，不是新的权重 release。",
@@ -538,7 +651,9 @@
       ],
       "fact_source_ids": [
         "src-anthropic-sonnet5",
-        "src-anthropic-system-cards"
+        "src-anthropic-system-cards",
+        "src-anthropic-models-overview",
+        "src-eigenigma-ikp-frontier-2026-07-31"
       ],
       "last_checked": "2026-08-27"
     },
@@ -674,9 +789,20 @@
       "reasoning_modes": [
         "thinking"
       ],
-      "architecture": null,
-      "context_note": "该托管 endpoint 的 context 上限尚未从逐型号的一手 endpoint 文档核验。",
-      "parameter_note": "该托管 endpoint 的参数量未公开；不得从 Qwen3.8 2.4T A95B open-weight checkpoint 继承。",
+      "architecture": "Mixture-of-Experts（托管 endpoint 的高层官方描述）",
+      "context_note": "Qwen Cloud 逐型号规格记录 1,000,000-token hosted context。",
+      "parameter_note": "官方托管规格披露 2.4T 总参数；95B active 只在底座 Qwen3.8-2.4T-A95B checkpoint 上直接披露，因此不写入 Max 的 canonical active 字段。",
+      "parameter_evidence": [
+        {
+          "kind": "base_checkpoint",
+          "label": "Qwen3.8-2.4T-A95B base checkpoint",
+          "total_b": 2400,
+          "active_b": 95,
+          "source_id": "src-qwen38-24t-hf",
+          "confidence": "vendor-published lineage",
+          "note": "托管 Max 明确基于 2.4T MoE；95B active 是底座 checkpoint 的数值，不代表对 hosted Max 的独立测量。"
+        }
+      ],
       "knowledge_cutoff": null,
       "max_output_tokens": null,
       "license": null,
@@ -686,7 +812,9 @@
       ],
       "fact_source_ids": [
         "src-qwen38-repo",
-        "src-qwen38-flash"
+        "src-qwen38-flash",
+        "src-qwen38-max-spec",
+        "src-qwen38-24t-hf"
       ],
       "last_checked": "2026-08-28"
     },
@@ -714,23 +842,24 @@
       "reasoning_modes": [
         "thinking"
       ],
-      "architecture": "MoE + deterministic n-gram memory",
-      "context_note": "262K native；官方资料描述可通过 YaRN 扩展到约 1M。",
-      "parameter_note": "125B main / 6B active；另有 51B n-gram memory，不计入 active。",
+      "architecture": "Hybrid Gated DeltaNet + Qwen Sparse Attention + n-gram embeddings + MoE",
+      "context_note": "262,144 native；官方 model card 描述通过指定 scaling configuration 扩展到约 1.01M。",
+      "parameter_note": "125B main / 6B active；另有 51B n-gram embeddings 与 4B MTP 组件，不能混入 6B per-token active。",
       "knowledge_cutoff": null,
       "max_output_tokens": null,
-      "license": null,
+      "license": "qwen-community-1.0",
       "caveats": [
         "n-gram memory 是额外组件，不应加进模型 active 参数。",
         "Flash-Next checkpoint 与 hosted qwen3.8-flash 的 serving 版本需分开记录。"
       ],
       "fact_source_ids": [
         "src-qwen38-flash",
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-flash-hf"
       ],
       "last_checked": "2026-08-27"
     },
-    "qwen/qwen3.8-27b@2026-08-26": {
+    "qwen/qwen3.8-27b@2026-08-14": {
       "positioning": "Qwen3.8 27B dense open-weight 模型，作为小模型/效率对照。",
       "capabilities": [
         "推理",
@@ -751,18 +880,19 @@
       "reasoning_modes": [
         "thinking"
       ],
-      "architecture": "dense",
-      "context_note": "原生 context 262K；部署端可用长度取决于显存与推理框架。",
+      "architecture": "Dense Transformer",
+      "context_note": "原生 context 262,144；官方 model card 描述可通过指定 scaling configuration 扩展到约 1.01M。",
       "parameter_note": "27B total / 27B active。",
       "knowledge_cutoff": null,
       "max_output_tokens": null,
-      "license": null,
+      "license": "Apache-2.0",
       "caveats": [
         "本地量化、推理框架和 batch size 会改变吞吐，不改变基础参数量。"
       ],
       "fact_source_ids": [
         "src-qwen38-27b",
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-27b-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -900,12 +1030,12 @@
       "reasoning_modes": [
         "thinking"
       ],
-      "architecture": "MoE",
+      "architecture": "Mixture-of-Experts, 480B total / 35B active",
       "context_note": "原生 256K（262,144 tokens）；模型卡给出可扩展至 1M 的配置，扩展方法与实际服务限制必须随 run 记录。",
       "parameter_note": "480B total / 35B active。",
       "knowledge_cutoff": null,
       "max_output_tokens": null,
-      "license": null,
+      "license": "Apache-2.0",
       "caveats": [
         "专用 coding 模型与通用 Qwen release 不应仅按名称比较。",
         "1M 是扩展配置而非原生 context；SWE/Terminal 类成绩必须保留 harness、工具和预算。"
@@ -1165,15 +1295,28 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": null,
-      "context_note": "Kimi Code 文档列出 coding endpoint；context/配额需按当前配置复核。",
-      "parameter_note": "参数量未公开。",
+      "architecture": "K2-family coding serving tier；精确 K2.7 物理架构未单独披露",
+      "context_note": "Kimi Code 官方表格记录 256,000-token context。",
+      "parameter_note": "K2.7 endpoint 未单独披露参数；Kimi K2 底座的 1.04T total / 32B active 仅作 lineage 参考。",
+      "parameter_evidence": [
+        {
+          "kind": "base_lineage",
+          "label": "Kimi K2 base lineage",
+          "total_b": 1040,
+          "active_b": 32,
+          "source_id": "src-kimi-k2-hf",
+          "confidence": "lineage only",
+          "note": "K2.7 是后续 coding derivative；底座参数不得写入 K2.7 endpoint 的 canonical fields。"
+        }
+      ],
       "license": null,
       "caveats": [
-        "这是 coding serving tier；SWE/Terminal 分数不能冒充裸 K2.7 模型分数。"
+        "这是 coding serving tier；SWE/Terminal 分数不能冒充裸 K2.7 模型分数。",
+        "官方文档说明 non-thinking 请求可能路由到 K2.6；run 必须记录 thinking mode 与 resolved model。"
       ],
       "fact_source_ids": [
-        "src-kimi-code"
+        "src-kimi-code",
+        "src-kimi-k2-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -1200,15 +1343,27 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": "同 Kimi K2.7 Code serving family",
-      "context_note": "速度 variant 的 context/配额需按 Kimi Code 配置页复核。",
-      "parameter_note": "参数量未公开。",
+      "architecture": "K2.7 Code 的 serving-speed variant；未披露独立权重变化",
+      "context_note": "Kimi Code 官方表格记录 256,000-token context。",
+      "parameter_note": "参数量未单独披露；K2 底座数据仅作 lineage 参考。",
+      "parameter_evidence": [
+        {
+          "kind": "base_lineage",
+          "label": "Kimi K2 base lineage",
+          "total_b": 1040,
+          "active_b": 32,
+          "source_id": "src-kimi-k2-hf",
+          "confidence": "lineage only",
+          "note": "Highspeed 是 serving variant；不把底座参数冒充为独立实测值。"
+        }
+      ],
       "license": null,
       "caveats": [
         "Highspeed 是 serving variant，不应新增或复用独立权重分数。"
       ],
       "fact_source_ids": [
-        "src-kimi-code"
+        "src-kimi-code",
+        "src-kimi-k2-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -1269,9 +1424,21 @@
       "reasoning_modes": [
         "max"
       ],
-      "architecture": null,
-      "context_note": "公开 blog 尚未给出可稳定复用的 context 数值。",
-      "parameter_note": "参数量未公开；weights release timing 需按官方公告更新。",
+      "architecture": "与 GLM-5.2 相同的 base architecture；本次为 post-training update",
+      "context_note": "官方 GLM-5.3 blog 记录 1,000,000-token preview context。",
+      "parameter_note": "GLM-5.3 未单独发布权重计数；GLM-5.2 的约 753B total / 40B active 仅作 base-lineage 参考。",
+      "parameter_evidence": [
+        {
+          "kind": "base_lineage",
+          "label": "GLM-5.2 base lineage",
+          "total_b": 753,
+          "active_b": 40,
+          "approximate": true,
+          "source_id": "src-glm53",
+          "confidence": "vendor-described lineage",
+          "note": "官方仅说明 GLM-5.3 沿用 GLM-5.2 底座并通过 post-training 提升；不写入 GLM-5.3 canonical 参数。"
+        }
+      ],
       "license": null,
       "caveats": [
         "预览服务与后续 weights release 可能不是同一 snapshot。",
@@ -1303,15 +1470,16 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": null,
-      "context_note": "当前公开 blog 未统一核验 context。",
-      "parameter_note": "参数量未公开。",
-      "license": null,
+      "architecture": "Native multimodal MoE；hybrid sparse/linear attention + mHC",
+      "context_note": "官方规格记录 1,000,000-token context。",
+      "parameter_note": "官方 exact-model 规格披露 320B total / 18B active per token。",
+      "license": "MIT",
       "caveats": [
         "Flash 速度/成本 tier 与 GLM-5.3 主模型不应直接合并排名。"
       ],
       "fact_source_ids": [
-        "src-glm53-flash"
+        "src-glm53-flash",
+        "src-glm53-flash-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -1444,16 +1612,17 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": "MiniMax Sparse Attention (MSA)",
+      "architecture": "Native multimodal MoE + MiniMax Sparse Attention (MSA)",
       "context_note": "官方模型页记录最多 1M、保证至少 512K context。",
-      "parameter_note": "参数量未公开。",
-      "license": null,
+      "parameter_note": "官方 model card 披露约 428B total / 23B active；目录以 approximate 标记，不显示为精确计数。",
+      "license": "minimax-community",
       "caveats": [
         "长视频/agent 结果依赖工具、上下文截断策略和 serving 配置。"
       ],
       "fact_source_ids": [
         "src-minimax-m3",
-        "src-minimax-release"
+        "src-minimax-release",
+        "src-minimax-m3-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -1584,10 +1753,10 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": "MoE",
+      "architecture": "Mixture-of-Experts, 1T total / 42B active",
       "context_note": "官方 MiMo model docs 记录 1M context。",
       "parameter_note": "1T total / 42B active。",
-      "license": null,
+      "license": "MIT",
       "caveats": [
         "Pro 与 UltraSpeed 是同 release 的不同 serving/deployment 条件。",
         "Agent 成绩需记录是否使用 OpenClaw/工具集成。"
@@ -1622,16 +1791,17 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": null,
+      "architecture": "Mixture-of-Experts",
       "context_note": "官方 MiMo model docs 记录 1M context。",
-      "parameter_note": "参数量未公开。",
-      "license": null,
+      "parameter_note": "官方 checkpoint model card 披露 309B semantic total / 15B active；tensor count 约 311B，二者口径分开。",
+      "license": "MIT",
       "caveats": [
         "不同输入模态的 API 处理、采样和费用不同；benchmark 必须标注 modality。"
       ],
       "fact_source_ids": [
         "src-mimo-models",
-        "src-mimo-updates"
+        "src-mimo-updates",
+        "src-mimo-v25-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -1697,15 +1867,17 @@
       "reasoning_modes": [
         "thinking"
       ],
-      "architecture": null,
-      "context_note": "本目录未从当前 model card 统一核验 context。",
+      "architecture": "Native multimodal model based on Gemini 3 Pro（官方高层描述）",
+      "context_note": "官方 preview endpoint 规格记录 1,048,576 input tokens。",
       "parameter_note": "参数量未公开。",
+      "max_output_tokens": 65536,
       "license": null,
       "caveats": [
         "Preview alias 与稳定 endpoint 可能路由不同；保留 source snapshot 和日期。"
       ],
       "fact_source_ids": [
-        "google-gemini31"
+        "google-gemini31",
+        "src-google-gemini31-spec"
       ],
       "last_checked": "2026-08-27"
     },
@@ -2113,8 +2285,10 @@
         "reasoning"
       ],
       "architecture": null,
-      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
-      "parameter_note": "参数量未在本目录统一核验。",
+      "context_note": "OpenAI endpoint 规格记录 400,000-token context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": "2025-08-31",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": [
         "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
@@ -2122,6 +2296,7 @@
       ],
       "fact_source_ids": [
         "src-openai-models",
+        "src-openai-gpt53-codex-spec",
         "src-epoch-benchmark-hub"
       ],
       "last_checked": "2026-08-27"
@@ -2268,8 +2443,8 @@
       ],
       "last_checked": "2026-08-27"
     },
-    "qwen/qwen3.8-2.4t-a95b@2026-08-26": {
-      "positioning": "Qwen3.8 2.4T A95B：公开榜单中有可追溯的 release/endpoint 记录。",
+    "qwen/qwen3.8-2.4t-a95b@2026-08-12": {
+      "positioning": "Qwen3.8 的公开权重 2.4T MoE checkpoint；95B parameters active per token。",
       "capabilities": [
         "推理"
       ],
@@ -2287,16 +2462,17 @@
       "reasoning_modes": [
         "reasoning"
       ],
-      "architecture": null,
-      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
-      "parameter_note": "参数量未在本目录统一核验。",
-      "license": null,
+      "architecture": "Mixture-of-Experts",
+      "context_note": "官方 model card 记录 262,144 native context；扩展部署配置需单独标注。",
+      "parameter_note": "官方 checkpoint 名称与 model card 直接披露 2.4T total / 95B active。",
+      "license": "qwen3.8-max custom license",
       "caveats": [
         "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
         "跨来源比较前请检查 benchmark version、harness 和 subject type。"
       ],
       "fact_source_ids": [
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-24t-hf"
       ],
       "last_checked": "2026-08-27"
     },
@@ -3072,13 +3248,13 @@
       "availability": ["api"],
       "reasoning_modes": ["pro"],
       "architecture": null,
-      "context_note": "该 Pro snapshot 的稳定 context 上限未从当前官方目录单独核验。",
+      "context_note": "OpenAI endpoint 规格记录 1,050,000-token context。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "knowledge_cutoff": "2025-08-31",
+      "max_output_tokens": 128000,
       "license": null,
       "caveats": ["Pro 是独立高计算 endpoint；不得把基础 GPT-5.4 的 protocol 或分数直接代入。", "Epoch 的 none/unknown/xhigh/web-app 拼写保留为 source protocol，不是四个 release。"],
-      "fact_source_ids": ["src-openai-models"],
+      "fact_source_ids": ["src-openai-models", "src-openai-gpt54-pro-spec"],
       "last_checked": "2026-08-28"
     },
     "openai/gpt-5.4-nano@2026-03-17": {
@@ -3091,11 +3267,11 @@
       "architecture": null,
       "context_note": "官方目录记录 400K context。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
+      "knowledge_cutoff": "2025-08-31",
       "max_output_tokens": 128000,
       "license": null,
       "caveats": ["128K 是 max output，不应与 400K input context 相加后当作单一窗口。", "LiveBench/Arena/Epoch 的 effort 后缀属于 run protocol。"],
-      "fact_source_ids": ["src-openai-models"],
+      "fact_source_ids": ["src-openai-models", "src-openai-gpt54-nano-spec"],
       "last_checked": "2026-08-28"
     },
     "openai/gpt-5-mini@2025-08-07": {
@@ -3208,13 +3384,13 @@
       "availability": ["api", "hosted"],
       "reasoning_modes": [],
       "architecture": null,
-      "context_note": "官方 catalog 条目存在，但本轮未确认 context 数值。",
+      "context_note": "官方 endpoint 规格记录 1,048,576 input tokens。",
       "parameter_note": "参数量未公开。",
       "knowledge_cutoff": null,
-      "max_output_tokens": null,
+      "max_output_tokens": 65536,
       "license": null,
       "caveats": ["latest 表示 catalog 生命周期，不授权映射 floating latest alias。", "high/medium/minimal 等后缀属于来源 protocol。"],
-      "fact_source_ids": ["src-google-gemini-models"],
+      "fact_source_ids": ["src-google-gemini-models", "src-google-gemini37-spec"],
       "last_checked": "2026-08-28"
     },
     "google/gemini-3.6-flash@current": {
@@ -3275,14 +3451,14 @@
       "endpoint_ids": ["grok-4.6"],
       "availability": ["api", "hosted"],
       "reasoning_modes": [],
-      "architecture": null,
-      "context_note": "当前来源未公开可登记的 context 数值。",
+      "architecture": "Native text-and-image input, text output（capability-level disclosure）",
+      "context_note": "xAI API 规格记录 500,000-token context。",
       "parameter_note": "参数量未公开。",
-      "knowledge_cutoff": null,
+      "knowledge_cutoff": "2026-01",
       "max_output_tokens": null,
       "license": null,
       "caveats": ["xhigh/high/medium/low 后缀是 source protocol，不是独立 release。", "带检索或工具的 system 结果必须保留 harness。"],
-      "fact_source_ids": ["src-xai-grok46"],
+      "fact_source_ids": ["src-xai-grok46", "src-xai-grok46-spec"],
       "last_checked": "2026-08-28"
     },
     "xai/grok-4.5@2026-07-16": {

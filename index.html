@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=20260828-ui1" />
+    <link rel="stylesheet" href="styles.css?v=20260828-ui2" />
   </head>
   <body>
     <div class="app-shell">
@@ -153,8 +153,28 @@
           <p id="presetHint" class="preset-hint" hidden></p>
           <p id="coverageNote" class="coverage-note" aria-live="polite"></p>
 
-          <div id="matrixView" class="matrix-frame">
-            <div class="matrix-scroll">
+          <div id="matrixTools" class="matrix-tools" aria-label="矩阵显示与导航">
+            <div class="matrix-tools-copy">
+              <span class="matrix-tools-kicker">MATRIX NAVIGATION</span>
+              <span id="matrixNavigationStatus">热门与高覆盖 benchmark 优先</span>
+            </div>
+            <div class="matrix-tools-actions">
+              <div class="density-switcher" role="group" aria-label="矩阵显示密度">
+                <button class="density-button active" type="button" data-matrix-density="compact" aria-pressed="true">紧凑</button>
+                <button class="density-button" type="button" data-matrix-density="standard" aria-pressed="false">标准</button>
+              </div>
+              <label class="matrix-jump-wrap">
+                <span class="sr-only">快速定位 benchmark</span>
+                <select id="benchmarkJump" aria-label="快速定位 benchmark">
+                  <option value="">定位 benchmark…</option>
+                </select>
+              </label>
+              <button id="matrixHome" class="matrix-home-button" type="button" title="滚动到模型列">回到模型列</button>
+            </div>
+          </div>
+
+          <div id="matrixView" class="matrix-frame" data-density="compact">
+            <div id="matrixScroll" class="matrix-scroll" tabindex="0" aria-label="可横向滚动的模型 benchmark 矩阵">
               <table class="matrix-table" aria-describedby="matrixCaption">
                 <caption id="matrixCaption" class="sr-only">模型与 benchmark 成绩矩阵。点击模型或成绩查看详情。</caption>
                 <thead id="matrixHead"></thead>
@@ -206,14 +226,18 @@
           </div>
           <section id="publicEvidenceSection" class="public-evidence-section" hidden aria-labelledby="publicEvidenceTitle">
             <div class="public-evidence-heading">
-              <div>
-                <h3 id="publicEvidenceTitle">公开披露索引</h3>
-                <p>这里按来源索引已映射的公开报告（首屏展示代表性 60 条，完整 evidence JSONL 可下载）。它们会帮助填满信息地图，但每一行都明确标记“本站未复现”；点击可展开来源、定位、协议与快照。身份徽标区分 exact / curated / heuristic alias，只表示归一化路径，不表示复现等级。无法安全映射的来源原名不会被猜成另一个模型，而会保留在 aliases 队列。</p>
-              </div>
-              <span class="public-evidence-actions"><span id="publicEvidenceCount" class="section-note"></span><a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">已映射 evidence JSONL ↗</a><a href="data/public/unmapped-summary.json" target="_blank" rel="noreferrer">待归一化 aliases ↗</a><a href="data/public/alternatives.jsonl" target="_blank" rel="noreferrer">其它映射 ↗</a></span>
+              <button id="publicEvidenceToggle" class="public-evidence-toggle" type="button" aria-expanded="false" aria-controls="publicEvidenceBody">
+                <span class="public-evidence-toggle-icon" aria-hidden="true">＋</span>
+                <span><span id="publicEvidenceTitle" class="public-evidence-title-label">数据来源与证据</span><span id="publicEvidenceCount" class="section-note"></span></span>
+                <span class="public-evidence-toggle-label">展开审计详情</span>
+              </button>
+              <span class="public-evidence-actions" aria-label="证据数据下载"><a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">evidence JSONL ↗</a><a href="data/public/unmapped-summary.json" target="_blank" rel="noreferrer">aliases ↗</a><a href="data/public/alternatives.jsonl" target="_blank" rel="noreferrer">其它映射 ↗</a></span>
             </div>
-            <div id="publicEvidenceList" class="public-evidence-list"></div>
-            <div id="publicAliasLedger" class="public-alias-ledger" hidden></div>
+            <div id="publicEvidenceBody" class="public-evidence-body" hidden>
+              <p class="public-evidence-intro">这里按来源索引代表性公开报告；每条均明确标记“本站未复现”，并保留来源、定位、协议与快照。身份徽标只表示归一化路径，不表示复现等级；无法安全映射的来源原名保留在 aliases 队列。</p>
+              <div id="publicEvidenceList" class="public-evidence-list"></div>
+              <div id="publicAliasLedger" class="public-alias-ledger" hidden></div>
+            </div>
           </section>
         </section>
 
@@ -262,6 +286,6 @@
     </aside>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=20260828-public16" defer></script>
+    <script src="app.js?v=20260828-public17" defer></script>
   </body>
 </html>

@@ -24,6 +24,9 @@
     sort: "coverage",
     availableOnly: false,
     showCatalog: false,
+    matrixDensity: "compact",
+    matrixBenchmarkJump: "",
+    publicEvidenceExpanded: false,
     runPage: 0,
     selected: null,
   };
@@ -40,9 +43,10 @@
     harnessFilterWrap: $("harnessFilterWrap"), runBenchmarkFilterWrap: $("runBenchmarkFilterWrap"),
     searchInput: $("searchInput"), availableOnly: $("availableOnly"), showCatalog: $("showCatalog"),
     activeFilters: $("activeFilters"), presetHint: $("presetHint"), coverageNote: $("coverageNote"),
-    matrixHead: $("matrixHead"), matrixBody: $("matrixBody"), matrixView: $("matrixView"), cardsView: $("cardsView"),
+    matrixHead: $("matrixHead"), matrixBody: $("matrixBody"), matrixView: $("matrixView"), matrixScroll: $("matrixScroll"), cardsView: $("cardsView"),
+    matrixTools: $("matrixTools"), matrixNavigationStatus: $("matrixNavigationStatus"), benchmarkJump: $("benchmarkJump"), matrixHome: $("matrixHome"),
     emptyState: $("emptyState"), spotlightGrid: $("spotlightGrid"), spotlightSection: $("spotlightSection"),
-    atlasLegend: $("atlasLegend"), publicEvidenceSection: $("publicEvidenceSection"), publicEvidenceCount: $("publicEvidenceCount"), publicEvidenceList: $("publicEvidenceList"), publicAliasLedger: $("publicAliasLedger"),
+    atlasLegend: $("atlasLegend"), publicEvidenceSection: $("publicEvidenceSection"), publicEvidenceToggle: $("publicEvidenceToggle"), publicEvidenceBody: $("publicEvidenceBody"), publicEvidenceCount: $("publicEvidenceCount"), publicEvidenceList: $("publicEvidenceList"), publicAliasLedger: $("publicAliasLedger"),
     runsView: $("runsView"), runTableFrame: $("runTableFrame"),
     runTableHead: $("runTableHead"), runTableBody: $("runTableBody"), runCardsView: $("runCardsView"),
     runEmptyState: $("runEmptyState"), runCountLabel: $("runCountLabel"),
@@ -635,6 +639,9 @@
       version: first(item?.benchmarkVersionId, item?.benchmarkVersion, item?.benchmark_version),
       evaluationMode: subjectType.toLowerCase() === "system" ? "system" : "direct",
       publicOnly: true,
+      // Dynamically observed source slices must not masquerade as curator-pinned
+      // columns even if a future source row happens to carry UI-like metadata.
+      displayPriority: null,
       sourceId: item?.sourceId,
       description: `来自公开榜单或模型卡的切片；本站未独立复现。${aleNote ? ` ${aleNote}` : ""}`,
     });
@@ -660,6 +667,7 @@
     "pass@1": "Pass@1", pass_rate: "Pass rate", "pass-rate": "Pass rate", pass: "Pass",
     pass_k: "Pass^k", "pass-k": "Pass^k", elo: "Elo", arena_rating: "Arena rating",
     "arena-rating": "Arena rating", ips: "IPS", success: "Success", performance: "Performance",
+    arena_score_bt: "Arena Score (Bradley–Terry)", "arena-score-bt": "Arena Score (Bradley–Terry)",
     rank: "Rank", em: "Exact match", f1: "F1", "cot-correct": "CoT correct",
   };
   function publicMetricKey(value) {
@@ -676,6 +684,13 @@
     const table = item?.protocol && typeof item.protocol === "object" ? text(item.protocol.table, "") : "";
     const tableKey = publicMetricKey(table);
     const sourceKey = publicMetricKey(sourceMetric);
+    // Older snapshots from Arena's own HF dataset called the numeric field
+    // `elo` even though the published methodology is Bradley–Terry. Preserve
+    // that raw source spelling on the evidence row, but map it to the current
+    // catalog metric so the headline column is not duplicated or left empty.
+    if (sourceId === "lmarena-hf-dataset" && sourceKey === "elo") {
+      return { sourceMetric, metricId: "arena_score_bt", label: "Arena Score (Bradley–Terry)" };
+    }
     // Existing HELM snapshots call both Accuracy/Mean score and
     // Efficiency/Mean score simply `score`. Preserve that source metric, but
     // give the non-Accuracy display slice a stable table-qualified identity.
@@ -763,6 +778,9 @@
             direction: publicMetricDirection(rawMetric, base, item),
             publicOnly: true,
             publicMetricSlice: true,
+            // Do not inherit the base benchmark's curated position. Secondary
+            // metrics stay inspectable but follow canonical/base columns.
+            displayPriority: null,
             baseBenchmarkId: base.id,
             description: `公开 ${rawMetric} 指标切片；本站未独立复现。`,
           });
@@ -1121,11 +1139,38 @@
     return true;
   }
   function filteredBenchmarks() {
-    return (state.data?.benchmarks || []).filter((benchmark) => {
+    const filtered = (state.data?.benchmarks || []).filter((benchmark) => {
       if (!presetAllowsBenchmark(benchmark)) return false;
       if (state.mode === "runs" && state.runBenchmark !== "all" && benchmark.id !== state.runBenchmark) return false;
       return true;
     });
+    if (state.mode !== "atlas") return filtered;
+
+    // Matrix order is a reading aid, not a ranking of benchmark quality. A
+    // curator can pin the intended left-to-right order with displayPriority
+    // (smaller first). Otherwise put featured and empirically populated
+    // columns first, then retain canonical source order as the stable tie-break.
+    const models = allModels();
+    const directCoverage = new Map(filtered.map((benchmark) => {
+      const count = models.reduce((sum, model) => {
+        const entry = model?.scores?.[benchmark.id];
+        const value = entry && typeof entry === "object" ? first(entry.value, entry.score, entry.result) : entry;
+        return sum + (value !== null && value !== undefined && value !== "" ? 1 : 0);
+      }, 0);
+      return [benchmark.id, count];
+    }));
+    return filtered.map((benchmark, sourceOrder) => ({ benchmark, sourceOrder })).sort((left, right) => {
+      const leftPriority = Number(first(left.benchmark.displayPriority, left.benchmark.display_priority));
+      const rightPriority = Number(first(right.benchmark.displayPriority, right.benchmark.display_priority));
+      const leftPinned = Number.isFinite(leftPriority);
+      const rightPinned = Number.isFinite(rightPriority);
+      if (leftPinned !== rightPinned) return leftPinned ? -1 : 1;
+      if (leftPinned && leftPriority !== rightPriority) return leftPriority - rightPriority;
+      if (Boolean(left.benchmark.publicMetricSlice) !== Boolean(right.benchmark.publicMetricSlice)) return left.benchmark.publicMetricSlice ? 1 : -1;
+      if (Boolean(left.benchmark.featured) !== Boolean(right.benchmark.featured)) return left.benchmark.featured ? -1 : 1;
+      const coverageDifference = (directCoverage.get(right.benchmark.id) || 0) - (directCoverage.get(left.benchmark.id) || 0);
+      return coverageDifference || left.sourceOrder - right.sourceOrder;
+    }).map(({ benchmark }) => benchmark);
   }
   function searchableModel(model) {
     return [model.name, model.id, model.provider, model.summary, model.release, model.endpoint, model.paramsTotal, model.paramsActive, ...(model.tags || []), ...(model.aliases || [])].filter(Boolean).join(" ").toLowerCase();
@@ -1437,10 +1482,46 @@
     if (els.footerStatus) els.footerStatus.textContent = isDemo ? "Seed data: replace or verify before citing." : `${state.data?.runs?.length || 0} system runs · public reports are marked not reproduced.`;
   }
 
+  function syncMatrixDensity() {
+    const density = state.matrixDensity === "standard" ? "standard" : "compact";
+    state.matrixDensity = density;
+    if (els.matrixView) els.matrixView.dataset.density = density;
+    document.querySelectorAll("[data-matrix-density]").forEach((button) => {
+      const active = button.dataset.matrixDensity === density;
+      button.classList.toggle("active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function renderMatrixNavigation(benchmarks) {
+    syncMatrixDensity();
+    if (els.matrixNavigationStatus) {
+      const pinned = benchmarks.filter((benchmark) => Number.isFinite(Number(first(benchmark.displayPriority, benchmark.display_priority)))).length;
+      els.matrixNavigationStatus.textContent = `${fmt(benchmarks.length, 0)} 个 benchmark · ${pinned ? `${fmt(pinned, 0)} 个策展置顶，其余` : ""}热门与高覆盖优先`;
+    }
+    if (!els.benchmarkJump) return;
+    const current = benchmarks.some((benchmark) => benchmark.id === state.matrixBenchmarkJump) ? state.matrixBenchmarkJump : "";
+    els.benchmarkJump.innerHTML = '<option value="">定位 benchmark…</option>' + benchmarks.map((benchmark, index) => `<option value="${esc(benchmark.id)}">${fmt(index + 1, 0)} · ${esc(benchmark.short || benchmark.name)}</option>`).join("");
+    els.benchmarkJump.value = current;
+  }
+
+  function scrollMatrixToBenchmark(benchmarkId) {
+    if (!benchmarkId || !els.matrixScroll || !els.matrixHead?.querySelectorAll) return;
+    const headers = [...els.matrixHead.querySelectorAll("[data-benchmark-col]")];
+    const target = headers.find((header) => header.dataset.benchmarkCol === benchmarkId);
+    if (!target) return;
+    const stickyWidth = els.matrixBody?.querySelector?.(".model-cell")?.offsetWidth || 0;
+    const left = Math.max(0, Number(target.offsetLeft || 0) - stickyWidth - 12);
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    if (typeof els.matrixScroll.scrollTo === "function") els.matrixScroll.scrollTo({ left, behavior: reducedMotion ? "auto" : "smooth" });
+    else els.matrixScroll.scrollLeft = left;
+  }
+
   function renderMatrix() {
     const benchmarks = filteredBenchmarks();
     const models = filteredModels();
-    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}${benchmark.publicOnly || benchmark.publicReported ? " · public" : ""}</small></span></th>`).join("")}</tr>`;
+    renderMatrixNavigation(benchmarks);
+    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col" data-benchmark-col="${esc(benchmark.id)}"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}${benchmark.publicOnly || benchmark.publicReported ? " · public" : ""}</small></span></th>`).join("")}</tr>`;
     if (els.matrixBody) els.matrixBody.innerHTML = models.map((model) => {
       const cells = benchmarks.map((benchmark) => {
         const entry = scoreEntry(model, benchmark.id);
@@ -1473,16 +1554,34 @@
       return [item.modelName, item.modelRef, item.canonicalModelId, item.benchmarkName, item.benchmarkId,
         item.metricId, item.sourceLabel, item.sourceId, item.harness, item.harnessId, display(item.protocol)].filter(Boolean).join(" ").toLowerCase().includes(query);
     });
-    const visible = filtered.slice(0, 60);
     els.publicEvidenceSection.hidden = state.mode !== "atlas" || records.length === 0;
+    els.publicEvidenceSection.classList.toggle("expanded", state.publicEvidenceExpanded);
+    if (els.publicEvidenceToggle) {
+      els.publicEvidenceToggle.setAttribute("aria-expanded", String(state.publicEvidenceExpanded));
+      const icon = els.publicEvidenceToggle.querySelector?.(".public-evidence-toggle-icon");
+      const label = els.publicEvidenceToggle.querySelector?.(".public-evidence-toggle-label");
+      if (icon) icon.textContent = state.publicEvidenceExpanded ? "−" : "＋";
+      if (label) label.textContent = state.publicEvidenceExpanded ? "收起审计详情" : "展开审计详情";
+    }
+    if (els.publicEvidenceBody) els.publicEvidenceBody.hidden = !state.publicEvidenceExpanded;
     if (els.publicEvidenceCount) {
       const stats = state.data?.publicStats || {};
-      const total = stats.deduplicatedRows || records.length;
+      const mapped = stats.rows || records.length;
       const unmapped = stats.unmappedRows || 0;
-      const excluded = records.filter((item) => item.matrixExcluded).length;
       const mappedCells = stats.mappedCells || 0;
-      els.publicEvidenceCount.textContent = `${visible.length}${filtered.length > visible.length ? ` / ${filtered.length}` : ""} 条已映射披露 · ${fmt(mappedCells, 0)} 个矩阵单元 · 原始 ${fmt(total, 0)} 条 · 待归一化 ${fmt(unmapped, 0)}${excluded ? ` · telemetry ${fmt(excluded, 0)}` : ""}`;
+      const sources = stats.sources || Object.keys(stats.sourceCounts || {}).length;
+      const filterPrefix = query ? `${fmt(filtered.length, 0)} / ` : "";
+      els.publicEvidenceCount.textContent = `${filterPrefix}${fmt(mapped, 0)} 条披露 · ${fmt(sources, 0)} 个来源 · ${fmt(mappedCells, 0)} 个单元 · ${fmt(unmapped, 0)} 条待归一化`;
     }
+    // The evidence ledger is an audit surface, not primary page content. Keep
+    // the collapsed state truly light by releasing its representative rows
+    // and alias cards instead of merely hiding a large pre-rendered DOM.
+    if (!state.publicEvidenceExpanded) {
+      els.publicEvidenceList.innerHTML = "";
+      if (els.publicAliasLedger) { els.publicAliasLedger.innerHTML = ""; els.publicAliasLedger.hidden = true; }
+      return;
+    }
+    const visible = filtered.slice(0, 60);
     els.publicEvidenceList.innerHTML = visible.map((item) => {
       const source = sourceFor(first(item.sourceId, item.sourceUrl));
       const status = evidenceStatus(item, "reported");
@@ -1671,6 +1770,7 @@
     if (els.matrixSubtitle) els.matrixSubtitle.textContent = atlas ? "静态能力按 model 展示；点击单元格查看版本、设置与来源。不同 benchmark 不合成总分。" : "一行代表一次 model × harness × protocol 运行；只在相同口径下比较，不跨 harness 合并。";
     if (els.spotlightSection) els.spotlightSection.hidden = !atlas;
     if (els.atlasLegend) els.atlasLegend.hidden = !atlas;
+    if (els.matrixTools) els.matrixTools.hidden = !atlas || state.atlasView !== "matrix";
     if (els.matrixView) els.matrixView.hidden = !atlas || state.atlasView !== "matrix";
     if (els.cardsView) els.cardsView.hidden = !atlas || state.atlasView !== "cards";
     if (els.runsView) els.runsView.hidden = atlas;
@@ -1847,6 +1947,8 @@
   }
 
   function bind() {
+    const savedDensity = localStorage.getItem("fmb-matrix-density");
+    if (["compact", "standard"].includes(savedDensity)) state.matrixDensity = savedDensity;
     els.searchInput?.addEventListener("input", (event) => { state.search = event.target.value; state.runPage = 0; render(); });
     els.providerFilter?.addEventListener("change", (event) => { state.provider = event.target.value; state.runPage = 0; render(); });
     els.familyFilter?.addEventListener("change", (event) => { state.family = event.target.value; state.runPage = 0; render(); });
@@ -1870,6 +1972,25 @@
     document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => { state.mode = tab.dataset.mode; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.runPage = 0; render(); }));
     document.querySelectorAll(".view-tab[data-view]").forEach((tab) => tab.addEventListener("click", () => { state.atlasView = tab.dataset.view; render(); }));
     document.querySelectorAll(".view-tab[data-run-view]").forEach((tab) => tab.addEventListener("click", () => { state.runView = tab.dataset.runView; state.runPage = 0; render(); }));
+    document.querySelectorAll("[data-matrix-density]").forEach((button) => button.addEventListener("click", () => {
+      state.matrixDensity = button.dataset.matrixDensity === "standard" ? "standard" : "compact";
+      localStorage.setItem("fmb-matrix-density", state.matrixDensity);
+      syncMatrixDensity();
+    }));
+    els.benchmarkJump?.addEventListener("change", (event) => {
+      state.matrixBenchmarkJump = event.target.value;
+      scrollMatrixToBenchmark(state.matrixBenchmarkJump);
+    });
+    els.matrixHome?.addEventListener("click", () => {
+      state.matrixBenchmarkJump = "";
+      if (els.benchmarkJump) els.benchmarkJump.value = "";
+      if (typeof els.matrixScroll?.scrollTo === "function") els.matrixScroll.scrollTo({ left: 0, behavior: "smooth" });
+      else if (els.matrixScroll) els.matrixScroll.scrollLeft = 0;
+    });
+    els.publicEvidenceToggle?.addEventListener("click", () => {
+      state.publicEvidenceExpanded = !state.publicEvidenceExpanded;
+      renderPublicEvidence();
+    });
     document.addEventListener("click", (event) => {
       if (event.target.closest("a")) return;
       const pageTarget = event.target.closest("[data-run-page]");

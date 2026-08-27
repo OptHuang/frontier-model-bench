@@ -571,19 +571,42 @@ def _harness(row: Mapping[str, Any], protocol: Mapping[str, Any], metadata: Mapp
 
 
 def _public_metric_id(source_id: str, source_metric: str, protocol: Mapping[str, Any]) -> str:
-    """Upgrade legacy HELM table-wide score ids during artifact rebuilds."""
+    """Upgrade legacy source metric ids during deterministic artifact rebuilds."""
 
     if source_id.startswith("helm-") and source_metric == "score":
         table = _nonempty(protocol.get("table"))
         table_id = re.sub(r"[^a-z0-9]+", "-", str(table or "").casefold()).strip("-")
         if table_id and table_id != "accuracy":
             return f"{table_id}-score"
+    if source_id == "lmarena-hf-dataset" and source_metric == "elo":
+        # The official dataset column historically used ``elo`` even after
+        # the leaderboard moved to Bradley-Terry model scores.  Preserve that
+        # raw spelling in sourceMetricId, but do not present it as Elo.
+        return "arena_score_bt"
     return source_metric
+
+
+def _public_unit(source_id: str, source_metric: str, source_unit: Any) -> str:
+    if source_id == "lmarena-hf-dataset" and source_metric == "elo":
+        return "rating"
+    return _nonempty(source_unit) or "unknown"
 
 
 _SYSTEM_SUBJECT_TYPES = {"system", "agent", "agent-system", "agentic", "harness"}
 _SYSTEM_HARNESS_KIND_TOKENS = ("agent", "terminal", "computer-use", "tool-use")
 _MODEL_HARNESS_IDS = {"", "model-only", "lm-eval", "helm", "vendor-default", "unspecified-reported"}
+_CANONICAL_MODEL_ID_MIGRATIONS = {
+    # These catalog rows originally used ingestion dates in their IDs.  Keep
+    # old adapter artifacts rebuildable while exposing the official release
+    # date as the canonical identity.
+    "qwen/qwen3.8-27b@2026-08-26": "qwen/qwen3.8-27b@2026-08-14",
+    "qwen/qwen3.8-2.4t-a95b@2026-08-26": "qwen/qwen3.8-2.4t-a95b@2026-08-12",
+}
+
+
+def _canonical_model_id(value: Any) -> str | None:
+    model_id = _nonempty(value)
+    return _CANONICAL_MODEL_ID_MIGRATIONS.get(model_id, model_id)
 
 
 def _resolve_subject_type(
@@ -734,7 +757,7 @@ def normalize_candidate(
     )
     row_url = _metadata_url(metadata)
     status, review_status = _reported_status(candidate, metadata)
-    canonical_model_id = _nonempty(candidate.get("canonical_model_id"))
+    canonical_model_id = _canonical_model_id(candidate.get("canonical_model_id"))
     mapping_status = _nonempty(candidate.get("mapping_status")) or ("exact_alias" if canonical_model_id else "unmatched")
     retrieved_at = _nonempty(manifest.get("retrieved_at")) or _nonempty(candidate.get("retrieved_at"))
     payload_sha256 = _nonempty(manifest.get("payload_sha256"))
@@ -752,6 +775,11 @@ def normalize_candidate(
     mapping_candidates = candidate.get("mapping_candidates")
     if not isinstance(mapping_candidates, list):
         mapping_candidates = []
+    mapping_candidates = [
+        migrated
+        for item in mapping_candidates
+        if (migrated := _canonical_model_id(item)) is not None
+    ]
 
     row: dict[str, Any] = {
         # Stable public id is independent of refresh timestamp.  If a source
@@ -799,7 +827,7 @@ def normalize_candidate(
         ),
         "value": candidate.get("value") if _finite(candidate.get("value")) else None,
         "rawValue": candidate.get("raw_value"),
-        "unit": _nonempty(candidate.get("unit")) or "unknown",
+        "unit": _public_unit(source_id, source_metric_id, candidate.get("unit")),
         "rank": candidate.get("rank"),
         "status": status,
         "reviewStatus": review_status,

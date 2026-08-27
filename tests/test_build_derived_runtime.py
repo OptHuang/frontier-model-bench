@@ -8,7 +8,9 @@ from pathlib import Path
 
 from scripts.build_derived import (
     PUBLIC_UNMAPPED_EXAMPLE_FIELDS,
+    benchmark_for_site,
     derive_site_timestamps,
+    model_for_site,
     public_evidence_for_site,
     public_unmapped_model_for_site,
     write_compact_json,
@@ -18,6 +20,42 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DerivedRuntimePayloadTests(unittest.TestCase):
+    def test_model_projection_keeps_vendor_approximate_parameter_semantics(self) -> None:
+        projected = model_for_site(
+            {
+                "id": "acme/moe@2026",
+                "name": "Acme MoE",
+                "provider": "Acme",
+                "params_total": 428_000_000_000,
+                "params_active": 23_000_000_000,
+                "params_approximate": True,
+            },
+            {},
+            {},
+            {},
+            {},
+            {},
+        )
+        self.assertTrue(projected["paramsApproximate"])
+
+    def test_benchmark_projection_keeps_editorial_matrix_priority(self) -> None:
+        projected = benchmark_for_site(
+            {
+                "id": "popular-bench",
+                "name": "Popular Bench",
+                "category": "reasoning",
+                "display_priority": 10,
+                "versions": [{"id": "v1"}],
+                "default_version_id": "v1",
+                "metrics": [{"id": "accuracy", "label": "Accuracy", "direction": "higher", "unit": "percent"}],
+                "default_metric_id": "accuracy",
+                "source_ids": ["source-a"],
+            },
+            {"source-a": {"id": "source-a", "label": "Source A", "url": "https://example.org"}},
+            "2026-08-28",
+        )
+        self.assertEqual(projected["displayPriority"], 10)
+
     def test_public_evidence_projection_keeps_visible_provenance_and_semantics(self) -> None:
         row = {
             "id": "pub-1",

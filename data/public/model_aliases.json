@@ -554,7 +554,7 @@
       "note": "Same dated release; effort/context/search presentation is retained as protocol metadata."
     },
     {
-      "canonicalModelId": "qwen/qwen3.8-2.4t-a95b@2026-08-26",
+      "canonicalModelId": "qwen/qwen3.8-2.4t-a95b@2026-08-12",
       "sourceIds": [
         "hf-gpqa",
         "hf-hle",

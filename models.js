@@ -145,6 +145,7 @@
       contextWindow: first(source.contextWindow, source.context_window, source.context),
       paramsTotal: first(source.paramsTotal, source.params_total, source.totalParams, source.parameters),
       paramsActive: first(source.paramsActive, source.params_active, source.activeParams),
+      paramsApproximate: source.paramsApproximate === true || source.params_approximate === true,
       openWeights: source.openWeights === true || source.open_weights === true,
       variant,
       profile,
@@ -450,6 +451,65 @@
       : `<p class="model-profile-empty">${esc(empty)}</p>`;
   }
 
+  function parameterEstimates(model) {
+    return list(model?.profile?.parameter_estimates)
+      .filter((item) => item && typeof item === "object")
+      .map((item) => ({
+        ...item,
+        kind: text(item.kind, "estimate"),
+        label: text(item.label, "第三方参数分析"),
+        pointB: number(first(item.point_b, item.pointB)),
+        rangeB: list(first(item.range_b, item.rangeB)).map(number).filter((value) => value !== null),
+        interval: text(item.interval, "区间未注明"),
+        basis: text(item.basis, "方法未注明"),
+        confidence: text(item.confidence, "置信度未注明"),
+        sourceId: first(item.source_id, item.sourceId),
+        asOf: first(item.as_of, item.asOf),
+        note: text(item.note, "第三方估计，不等同于实际权重数。"),
+      }))
+      .filter((item) => item.pointB !== null && item.pointB > 0);
+  }
+
+  function preferredParameterEstimate(model) {
+    return parameterEstimates(model)[0] || null;
+  }
+
+  function parameterDisplay(model) {
+    const official = formatParams(model.paramsTotal, model.paramsActive);
+    if (official !== "未注明") return {
+      text: model.paramsApproximate ? `≈ ${official}` : official,
+      kind: model.paramsApproximate ? "official-approx" : "official",
+      title: model.paramsApproximate ? "vendor-disclosed approximate 参数" : "source-backed canonical 参数",
+    };
+    const estimate = preferredParameterEstimate(model);
+    if (!estimate) return { text: "官方未披露", kind: "missing", title: "暂无可展示的可靠参数估计" };
+    return {
+      text: `≈ ${formatParams(estimate.pointB * 1e9, null)} effective`,
+      kind: "estimate",
+      title: `${estimate.label}；第三方估计，不是实际权重数`,
+    };
+  }
+
+  function parameterEstimateSearchTerms(model) {
+    return parameterEstimates(model).flatMap((item) => [item.kind, item.label, item.pointB, ...item.rangeB, item.basis, item.confidence, item.note]);
+  }
+
+  function parameterEvidence(model) {
+    return list(model?.profile?.parameter_evidence)
+      .filter((item) => item && typeof item === "object")
+      .map((item) => ({
+        ...item,
+        kind: text(item.kind, "lineage"),
+        label: text(item.label, "参数来源说明"),
+        totalB: number(first(item.total_b, item.totalB)),
+        activeB: number(first(item.active_b, item.activeB)),
+        approximate: item.approximate === true,
+        sourceId: first(item.source_id, item.sourceId),
+        confidence: text(item.confidence, "scope-limited"),
+        note: text(item.note, "仅作来源范围说明，不进入 canonical 参数字段。"),
+      }));
+  }
+
   // This key is only for joining a displayed source spelling to an existing
   // catalog alias.  It never mutates canonical identity and intentionally
   // keeps release/variant tokens intact.
@@ -569,7 +629,7 @@
     const publicTerms = publicEntries(model).flatMap((item) => [item.benchmarkId, item.benchmarkName, item.metricId, item.harness]);
     const profile = model.profile || {};
     const unmappedTerms = publicUnmappedFor(model).flatMap((item) => [item.modelRef, ...(item.aliases || []), ...(item.sourceIds || [])]);
-    return [model.id, model.name, model.provider, model.familyId, model.summary, model.release, model.access, profile.positioning, profile.architecture, profile.context_note, profile.parameter_note, ...profileList(profile.capabilities), ...profileList(profile.best_for), ...profileList(profile.endpoint_ids), ...profileList(profile.availability), ...profileList(profile.caveats), ...model.aliases, ...model.tags, ...model.modalities, ...variantLabels(model), ...publicTerms, ...unmappedTerms]
+    return [model.id, model.name, model.provider, model.familyId, model.summary, model.release, model.access, profile.positioning, profile.architecture, profile.context_note, profile.parameter_note, ...parameterEstimateSearchTerms(model), ...profileList(profile.capabilities), ...profileList(profile.best_for), ...profileList(profile.endpoint_ids), ...profileList(profile.availability), ...profileList(profile.caveats), ...model.aliases, ...model.tags, ...model.modalities, ...variantLabels(model), ...publicTerms, ...unmappedTerms]
       .filter(Boolean).join(" ").toLowerCase();
   }
 
@@ -638,13 +698,14 @@
     }).join("");
     const tags = [...model.tags, ...variantLabels(model)].slice(0, 4).map((tag) => `<span class="model-badge">${esc(tag)}</span>`).join("");
     const modalities = model.modalities.length ? model.modalities.map(modalityLabel).join(" · ") : "未注明";
+    const parameters = parameterDisplay(model);
     return `<article class="model-directory-card" data-model-id="${esc(model.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 详情">
       <div class="model-card-head">${modelIdentity(model)}${statusBadge(model)}</div>
       <p class="model-card-summary">${esc(model.summary)}</p>
       <div class="model-card-specs">
         <span><small>RELEASE</small><strong>${esc(formatDate(model.releaseDate || model.release))}</strong></span>
         <span><small>CONTEXT</small><strong>${esc(formatContext(model.contextWindow))}</strong></span>
-        <span><small>PARAMS</small><strong>${esc(formatParams(model.paramsTotal, model.paramsActive))}</strong></span>
+        <span><small>PARAMS${parameters.kind === "estimate" ? " · EST." : parameters.kind === "official-approx" ? " · APPROX." : ""}</small><strong class="param-${esc(parameters.kind)}" title="${esc(parameters.title)}">${esc(parameters.text)}</strong></span>
         <span><small>MODALITIES</small><strong>${esc(modalities)}</strong></span>
       </div>
       <div class="model-card-tags">${tags || '<span class="model-badge muted-badge">暂无标签</span>'}</div>
@@ -660,12 +721,13 @@
     const scores = scoreEntries(model);
     const publicRows = publicEntries(model);
     const modalities = model.modalities.length ? model.modalities.map(modalityLabel).join(" · ") : "—";
+    const parameters = parameterDisplay(model);
     return `<tr data-model-id="${esc(model.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 详情">
       <td><div class="table-model-identity"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><span><strong>${esc(model.name)}</strong><small>${esc(model.provider)} · ${esc(familyName(model))}</small></span></div></td>
       <td>${statusBadge(model)}</td>
       <td>${esc(modalities)}</td>
       <td class="mono-cell">${esc(formatContext(model.contextWindow))}</td>
-      <td class="mono-cell">${esc(formatParams(model.paramsTotal, model.paramsActive))}</td>
+      <td class="mono-cell param-${esc(parameters.kind)}" title="${esc(parameters.title)}">${esc(parameters.text)}</td>
       <td>${model.openWeights ? '<span class="table-yes">open</span>' : '<span class="table-muted">closed / ?</span>'}</td>
       <td class="mono-cell" title="c = canonical / curated · r = public reported">${scores.length || publicRows.length ? `${scores.length ? `${scores.length}c` : ""}${scores.length && publicRows.length ? " · " : ""}${publicRows.length ? `${publicRows.length}r` : ""}` : "—"}</td>
     </tr>`;
@@ -739,7 +801,7 @@
       const publicTotal = models.reduce((sum, model) => sum + publicEntries(model).length, 0);
       const pendingRows = state.publicUnmappedModels.reduce((sum, item) => sum + (Number(item.rowCount) || 0), 0);
       const pendingNote = state.publicUnmappedModels.length ? ` · ${state.publicUnmappedModels.length} 个来源原名待归一化（${pendingRows} 行）` : "";
-      els.directoryNote.textContent = `${models.length} / ${state.models.length} 个模型条目 · ${canonicalTotal} 条 canonical + ${publicTotal} 条公开披露${pendingNote} · 目录字段缺失会显示“未注明”，不会推断。`;
+      els.directoryNote.textContent = `${models.length} / ${state.models.length} 个模型条目 · ${canonicalTotal} 条 canonical + ${publicTotal} 条公开披露${pendingNote} · 参数分为官方精确、厂商约数、底座血缘与第三方分析；非 exact-model 数字不会静默回填 canonical。`;
     }
     if (els.modelGrid) els.modelGrid.innerHTML = models.map(cardMarkup).join("");
     if (els.modelTableBody) els.modelTableBody.innerHTML = models.map(tableMarkup).join("");
@@ -757,6 +819,32 @@
 
   function detailItem(label, value, extraClass = "") {
     return `<div class="detail-item model-detail-item"><label>${esc(label)}</label><span class="model-detail-value ${extraClass}">${value}</span></div>`;
+  }
+
+  function parameterEstimateMarkup(estimate) {
+    const source = sourceFor(estimate.sourceId);
+    const point = formatParams(estimate.pointB * 1e9, null);
+    const interval = estimate.rangeB.length === 2
+      ? `${formatParams(estimate.rangeB[0] * 1e9, null)} – ${formatParams(estimate.rangeB[1] * 1e9, null)}`
+      : "区间未注明";
+    return `<article class="model-parameter-estimate">
+      <div class="model-parameter-estimate-head"><div><span class="estimate-badge">第三方估计</span><strong>${esc(estimate.label)}</strong></div><strong class="estimate-point">≈ ${esc(point)} eff.</strong></div>
+      <div class="model-parameter-estimate-range"><span>${esc(estimate.interval)} interval</span><strong>${esc(interval)}</strong></div>
+      <div class="model-parameter-estimate-meta"><span>${esc(estimate.kind)}</span><span>${esc(estimate.basis)}</span><span>${esc(estimate.confidence)}</span>${estimate.asOf ? `<span>${esc(formatDate(estimate.asOf))}</span>` : ""}</div>
+      <p>${esc(estimate.note)}</p>
+      <div class="model-parameter-estimate-source">${sourceLinkMarkup(source, null, first(source?.label, estimate.sourceId, "查看分析来源"))}</div>
+    </article>`;
+  }
+
+  function parameterEvidenceMarkup(item) {
+    const source = sourceFor(item.sourceId);
+    const counts = formatParams(item.totalB === null ? null : item.totalB * 1e9, item.activeB === null ? null : item.activeB * 1e9);
+    return `<article class="model-parameter-estimate model-parameter-lineage">
+      <div class="model-parameter-estimate-head"><div><span class="estimate-badge lineage-badge">底座 / 血缘</span><strong>${esc(item.label)}</strong></div><strong class="estimate-point">${item.approximate ? "≈ " : ""}${esc(counts)}</strong></div>
+      <div class="model-parameter-estimate-meta"><span>${esc(item.kind)}</span><span>${esc(item.confidence)}</span><span>不进入 canonical 参数</span></div>
+      <p>${esc(item.note)}</p>
+      <div class="model-parameter-estimate-source">${sourceLinkMarkup(source, null, first(source?.label, item.sourceId, "查看来源"))}</div>
+    </article>`;
   }
 
   function scoreMarkup(item) {
@@ -781,6 +869,8 @@
     const pageUrl = item.sourcePageUrl;
     const apiUrl = item.sourceApiUrl;
     const version = first(item.benchmarkVersion, item.benchmarkVersionId, benchmark?.versionId, "version 未注明");
+    const metricId = first(item.metricId, "metric 未注明");
+    const metricLabel = metricId === "arena_score_bt" ? "Arena Score (Bradley–Terry)" : metricId;
     const protocolParts = item.protocol && typeof item.protocol === "object"
       ? [item.protocol.split, item.protocol.track, item.protocol.split_track, item.protocol.harness_variant, item.protocol.reasoning_mode].filter(Boolean)
       : [];
@@ -790,12 +880,12 @@
       if (external && !urls.some(([known]) => known === external)) urls.push([external, label]);
     });
     return `<article class="model-public-row">
-      <div class="model-score-row-head"><div><strong>${esc(benchmarkLabel(item.benchmarkId, item.benchmarkName))}</strong><small>${esc(version)} · ${esc(item.metricId || "metric 未注明")}</small></div><strong class="model-score-value public-value">${esc(formatPublicEvidence(item))}</strong></div>
+      <div class="model-score-row-head"><div><strong>${esc(benchmarkLabel(item.benchmarkId, item.benchmarkName))}</strong><small>${esc(version)} · ${esc(metricLabel)}</small></div><strong class="model-score-value public-value">${esc(formatPublicEvidence(item))}</strong></div>
       <div class="model-score-row-meta"><span class="score-evidence evidence-reported">披露 · 未复现</span><span>${esc(first(item.unit, "unit 未注明"))}</span>${item.harness ? `<span>${esc(item.harness)}</span>` : ""}${item.subjectType ? `<span>${esc(item.subjectType)}</span>` : ""}${item.observedAt || item.publishedAt ? `<span>${esc(formatDate(first(item.observedAt, item.publishedAt)))}</span>` : ""}</div>
       ${protocolParts.length ? `<p class="public-protocol">${esc(protocolParts.join(" · "))}</p>` : ""}
       <div class="model-public-source">${urls.map(([url, label]) => `<a class="source-link" href="${esc(url)}" target="_blank" rel="noreferrer">${esc(label)} ↗</a>`).join("") || '<span class="source-link source-link-muted">来源链接未注明</span>'}</div>
       ${item.sourceLocator ? `<p class="public-locator"><span>locator</span> <code>${esc(item.sourceLocator)}</code></p>` : ""}
-      <p class="public-raw"><span>raw</span> <code>${esc(item.rawValue === undefined || item.rawValue === null ? "—" : item.rawValue)}</code>${item.payloadSha256 ? ` <span>· snapshot ${esc(String(item.payloadSha256).slice(0, 12))}…</span>` : ""}</p>
+      <p class="public-raw"><span>raw</span> <code>${esc(item.rawValue === undefined || item.rawValue === null ? "—" : item.rawValue)}</code>${item.sourceMetricId && item.sourceMetricId !== metricId ? ` <span>· source metric ${esc(item.sourceMetricId)}</span>` : ""}${item.payloadSha256 ? ` <span>· snapshot ${esc(String(item.payloadSha256).slice(0, 12))}…</span>` : ""}</p>
       ${item.qualityFlags?.length ? `<p class="public-flags">${item.qualityFlags.map((flag) => `<span>${esc(flag)}</span>`).join("")}</p>` : ""}
     </article>`;
   }
@@ -843,6 +933,10 @@
     const profileCaveats = profileList(profile.caveats);
     const profilePositioning = first(profile.positioning, model.summary, "暂无模型说明。");
     const profileEndpoints = profileListText(profile.endpoint_ids);
+    const parameterEstimateItems = parameterEstimates(model);
+    const parameterEstimateRows = parameterEstimateItems.map(parameterEstimateMarkup).join("");
+    const parameterEvidenceItems = parameterEvidence(model);
+    const parameterEvidenceRows = parameterEvidenceItems.map(parameterEvidenceMarkup).join("");
     const sourceMarkup = sources.length ? sources.map((source) => `<li>${sourceLinkMarkup(source, null, source.label || source.id)}<small>${esc(first(source.publisher, source.kind, "source") || "")}</small></li>`).join("") : '<li class="model-source-empty">暂无直接来源链接。</li>';
     const rawJson = JSON.stringify(model, null, 2);
     els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3 id="drawerTitle">${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(familyName(model))}</p><div class="drawer-status-row">${statusBadge(model)}<span class="model-detail-id">${esc(model.id)}</span></div></div></div>
@@ -859,12 +953,14 @@
         ${detailItem("ARCHITECTURE", esc(text(profile.architecture, "未注明")))}
         ${detailItem("CONTEXT", esc(formatContext(model.contextWindow)))}
         ${detailItem("MAX OUTPUT", esc(formatContext(profile.max_output_tokens)))}
-        ${detailItem("PARAMETERS", esc(formatParams(model.paramsTotal, model.paramsActive)))}
+        ${detailItem(model.paramsApproximate ? "PARAMETERS · VENDOR APPROX." : "PARAMETERS · OFFICIAL", esc(parameterDisplay(model).text))}
         ${detailItem("KNOWLEDGE CUTOFF", esc(text(profile.knowledge_cutoff, "未注明")))}
         ${detailItem("LICENSE", esc(text(profile.license, "未注明")))}
         ${detailItem("OPEN WEIGHTS", model.openWeights ? '<span class="table-yes">yes</span>' : '<span class="table-muted">no / 未注明</span>')}
         ${detailItem("CATALOG STATE", model.catalogOnly ? "catalog-only" : "scored release")}
       </div></section>
+      ${parameterEstimateItems.length ? `<section class="detail-section parameter-estimate-section"><h4>PARAMETER ANALYSIS · ${parameterEstimateItems.length}</h4><p class="model-source-scope-note">只展示可追溯的第三方分析。effective capacity 与真实 total / active weights 是不同量，估计值不会进入参数筛选或规模排名。</p><div class="model-parameter-estimate-list">${parameterEstimateRows}</div></section>` : ""}
+      ${parameterEvidenceItems.length ? `<section class="detail-section parameter-estimate-section"><h4>PARAMETER PROVENANCE · ${parameterEvidenceItems.length}</h4><p class="model-source-scope-note">这些数字只描述底座或模型血缘，不等于当前 hosted endpoint 的逐型号物理权重；因此不会进入参数筛选或规模排名。</p><div class="model-parameter-estimate-list">${parameterEvidenceRows}</div></section>` : ""}
       <section class="detail-section"><h4>ALIASES / ENDPOINT</h4><p class="model-aliases">${aliases}</p><p class="model-endpoint"><span>endpoint ids</span> <code>${esc(profileEndpoints)}</code></p>${model.endpoint ? `<p class="model-endpoint"><span>endpoint</span> <code>${esc(model.endpoint)}</code></p>` : ""}</section>
       ${sourceAliasMarkup(model)}
       <section class="detail-section"><h4>PROFILE NOTES</h4><p class="model-profile-provenance">CURATED PROFILE · source-linked discovery metadata；部分 source 仅覆盖 family / release notes，未必是该 release 的逐项官方确认；不等同于本站独立复现或 benchmark 运行。</p><p class="model-profile-positioning">${esc(profilePositioning)}</p><div class="model-profile-columns"><div><label>CAPABILITIES</label>${profileBulletMarkup(profileCapabilities)}</div><div><label>BEST FOR</label>${profileBulletMarkup(profileBestFor)}</div></div>${profile.context_note ? `<p class="model-profile-note"><span>context</span> ${esc(profile.context_note)}</p>` : ""}${profile.parameter_note ? `<p class="model-profile-note"><span>parameters</span> ${esc(profile.parameter_note)}</p>` : ""}${profileCaveats.length ? `<div class="model-profile-caveats"><label>CAVEATS</label>${profileBulletMarkup(profileCaveats)}</div>` : ""}${profile.last_checked ? `<p class="model-profile-checked">profile checked ${esc(formatDate(profile.last_checked))}</p>` : ""}</section>

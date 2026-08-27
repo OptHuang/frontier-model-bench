@@ -367,8 +367,12 @@ class ArenaHFDatasetAdapter(Adapter):
         is_agent = config in self.SYSTEM_CONFIGS or is_ips
         if "rating" in row:
             value = row.get("rating")
-            metric = "elo"
-            unit = "elo"
+            # Arena switched its public rating methodology to Bradley–Terry;
+            # keep the metric name explicit instead of perpetuating the old
+            # generic "Elo" label. Historical snapshots remain versioned by
+            # source locator/date and must not be merged across methods.
+            metric = "arena_score_bt"
+            unit = "rating"
             lower = row.get("rating_lower")
             upper = row.get("rating_upper")
             rating_method = "bradley-terry"

@@ -802,6 +802,9 @@ def benchmark_for_site(
         "versions": benchmark.get("versions", []),
         "metrics": benchmark.get("metrics", []),
         "featured": bool(benchmark.get("featured", False)),
+        # Editorial reading order for the wide matrix. Lower values appear
+        # first; this is navigation metadata, never a benchmark-quality score.
+        "displayPriority": benchmark.get("display_priority", benchmark.get("displayPriority")),
     }
     # Long-form benchmark profiles live in a separate catalog file so that
     # the compact registry stays easy to scan.  Keep the profile opaque here:
@@ -895,6 +898,7 @@ def model_for_site(
         "contextWindow": model.get("context_window", model.get("contextWindow")),
         "paramsTotal": model.get("params_total", model.get("paramsTotal")),
         "paramsActive": model.get("params_active", model.get("paramsActive")),
+        "paramsApproximate": bool(model.get("params_approximate", model.get("paramsApproximate", False))),
         "openWeights": model.get("open_weights", model.get("openWeights")),
         "variant": model.get("variant", {}),
         # Keep the descriptive profile separate from canonical identity fields

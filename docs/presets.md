@@ -192,6 +192,6 @@ benchmark suite/version/split
 
 - preset URL 应可分享，例如 `?preset=coding-agent&version=terminal-bench@2.1`；筛选状态不写回 observation。
 - 每个分数单元显示 `value · evidence · harness/effort`，点击展开完整 protocol 和 source locator。
-- 默认列按 benchmark registry 顺序；同列只有在 `exact` 时显示排序徽标，`conditional` 只显示比较提示。
+- 默认列先按 catalog 的 `display_priority` 展示人工策展的热门/current headline benchmark；其余列再按 featured、实际模型覆盖和 registry 原始顺序稳定回退。`display_priority` 只是横向阅读导航，不是 benchmark 质量排名。secondary metric、subtask 和外部聚合 slice 不继承置顶优先级，默认进入详情或矩阵后段；同列只有在 `exact` 时显示排序徽标，`conditional` 只显示比较提示。
 - `scoreCoverage: catalog-only` 与生命周期 `preview` / `restricted` 分开显示；`stale`、`conflict` 也用明确徽标，不用空白或 0 混淆。
 - 自动更新流程只产生 candidate observations；人工确认后才进入 `approved`/默认矩阵。来源适配器应保存 URL、retrieved_at、published_at、hash 和 parser version。

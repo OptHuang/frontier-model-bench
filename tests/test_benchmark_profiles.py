@@ -34,7 +34,7 @@ class BenchmarkProfileTests(unittest.TestCase):
         expected_modes = {
             "livebench": "direct",
             "epoch-arc_agi_2_external": "unknown",
-            "epoch-frontiermath_tier_4": "unknown",
+            "epoch-frontiermath_tier_4": "system",
             "epoch-bbh_external": "unknown",
             "helm-ifeval": "direct",
             "helm-math": "direct",

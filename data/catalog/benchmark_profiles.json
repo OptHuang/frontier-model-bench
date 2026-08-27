@@ -14,21 +14,21 @@
     "dataset": {"size": "2025 年 AIME I/II 题目窗口（每场 15 题；总量以发布快照为准）", "splits": ["AIME I 2025", "AIME II 2025"], "availability": "题目公开；答案与评测脚本按来源快照记录"},
     "protocol": {"mode": "model-only / direct", "grader": "整数 exact match", "tools": "是否允许 Python/计算器必须注明", "sampling": "pass@1、majority vote、best-of-n 不可互换"},
     "comparison": {"recommended": "固定年份、题目窗口、采样预算和答案抽取规则", "avoid": "不要用 best-of-n 或泄露题解的成绩冒充单次 pass@1"},
-    "source_locator": "AIME 题集来源与 OpenAI GPT-5 评测表；年份窗口需随快照更新"
+    "source_locator": "MAA Invitational Competitions official AIME source + OpenAI GPT-5 evaluation table；保留 AIME I/II、30题聚合、工具、n 与题解公开截止时间"
   },
   "aime-2026": {
     "task": {"summary": "最新 AIME 数学整数答案题，用于观察前沿模型在新题窗口上的竞赛数学能力。", "input": "AIME 2026 题目文本", "output": "0–999 整数答案"},
-    "dataset": {"size": "2026 题集；题量和公开状态以 MathArena/HF 版本为准", "splits": ["AIME 2026 release window"], "availability": "公开榜单/数据卡持续更新"},
+    "dataset": {"size": "AIME I/II 各 15 题；combined 口径为 30 题", "splits": ["AIME I 2026", "AIME II 2026", "combined 30"], "availability": "MAA competition source + MathArena/HF 公开榜单快照"},
     "protocol": {"mode": "model-only / direct", "grader": "整数 exact match", "tools": "是否使用代码执行、搜索或外部证明需记录", "sampling": "记录 temperature、n、答案归一化和截止日期"},
     "comparison": {"recommended": "把同一题集快照与相同 inference budget 的模型并列", "avoid": "不要把 2025 与 2026 或公开题解之后的回测直接平均"},
-    "source_locator": "MathArena AIME 2026 leaderboard API 与 HMMT/AIME 题集说明"
+    "source_locator": "MAA Invitational Competitions official AIME source + MathArena AIME 2026 leaderboard API；HMMT 是不同竞赛，不作为 AIME 来源"
   },
   "frontiermath": {
     "task": {"summary": "面向前沿研究数学的开放式/短答案问题，按难度层级测试模型能否提出并验证非模板化解法。", "input": "研究级数学问题与必要定义", "output": "可判定的数学答案或证明"},
-    "dataset": {"size": "题目窗口与难度层级随 Epoch release 变化；官方不应假定固定公开题量", "splits": ["T1", "T2", "T3"], "availability": "部分题目/答案受限；榜单快照优先"},
-    "protocol": {"mode": "model-only 或带工具的 system，须分开", "grader": "官方判定器/专家或模型 judge，具体设置随 release", "tools": "Python、CAS、检索和 proof checker 需逐项记录", "sampling": "pass@1 与多次采样、partial credit 需区分"},
+    "dataset": {"size": "FrontierMath v2 共 338 题：Tiers 1–3 为 295 题，Tier 4 为 43 题；v2 修正了 42% 题目", "splits": ["v2 Tier 1", "v2 Tier 2", "v2 Tier 3"], "availability": "部分题目/答案受限；v1/v2 结果必须分开"},
+    "protocol": {"mode": "model-only 或带工具的 system，须分开", "grader": "官方 answer() grader / 专家规则，grader version 随 release 固定", "tools": "Python tool、CAS、检索和 proof checker 需逐项记录", "sampling": "v2 官方 protocol 最高 1M tokens；pass@1、多次采样与 partial credit 需区分"},
     "comparison": {"recommended": "同一 tier、题目窗口、工具许可和 judge 版本内比较", "avoid": "不要将 T1–T3 与更难 tier 或不同保密窗口合并为一个总分"},
-    "source_locator": "Epoch AI FrontierMath benchmark page；tier、窗口和可见性以官方快照为准"
+    "source_locator": "Epoch AI FrontierMath Tier 4 v2 official page（2026-06-12 release）；v2 task counts、42% corrections、Python tool、1M-token limit 与 answer() grader"
   },
   "hmmt": {
     "task": {"summary": "HMMT 竞赛数学题，覆盖代数、几何、组合和数论，测试精确解题与答案提取。", "input": "HMMT 赛季题目", "output": "短答案/整数或选择项"},
@@ -46,10 +46,10 @@
   },
   "hle": {
     "task": {"summary": "跨学科专家级闭卷问题，包含文本与多模态题，专门避免已饱和的简单知识问答。", "input": "文本或图像问题（closed-ended）", "output": "短答案/选项答案及可判定解释"},
-    "dataset": {"size": "2,500 题、100+ 学科（官方论文/榜单口径）", "splits": ["full", "text", "vision", "subject slices"], "availability": "公开题集与官方/合作方榜单；部分答案评测受保护"},
-    "protocol": {"mode": "model-only 或 tools-enabled system，必须标注", "grader": "答案匹配与 judge 组合；具体 grader 版本需保留", "tools": "无工具、搜索和工具辅助是不同 track", "sampling": "temperature、reasoning budget、图像输入和答案格式需记录"},
+    "dataset": {"size": "finalized public release：2,500 题、100+ 学科；另有 HLE-preview、text-only 与 private held-out scope", "splits": ["finalized public 2025-04-03", "preview", "text-only", "vision", "private held-out", "subject slices"], "availability": "公开题集与 official leaderboard；private held-out 用于抗过拟合"},
+    "protocol": {"mode": "model-only 或 tools-enabled system，必须标注", "grader": "accuracy + CI 与 RMS calibration error；judge model/prompt/version 需保留", "tools": "无工具、搜索和工具辅助是不同 track", "sampling": "temperature、reasoning budget、图像输入、答案格式和 public/private scope 需记录"},
     "comparison": {"recommended": "同一 text/vision/tools track、prompt、judge 和题集版本内比较", "avoid": "不要把工具辅助分数当作裸模型知识分，也不要忽略题目难度/subject mix"},
-    "source_locator": "Scale Labs HLE leaderboard、Nature paper 与 HLE 数据卡"
+    "source_locator": "Scale Labs Humanity's Last Exam official leaderboard；finalized 2025-04-03 / preview / text-only / private holdout 分轨"
   },
   "simpleqa": {
     "task": {"summary": "短事实问答，要求模型给出简洁、可核验且不过度扩展的事实。", "input": "单句事实问题", "output": "短文本答案或明确拒答"},
@@ -61,9 +61,9 @@
   "swebench-verified": {
     "task": {"summary": "从真实 GitHub issue、仓库上下文到补丁和测试通过的端到端软件工程任务。", "input": "issue 描述、指定 commit 的代码仓库", "output": "可应用的代码 patch"},
     "dataset": {"size": "500 个 human-filtered verified instances", "splits": ["Verified", "repository/project slices"], "availability": "任务与评测 harness 公开"},
-    "protocol": {"mode": "system / agent harness", "grader": "应用 patch 后运行测试，报告 Resolved %", "tools": "终端、文件编辑、测试和网络权限必须注明", "sampling": "rollout 数、patch selection、timeout 和 scaffold 版本影响结果"},
+    "protocol": {"mode": "system / agent harness", "grader": "应用 patch 后运行测试，报告 Resolved %", "tools": "official full-system leaderboard 与 bash-only mini-SWE-agent 是不同 track；终端、编辑、网络和 checked 状态必须注明", "sampling": "rollout 数、patch selection、timeout、mini-SWE-agent 1.x/2.x 与 scaffold version 影响结果"},
     "comparison": {"recommended": "优先比较相同 harness（如 mini-SWE-agent）、任务版本和预算", "avoid": "不要把 agent/system 分数标成裸模型；注意公开 issue/patch 训练污染风险"},
-    "source_locator": "SWE-bench 官方 leaderboard 与 OpenAI Verified 说明"
+    "source_locator": "swebench.com/verified.html + official leaderboard；保留 track、mini-SWE-agent release、scaffold、checked、cost 与 trajectory"
   },
   "swebench-pro": {
     "task": {"summary": "更接近真实软件维护的仓库级 issue 修复，强调长上下文、定位、实现和回归测试。", "input": "issue、仓库快照与工程环境", "output": "通过隐藏/公开测试的补丁"},
@@ -81,29 +81,29 @@
   },
   "deepswe": {
     "task": {"summary": "软件工程 Agent 在仓库环境中进行问题理解、修改、测试和修复闭环。", "input": "issue/任务描述与代码仓库", "output": "可验证的修复 patch"},
-    "dataset": {"size": "v1.1 任务集；公开页面按 release/项目列出，固定题量需以快照为准", "splits": ["v1.1", "task/project slices"], "availability": "官方/项目 leaderboard"},
-    "protocol": {"mode": "system / agent harness", "grader": "测试或任务判定器；需保留 timeout 和失败类型", "tools": "shell、编辑器、测试、网络和上下文预算是系统条件", "sampling": "rollout 聚合、并行尝试和成功定义需记录"},
+    "dataset": {"size": "DeepSWE v1.1：113 tasks", "splits": ["v1.1", "task/project slices"], "availability": "official v1.1 leaderboard"},
+    "protocol": {"mode": "system / agent harness", "grader": "Resolved % + confidence interval；需保留 timeout 和失败类型", "tools": "shell、编辑器、测试、网络和上下文预算是系统条件", "sampling": "保留 config/effort、cost、output tokens、agent steps、rollout 聚合与成功定义"},
     "comparison": {"recommended": "同 harness、timeout、模型 endpoint 和任务版本内比较", "avoid": "不要把一次成功 rollout 与多次搜索/自修复系统直接横比"},
-    "source_locator": "DeepSWE 官方 leaderboard 与项目说明"
+    "source_locator": "deepswe.datacurve.ai official v1.1 leaderboard；113 tasks + CI/cost/output tokens/agent steps"
   },
   "nl2repo": {
-    "task": {"summary": "根据自然语言需求生成或修改完整仓库，检验规划、跨文件实现与测试闭环。", "input": "需求描述、仓库骨架或 issue", "output": "仓库级代码变更"},
-    "dataset": {"size": "公开 v1 任务与仓库快照；题量随 release 记录", "splits": ["task/repository slices", "public/hidden tests"], "availability": "代码与评测说明公开"},
-    "protocol": {"mode": "system / agent harness", "grader": "自动测试、隐藏测试与反作弊检查", "tools": "repo access、终端、依赖安装、网络和 timeout 需记录", "sampling": "patch apply、测试执行和失败原因要可追溯"},
+    "task": {"summary": "根据自然语言需求从 0 到 1 生成完整代码仓库，检验规划、跨文件实现与测试闭环。", "input": "自然语言需求与隔离 runtime", "output": "可运行的完整仓库"},
+    "dataset": {"size": "104 tasks；packaged environment 中 103 runnable", "splits": ["task/repository slices", "hidden original tests"], "availability": "official repositories、runtime 与评测说明公开"},
+    "protocol": {"mode": "system / OpenHands-compatible agent harness", "grader": "原始 pytest/hidden tests 的连续 passed-tests ratio", "tools": "OpenHands/runtime version、CPU/RAM、repo access、依赖安装、网络和 timeout 需记录", "sampling": "完整 repo、测试执行、reward 与失败原因要可追溯"},
     "comparison": {"recommended": "固定仓库 commit、scaffold、依赖环境和测试版本", "avoid": "不要把仅生成代码的 pass@1 与仓库级 resolved 混排"},
-    "source_locator": "M-A-P / NL2Repo-Bench official repository 与 benchmark README"
+    "source_locator": "multimodal-art-projection/NL2RepoBench + EnvCommons/NL2RepoBench official repositories；104 tasks / 103 runnable"
   },
   "terminal-bench": {
     "task": {"summary": "在隔离终端环境中完成长程工程任务，包含安装、调试、文件操作和验证。", "input": "任务指令与预置终端/容器环境", "output": "环境状态、文件产物或通过验证的解决方案"},
-    "dataset": {"size": "2.0/2.1 task release；任务数量以 Harbor/TBench 快照为准", "splits": ["2.0", "2.1", "task/domain slices"], "availability": "官方任务、镜像和 leaderboard"},
+    "dataset": {"size": "2.0/2.1 是当前已收录结果窗口；Terminal-Bench 3 已发布并需作为独立 version/track", "splits": ["2.0", "2.1 pinned", "3 separate track", "task/domain slices"], "availability": "官方任务、镜像和 leaderboard"},
     "protocol": {"mode": "system / terminal agent", "grader": "任务级 verifier，常汇总为 pass rate", "tools": "shell、网络、文件系统、容器镜像、timeout 和资源上限必须记录", "sampling": "agent harness、模型 effort、重试和最终状态需保留"},
     "comparison": {"recommended": "固定 benchmark version、镜像、权限、timeout 和 harness", "avoid": "不要把不同 terminal image 或人工介入的结果当作同一系统"},
-    "source_locator": "Terminal-Bench 官方页面、Harbor 数据集与 leaderboard"
+    "source_locator": "tbench.ai + FrontierBench official pages；2.1 与 3 的任务、镜像、harness 和 verifier 不可 rolling overwrite"
   },
   "bfcl": {
     "task": {"summary": "覆盖单轮、多轮、并行、复杂和 agentic function calling 的工具调用能力。", "input": "用户意图、工具 schema 与对话状态", "output": "一个或多个结构化 function calls 及参数"},
     "dataset": {"size": "V4 按类别发布；子集数量随官方 CSV/commit 更新", "splits": ["simple", "multiple", "parallel", "multi-turn", "agentic", "native_fc/prompt"], "availability": "官方 leaderboard CSV 与 evaluator code"},
-    "protocol": {"mode": "hybrid / tool protocol", "grader": "调用结构、参数和执行结果 evaluator；overall 为子类聚合", "tools": "native function calling 与 prompt workaround 必须分列", "sampling": "保留 evaluator commit、schema、temperature 和错误类型"},
+    "protocol": {"mode": "hybrid / tool protocol", "grader": "调用结构、参数和执行结果 evaluator；V4 overall 是子类别的未加权平均", "tools": "native function calling 与 prompt workaround 必须分列", "sampling": "保留 evaluator commit f7cf735、bfcl-eval package、schema、temperature 和错误类型"},
     "comparison": {"recommended": "同一 V4 commit、calling mode、模型 endpoint 和子类比较", "avoid": "不要把 BFCL overall 当通用准确率，也不要合并 native FC 与 prompt 模拟"},
     "source_locator": "Berkeley Gorilla official leaderboard data_overall.csv 与 evaluator commit"
   },
@@ -137,10 +137,10 @@
   },
   "mmmu-pro": {
     "task": {"summary": "针对图像可忽略、文字捷径等问题设计的更难多模态选择题，要求真正读取视觉信息。", "input": "图像/截图与十选一或 vision-only 问题", "output": "选项答案"},
-    "dataset": {"size": "标准与 vision-only 格式合计约 3,460 题；以 release 数据卡为准", "splits": ["standard", "vision-only", "subject slices"], "availability": "公开论文/数据与评测代码"},
-    "protocol": {"mode": "multimodal model-only / direct", "grader": "选项 exact-match accuracy", "tools": "必须注明图像输入、截图/原图格式和是否有 OCR/工具", "sampling": "prompt、选项顺序和格式化规则需固定"},
+    "dataset": {"size": "1,730 个 unique items；每个 item 分别以 standard 与 vision-only presentation 评测", "splits": ["standard", "vision-only", "subject slices"], "availability": "官方 repository、paper、数据与 evaluator"},
+    "protocol": {"mode": "multimodal model-only / direct", "grader": "选项 exact-match accuracy", "tools": "必须注明 standard/vision-only、图像输入、截图/原图格式和 OCR/工具", "sampling": "direct/CoT、prompt、选项顺序和格式化规则需固定"},
     "comparison": {"recommended": "分别比较 standard 与 vision-only，并固定 image preprocessing", "avoid": "不要把 MMMU-Pro 与原版 MMMU 或 text-only shortcut 结果混合"},
-    "source_locator": "MMMU-Pro paper、官方项目页与数据卡"
+    "source_locator": "MMMU official repository mmmu-pro/evaluate.py；1,730 unique items 在 standard / vision-only 两种 setting 下分别评测"
   },
   "mathvista": {
     "task": {"summary": "视觉数学推理，结合图表、几何、函数图像和自然语言解释。", "input": "数学图像/图表与问题", "output": "短答案、数值或选项"},
@@ -158,10 +158,10 @@
   },
   "osworld": {
     "task": {"summary": "在真实桌面和浏览器应用中完成多步操作，测视觉定位、规划、执行和状态验证。", "input": "自然语言任务、桌面截图与应用状态", "output": "最终 GUI 状态或生成的文件/表单"},
-    "dataset": {"size": "OSWorld 2.0 任务与环境按 release 更新；固定题量以官方快照为准", "splits": ["desktop apps", "browser", "task/domain slices"], "availability": "代码、容器/镜像和 leaderboard"},
-    "protocol": {"mode": "system / computer-use agent", "grader": "环境状态检查与任务级 success", "tools": "OS 镜像、分辨率、浏览器 profile、截图频率、鼠标/键盘执行器必须固定", "sampling": "记录任务重试、timeout、人工介入和失败类别"},
+    "dataset": {"size": "OSWorld-V2 release osworld-v2-2026.06.24：108 tasks", "splits": ["desktop apps", "browser", "task/domain slices"], "availability": "official OSWorld-V2 code、tasks、assets、websites、provider images 与 release manifest"},
+    "protocol": {"mode": "system / computer-use agent", "grader": "环境状态检查与任务级 success", "tools": "code/tasks/assets/websites/provider images、OS 镜像、分辨率、browser profile、截图频率和执行器必须同 release", "sampling": "记录任务重试、timeout、人工介入和失败类别"},
     "comparison": {"recommended": "相同 OS image、app state、screen size、harness 和任务版本内比较", "avoid": "不要将 GUI agent success 与文本指令遵循或网页静态代码分混排"},
-    "source_locator": "OSWorld official repository、environment/evaluator 文档"
+    "source_locator": "xlang-ai/OSWorld-V2 + benchmark_releases/osworld-v2-2026.06.24.json"
   },
   "ruler": {
     "task": {"summary": "可调 context length 的合成检索与推理任务，超越单一 needle-in-a-haystack。", "input": "含 distractors、needle、多跳关系或聚合要求的长上下文", "output": "检索出的值、关系判断或聚合答案"},
@@ -215,28 +215,28 @@
   "arena-text": {
     "task": {"summary": "文本对话 Arena 的真实用户 pairwise 偏好，比较两个 endpoint 的回答质量与体验。", "input": "用户文本提示与两个模型回答", "output": "用户偏好投票"},
     "dataset": {"size": "随 LMArena 投票和时间窗口动态变化", "splits": ["overall", "category", "latest snapshot"], "availability": "官方页面与 Hugging Face leaderboard dataset"},
-    "protocol": {"mode": "preference / pairwise", "grader": "Bradley–Terry rating/Elo 及置信区间", "tools": "system prompt、endpoint、匿名化、投票过滤和 category 需记录", "sampling": "保存 votes、snapshot date、model display name 与 CI"},
+    "protocol": {"mode": "preference / pairwise", "grader": "Bradley–Terry Arena Score、95% 置信区间与 vote count", "tools": "system prompt、endpoint、匿名化、投票过滤、category、style-control 与 methodology version 需记录", "sampling": "保存 votes、snapshot date、model display name、style-control 状态与 CI"},
     "comparison": {"recommended": "同一 snapshot、category、投票池和 rating 版本内比较", "avoid": "Arena rating 是相对偏好，不等于知识准确率或独立测试集分数"},
-    "source_locator": "LMArena/Arena official leaderboard 与 Hugging Face dataset"
+    "source_locator": "lmarena-ai/leaderboard-dataset official data card；rating methodology 自 2024 起为 Bradley–Terry，2025 起 text 默认 style-control"
   },
   "arena-vision": {
     "task": {"summary": "视觉/图文 Arena 的 pairwise 偏好，比较模型对图像理解、编辑或生成式请求的实际体验。", "input": "图像与文本提示、两个候选回答", "output": "偏好投票"},
     "dataset": {"size": "动态投票快照；图片类型和 category 随榜单更新", "splits": ["overall", "vision categories", "latest snapshot"], "availability": "Arena 页面与公开历史数据集"},
-    "protocol": {"mode": "multimodal preference / pairwise", "grader": "Bradley–Terry/Elo aggregate", "tools": "图像分辨率、输入格式、生成 endpoint 和过滤规则需保留", "sampling": "记录 votes、category、时间窗口和置信区间"},
+    "protocol": {"mode": "multimodal preference / pairwise", "grader": "Bradley–Terry Arena Score、95% 置信区间与 vote count", "tools": "图像分辨率、输入格式、生成 endpoint、过滤规则、style-control 与 methodology version 需保留", "sampling": "记录 votes、category、style-control、时间窗口和置信区间"},
     "comparison": {"recommended": "同一 vision snapshot、输入模态和 category 内比较", "avoid": "不要与 Text Arena、MMMU accuracy 或不同图像任务直接平均"},
-    "source_locator": "Arena Vision leaderboard 与 lmarena-ai leaderboard dataset"
+    "source_locator": "lmarena-ai/leaderboard-dataset official data card；vision rating 需保留 snapshot 与 style-control 状态"
   },
   "arena-webdev": {
     "task": {"summary": "用户比较模型生成网页或应用的视觉质量、交互完成度和可用性。", "input": "Web/app 构建需求与运行环境", "output": "可运行网页/应用及用户偏好投票"},
     "dataset": {"size": "随 WebDev Arena prompt、投票与 snapshot 动态变化", "splits": ["webdev categories", "latest snapshot"], "availability": "Arena leaderboard/data snapshot"},
-    "protocol": {"mode": "system / coding-agent preference", "grader": "用户 pairwise preference 聚合为 Arena rating", "tools": "browser、runtime、scaffold、endpoint、effort tier 和模型名需记录", "sampling": "保存 prompt、render environment、votes 和时间窗口"},
-    "comparison": {"recommended": "固定 scaffold、浏览器/runtime、prompt category 和 endpoint 比较", "avoid": "不能把 WebDev Elo 当通用代码 pass@1，也不要忽略渲染环境"},
+    "protocol": {"mode": "system / coding-agent preference", "grader": "用户 pairwise preference 聚合为 Bradley–Terry Arena Score", "tools": "browser、runtime、scaffold、endpoint、effort tier 和模型名需记录", "sampling": "保存 prompt、render environment、votes、置信区间和时间窗口"},
+    "comparison": {"recommended": "固定 scaffold、浏览器/runtime、prompt category、snapshot 和 endpoint 比较", "avoid": "不能把 WebDev preference score 当通用代码 pass@1，也不要忽略渲染环境"},
     "source_locator": "Arena WebDev leaderboard snapshot 与官方数据集"
   },
   "arena-search": {
     "task": {"summary": "带搜索工具的 Arena，比较模型检索、引用、事实核验与综合回答体验。", "input": "用户问题、搜索环境与两个候选系统", "output": "带引用的回答与用户偏好投票"},
     "dataset": {"size": "随 Search Arena category、搜索引擎和 snapshot 动态变化", "splits": ["search category", "latest snapshot"], "availability": "Arena page/historical dataset（字段随版本变化）"},
-    "protocol": {"mode": "system / search-agent preference", "grader": "pairwise user vote → Bradley–Terry/Elo", "tools": "搜索引擎、调用次数、浏览预算、时效与 citation policy 必须固定", "sampling": "记录 query time、source freshness、votes 和 CI"},
+    "protocol": {"mode": "system / search-agent preference", "grader": "pairwise user vote → Bradley–Terry Arena Score", "tools": "搜索引擎、调用次数、浏览预算、时效与 citation policy 必须固定", "sampling": "记录 query time、source freshness、votes、CI 与 snapshot"},
     "comparison": {"recommended": "同一搜索 provider、工具预算、category 和时间窗口比较", "avoid": "不要与无搜索 Text Arena 或静态 accuracy 混合"},
     "source_locator": "Arena Search leaderboard/data snapshot 与 LMArena 说明"
   },
@@ -256,7 +256,7 @@
   },
   "agents-last-exam": {
     "task": {"summary": "真实职业工作流的长程 Agent 系统评测，任务需要工具、环境状态和多步交付。", "input": "职业任务指令、受控环境与工具", "output": "可审计的任务交付物/环境状态"},
-    "dataset": {"size": "ALE-V1：147 个公开任务、55 个子领域", "splits": ["full/overall", "near-term", "full-spectrum", "last-exam", "licensed", "unlicensed", "ALE-CLI/Linux"], "availability": "官方 leaderboard/API；部分任务与参考答案受保护"},
+    "dataset": {"size": "ALE-V1 snapshot：147 个公开任务、55 个子领域；living framework 约 150 public tasks，来自 1,000+ task corpus", "splits": ["full/overall", "near-term", "full-spectrum", "last-exam", "licensed", "unlicensed", "ALE-CLI/Linux"], "availability": "官方 leaderboard/API；snapshot task_count 与 living corpus size 分开记录"},
     "protocol": {"mode": "system / Agent × harness × environment × task", "grader": "deterministic 与 judge graders；Pass Rate + partial-credit Score", "tools": "harness、环境、effort、工具、成本、runtime 和 token budget 需记录", "sampling": "保留 split、variant、harness、pass_rate、avg_score 与 observed snapshot"},
     "comparison": {"recommended": "只比较相同 split、harness、environment、effort 和 ALE version", "avoid": "不要把 ALE 当裸模型分数，也不要与 SakanaAI ALE-Bench/Atari ALE 混名"},
     "source_locator": "agents-last-exam.org docs、official leaderboard 与公开 JSON endpoint"
@@ -277,10 +277,10 @@
   },
   "aider-polyglot": {
     "task": {"summary": "真实编辑器工作流中的多语言代码修改，要求模型正确应用 patch 并通过项目测试。", "input": "仓库文件、自然语言 edit request 与测试", "output": "符合 edit format 的代码修改"},
-    "dataset": {"size": "公开 Polyglot leaderboard task snapshot；题量随官方 YAML 更新", "splits": ["language slices", "public leaderboard snapshot"], "availability": "官方仓库 YAML 与人类可读 leaderboard"},
-    "protocol": {"mode": "system / code-edit harness", "grader": "patch apply + tests，通常汇总 pass rate", "tools": "edit format、repo snapshot、endpoint、temperature、patch application 需记录", "sampling": "保留日期、commit、语言和失败类型"},
+    "dataset": {"size": "225 exercises，覆盖 C++、Go、Java、JavaScript、Python、Rust", "splits": ["6 language slices", "public leaderboard snapshot"], "availability": "official leaderboard 与 task repository"},
+    "protocol": {"mode": "system / Aider code-edit harness", "grader": "Percent correct（相对 attempts）以及 pass_rate_1 / pass_rate_2 分列", "tools": "Aider version/commit、edit format、repo snapshot、endpoint、temperature 和 patch application 需记录", "sampling": "保留日期、cost、commit、语言、attempt count 和失败类型"},
     "comparison": {"recommended": "固定 Aider commit、edit format、repo/task snapshot 和解码设置", "avoid": "不要将 Aider 编辑成功率与纯代码生成 pass@1 或 SWE-bench resolved 直接合并"},
-    "source_locator": "Aider official leaderboard docs 与 polyglot_leaderboard.yml"
+    "source_locator": "aider.chat official leaderboards + Polyglot benchmark release；225 exercises / 6 languages"
   },
   "androidworld": {
     "task": {"summary": "在 Android emulator 的真实应用中完成点击、输入、导航、编辑和状态查询任务。", "input": "自然语言任务、Android app 状态和设备屏幕", "output": "设备系统状态达到目标"},
@@ -312,10 +312,10 @@
   },
   "epoch-frontiermath_tier_4": {
     "task": {"summary": "FrontierMath Tier 4 的高难度研究数学问题，要求给出可判定的答案或推导，难度切片独立于 T1–T3。", "input": "Tier 4 数学问题与必要定义", "output": "可由官方/专家 grader 判定的答案或证明"},
-    "dataset": {"size": "题目窗口、可见性和规模随 Epoch release；不登记固定题量", "splits": ["Tier 4", "rolling source snapshot"], "availability": "题面和答案可能受限；公开表主要提供聚合结果"},
-    "protocol": {"mode": "unknown / source-aggregated model results", "grader": "Epoch 源表的 mean_score（percent）；具体 judge 与 partial-credit 规则按原始评测记录", "tools": "Python、CAS、检索、proof checker、reasoning effort 与采样预算可能不同", "sampling": "保留模型 setting、题目窗口、judge 和采样次数；模型发布日期不是 benchmark version"},
+    "dataset": {"size": "FrontierMath v2 Tier 4：43 题；v2 于 2026-06-12 发布且与 pre-v2 snapshot 不可合并", "splits": ["v2 Tier 4", "Epoch reported snapshot"], "availability": "题面和答案可能受限；公开表提供带 locator 的聚合结果"},
+    "protocol": {"mode": "system / tool-enabled source-reported results", "grader": "官方 answer() grader / source mean_score；保留 grader 与 partial-credit 口径", "tools": "Python tool、1M-token hard limit、CAS、检索、proof checker、reasoning effort 与采样预算必须记录", "sampling": "保留 v2、model setting、题目窗口、judge 和采样次数；模型发布日期不是 benchmark version"},
     "comparison": {"recommended": "同一 Tier 4 release/window、工具、judge 与采样预算内比较", "avoid": "不要与 FrontierMath T1–T3 直接平均，也不要跨保密窗口或不同 grader 排名"},
-    "source_locator": "Epoch AI Benchmarking Hub downloadable snapshot（src-epoch-benchmark-hub）：benchmark_data.zip / frontiermath_tier_4.csv:row=*;column=mean_score"
+    "source_locator": "Epoch AI FrontierMath Tier 4 v2 official page + Benchmarking Hub snapshot：benchmark_data.zip / frontiermath_tier_4.csv:row=*;column=mean_score"
   },
   "epoch-bbh_external": {
     "task": {"summary": "BIG-Bench Hard（BBH）汇集 23 个对早期语言模型较难的推理任务，覆盖逻辑、算法、常识和符号操作。", "input": "各 BBH task 的自然语言问题与按协议给出的 demonstrations", "output": "短答案、标签或选择项"},

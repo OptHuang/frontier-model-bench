@@ -315,6 +315,52 @@ class PublicEvidenceTests(unittest.TestCase):
         self.assertEqual(row["metricId"], "efficiency-score")
         self.assertEqual(row["sourceMetricId"], "score")
 
+    def test_legacy_arena_elo_spelling_is_displayed_as_bradley_terry_rating(self) -> None:
+        root, source_dir = self.make_fixture()
+        candidate_path = source_dir / "candidates.jsonl"
+        candidates = [json.loads(line) for line in candidate_path.read_text(encoding="utf-8").splitlines()]
+        candidates[0]["source_id"] = "lmarena-hf-dataset"
+        candidates[0]["metric"] = "elo"
+        candidates[0]["unit"] = "elo"
+        candidate_path.write_text(
+            "\n".join(json.dumps(row) for row in candidates) + "\n",
+            encoding="utf-8",
+        )
+
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=0,
+        )
+        row = next(item for item in index["rows"] if item["sourceLocator"] == "table=main;row=0")
+
+        self.assertEqual(row["metricId"], "arena_score_bt")
+        self.assertEqual(row["sourceMetricId"], "elo")
+        self.assertEqual(row["unit"], "rating")
+
+    def test_legacy_ingestion_date_model_id_migrates_to_release_date(self) -> None:
+        root, source_dir = self.make_fixture()
+        candidate_path = source_dir / "candidates.jsonl"
+        candidates = [json.loads(line) for line in candidate_path.read_text(encoding="utf-8").splitlines()]
+        candidates[0]["canonical_model_id"] = "qwen/qwen3.8-27b@2026-08-26"
+        candidates[0]["mapping_candidates"] = ["qwen/qwen3.8-27b@2026-08-26"]
+        candidate_path.write_text(
+            "\n".join(json.dumps(row) for row in candidates) + "\n",
+            encoding="utf-8",
+        )
+
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=0,
+        )
+        row = next(item for item in index["rows"] if item["sourceLocator"] == "table=main;row=0")
+
+        self.assertEqual(row["canonicalModelId"], "qwen/qwen3.8-27b@2026-08-14")
+        self.assertEqual(row["mappingCandidates"], ["qwen/qwen3.8-27b@2026-08-14"])
+
     def test_telemetry_is_persistently_excluded_from_matrix_stats(self) -> None:
         root, source_dir = self.make_fixture()
         candidate_path = source_dir / "candidates.jsonl"

@@ -111,8 +111,8 @@ class ArenaHFDatasetTests(unittest.TestCase):
         self.assertEqual(len(rows), 2)
         rating = rows[0]
         ips = rows[1]
-        self.assertEqual(rating["metric"], "elo")
-        self.assertEqual(rating["unit"], "elo")
+        self.assertEqual(rating["metric"], "arena_score_bt")
+        self.assertEqual(rating["unit"], "rating")
         self.assertEqual(rating["value"], 1450.5)
         self.assertEqual(rating["uncertainty"]["lower"], 1440.0)
         self.assertEqual(rating["metadata"]["vote_count"], 1234)

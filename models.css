@@ -66,6 +66,9 @@
 .model-card-specs span { min-width: 0; padding: 8px 9px; background: var(--surface-2); }
 .model-card-specs small { display: block; margin-bottom: 3px; color: var(--muted-2); font: 8px var(--mono); letter-spacing: .04em; }
 .model-card-specs strong { display: block; overflow: hidden; color: var(--text); font: 10px var(--mono); font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.model-card-specs .param-estimate, .model-table .param-estimate { color: var(--yellow); }
+.model-card-specs .param-official-approx, .model-table .param-official-approx { color: var(--cyan); }
+.model-card-specs .param-missing, .model-table .param-missing { color: var(--muted-2); }
 .model-card-tags { display: flex; gap: 5px; flex-wrap: wrap; min-height: 21px; }
 .model-card-tags .muted-badge { color: var(--muted-2); }
 .model-card-provenance { margin: 7px 0 0; color: var(--muted-2); font: 8px/1.45 var(--mono); letter-spacing: .02em; }
@@ -132,6 +135,24 @@
 .model-profile-note, .model-profile-checked, .model-profile-empty { margin: 10px 0 0; color: var(--muted-2); font: 9px/1.55 var(--mono); }
 .model-profile-note span { color: var(--accent); text-transform: uppercase; }
 .model-profile-checked { color: var(--muted-2); text-align: right; }
+.parameter-estimate-section { border-color: color-mix(in srgb, var(--yellow) 24%, var(--line)); }
+.model-parameter-estimate-list { display: grid; gap: 9px; }
+.model-parameter-estimate { padding: 12px; border: 1px solid color-mix(in srgb, var(--yellow) 28%, var(--line)); border-radius: 9px; background: color-mix(in srgb, var(--yellow) 4%, var(--surface-2)); }
+.model-parameter-estimate-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.model-parameter-estimate-head > div { min-width: 0; }
+.model-parameter-estimate-head strong { display: block; margin-top: 5px; color: var(--text); font-size: 10px; }
+.estimate-badge { display: inline-flex; padding: 2px 6px; border: 1px solid color-mix(in srgb, var(--yellow) 38%, transparent); border-radius: 999px; color: var(--yellow); font: 8px var(--mono); letter-spacing: .03em; }
+.model-parameter-estimate-head .estimate-point { flex: 0 0 auto; margin: 0; color: var(--yellow); font: 14px var(--mono); font-weight: 500; white-space: nowrap; }
+.model-parameter-estimate-range { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-top: 11px; padding: 8px 9px; border-radius: 7px; background: var(--surface); }
+.model-parameter-estimate-range span { color: var(--muted-2); font: 8px var(--mono); text-transform: uppercase; }
+.model-parameter-estimate-range strong { color: var(--text); font: 10px var(--mono); font-weight: 400; }
+.model-parameter-estimate-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.model-parameter-estimate-meta span { padding: 2px 5px; border: 1px solid var(--line); border-radius: 5px; color: var(--muted-2); font: 8px var(--mono); }
+.model-parameter-estimate > p { margin: 9px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+.model-parameter-estimate-source { margin-top: 8px; font: 9px var(--mono); }
+.model-parameter-lineage { border-color: color-mix(in srgb, var(--cyan) 25%, var(--line)); background: color-mix(in srgb, var(--cyan) 3%, var(--surface-2)); }
+.model-parameter-lineage .lineage-badge { border-color: color-mix(in srgb, var(--cyan) 38%, transparent); color: var(--cyan); }
+.model-parameter-lineage .estimate-point { color: var(--cyan); }
 .model-aliases { margin: 0; color: var(--muted); font: 10px var(--mono); line-height: 2; word-break: break-word; }
 .model-aliases code, .model-endpoint code { color: var(--accent); font: inherit; }
 .model-endpoint { margin: 8px 0 0; color: var(--muted-2); font: 10px var(--mono); }
@@ -214,6 +235,8 @@
   .models-method { padding-top: 56px; }
   .model-score-source { align-items: flex-start; flex-direction: column; }
   .model-source-list li { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .model-parameter-estimate-head, .model-parameter-estimate-range { align-items: flex-start; flex-direction: column; }
+  .model-parameter-estimate-head .estimate-point { white-space: normal; }
   .model-profile-columns { grid-template-columns: 1fr; }
   .model-source-alias-columns { grid-template-columns: 1fr; }
 }

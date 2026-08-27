@@ -349,6 +349,16 @@
     "staleness_after_days": 180
   },
   {
+    "id": "src-frontiermath-v2",
+    "label": "Epoch AI · FrontierMath Tier 4 v2",
+    "kind": "benchmark",
+    "publisher": "Epoch AI",
+    "url": "https://epoch.ai/benchmarks/frontiermath-tier-4-v2",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official v2 benchmark page; records the 2026-06-12 release, corrected task set, Tier 4 protocol, Python tool and 1M-token hard limit."
+  },
+  {
     "id": "src-hmmt",
     "label": "HMMT benchmark",
     "kind": "benchmark",
@@ -356,6 +366,16 @@
     "url": "https://www.hmmt.org/",
     "default_evidence_level": "A",
     "staleness_after_days": 365
+  },
+  {
+    "id": "src-maa-aime",
+    "label": "MAA · American Invitational Mathematics Examination",
+    "kind": "benchmark",
+    "publisher": "Mathematical Association of America",
+    "url": "https://maa.org/maa-invitational-competitions/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "Official AIME competition source. AIME I/II, publication window, tool access and pass@1 versus best-of-n remain protocol fields; HMMT is a different competition."
   },
   {
     "id": "src-simpleqa",
@@ -435,12 +455,13 @@
   },
   {
     "id": "src-osworld",
-    "label": "OSWorld benchmark",
+    "label": "OSWorld-V2 benchmark and release manifest",
     "kind": "benchmark",
     "publisher": "OSWorld",
-    "url": "https://github.com/xlang-ai/OSWorld",
+    "url": "https://github.com/xlang-ai/OSWorld-V2",
     "default_evidence_level": "A",
-    "staleness_after_days": 180
+    "staleness_after_days": 90,
+    "notes": "Official OSWorld-V2 repository; pin code, tasks, assets, websites, provider images and the osworld-v2-2026.06.24 release manifest together."
   },
   {
     "id": "src-helm",
@@ -866,5 +887,187 @@
     "default_evidence_level": "A",
     "staleness_after_days": 90,
     "notes": "Official multimodal coding model guide; documents the glm-5v-turbo endpoint, modalities, 200K context and 128K maximum output."
+  },
+  {
+    "id": "src-eigenigma-ikp-frontier-2026-07-31",
+    "label": "Eigenigma · Claude 5 / GPT-5.6 IKP capacity analysis",
+    "kind": "independent-analysis",
+    "publisher": "Eigenigma",
+    "url": "https://eigenigma.io/en/articles/estimating-parameter-counts-of-claude-5-and-gpt-5-6/",
+    "default_evidence_level": "C",
+    "staleness_after_days": 180,
+    "notes": "Reproducible black-box IKP analysis with downloadable per-question data. Values are IKP-effective knowledge-capacity equivalents with wide 90% intervals, not literal model weight counts; never use them as canonical params_total or params_active."
+  },
+  {
+    "id": "src-openai-gpt55-spec",
+    "label": "OpenAI API · GPT-5.5 specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.5",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt55-pro-spec",
+    "label": "OpenAI API · GPT-5.5 Pro specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.5-pro",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt54-spec",
+    "label": "OpenAI API · GPT-5.4 specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.4",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt54-mini-spec",
+    "label": "OpenAI API · GPT-5.4 mini specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.4-mini",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt54-pro-spec",
+    "label": "OpenAI API · GPT-5.4 Pro specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.4-pro",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt54-nano-spec",
+    "label": "OpenAI API · GPT-5.4 nano specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.4-nano",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt53-codex-spec",
+    "label": "OpenAI API · GPT-5.3 Codex specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-5.3-codex",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-anthropic-models-overview",
+    "label": "Anthropic · Claude model specification table",
+    "kind": "documentation",
+    "publisher": "Anthropic",
+    "url": "https://platform.claude.com/docs/en/about-claude/models/overview",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-qwen38-max-spec",
+    "label": "Qwen Cloud · Qwen3.8 Max specification",
+    "kind": "documentation",
+    "publisher": "Qwen",
+    "url": "https://docs.qwencloud.com/developer-guides/getting-started/latest-model",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-kimi-k2-hf",
+    "label": "Moonshot AI · Kimi K2 base model card",
+    "kind": "primary",
+    "publisher": "Moonshot AI",
+    "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "Base-lineage evidence only for K2.7 coding endpoints; never promoted to exact K2.7 canonical parameter counts."
+  },
+  {
+    "id": "src-qwen38-flash-hf",
+    "label": "Qwen · Qwen3.8 Flash-Next model card",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen38-27b-hf",
+    "label": "Qwen · Qwen3.8 27B model card",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-27B",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen38-24t-hf",
+    "label": "Qwen · Qwen3.8 2.4T A95B model card",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://huggingface.co/Qwen/Qwen3.8-2.4T-A95B",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-glm53-flash-hf",
+    "label": "Z.ai · GLM-5.3 Flash model card",
+    "kind": "primary",
+    "publisher": "Z.ai",
+    "url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-minimax-m3-hf",
+    "label": "MiniMax · MiniMax M3 model card",
+    "kind": "primary",
+    "publisher": "MiniMax",
+    "url": "https://huggingface.co/MiniMaxAI/MiniMax-M3",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-mimo-v25-hf",
+    "label": "Xiaomi MiMo · MiMo-V2.5 model card",
+    "kind": "primary",
+    "publisher": "Xiaomi MiMo",
+    "url": "https://huggingface.co/XiaomiMiMo/MiMo-V2.5",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-google-gemini31-spec",
+    "label": "Google AI · Gemini 3.1 Pro endpoint specification",
+    "kind": "documentation",
+    "publisher": "Google DeepMind",
+    "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-google-gemini37-spec",
+    "label": "Google AI · Gemini 3.7 Flash endpoint specification",
+    "kind": "documentation",
+    "publisher": "Google DeepMind",
+    "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-xai-grok46-spec",
+    "label": "xAI API · Grok 4.6 specification",
+    "kind": "documentation",
+    "publisher": "xAI",
+    "url": "https://docs.x.ai/developers/grok-4-6",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
   }
 ]

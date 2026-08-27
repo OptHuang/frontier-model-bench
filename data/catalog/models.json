@@ -121,7 +121,7 @@
       "name": "GPT-5.5",
       "provider": "OpenAI",
       "mark": "O",
-      "release_date": null,
+      "release_date": "2026-04-23",
       "status": "active",
       "access": "api",
       "aliases": [
@@ -132,7 +132,7 @@
         "text",
         "image"
       ],
-      "context_window": null,
+      "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -147,7 +147,8 @@
       ],
       "summary": "上一代 OpenAI frontier baseline。",
       "source_ids": [
-        "src-openai-gpt55"
+        "src-openai-gpt55",
+        "src-openai-gpt55-spec"
       ]
     },
     {
@@ -166,7 +167,7 @@
         "text",
         "image"
       ],
-      "context_window": null,
+      "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -181,7 +182,8 @@
       ],
       "summary": "GPT-5.5 higher-compute product tier；作为独立 endpoint 记录。",
       "source_ids": [
-        "src-openai-gpt55"
+        "src-openai-gpt55",
+        "src-openai-gpt55-pro-spec"
       ]
     },
     {
@@ -190,7 +192,7 @@
       "name": "GPT-5.4",
       "provider": "OpenAI",
       "mark": "O",
-      "release_date": null,
+      "release_date": "2026-03-05",
       "status": "active",
       "access": "api",
       "aliases": [
@@ -201,7 +203,7 @@
         "text",
         "image"
       ],
-      "context_window": null,
+      "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -214,7 +216,8 @@
         "推理"
       ],
       "source_ids": [
-        "src-openai-models"
+        "src-openai-models",
+        "src-openai-gpt54-spec"
       ]
     },
     {
@@ -223,7 +226,7 @@
       "name": "GPT-5.4 mini",
       "provider": "OpenAI",
       "mark": "O",
-      "release_date": null,
+      "release_date": "2026-03-17",
       "status": "active",
       "access": "api",
       "aliases": [
@@ -233,7 +236,7 @@
         "text",
         "image"
       ],
-      "context_window": null,
+      "context_window": 400000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -247,7 +250,8 @@
         "效率"
       ],
       "source_ids": [
-        "src-openai-models"
+        "src-openai-models",
+        "src-openai-gpt54-mini-spec"
       ]
     },
     {
@@ -581,8 +585,8 @@
         "text",
         "image"
       ],
-      "context_window": null,
-      "params_total": null,
+      "context_window": 1000000,
+      "params_total": 2400000000000,
       "params_active": null,
       "open_weights": false,
       "variant": {
@@ -595,10 +599,11 @@
         "推理",
         "代码"
       ],
-      "summary": "Qwen3.8 Max 托管旗舰 endpoint；参数规模与 context 尚未由该 endpoint 的一手 model card 单独核验。",
+      "summary": "Qwen3.8 Max 托管旗舰 endpoint；官方规格披露 1M context 与 2.4T MoE 总参数，95B active 仅作为底座 checkpoint 证据展示。",
       "source_ids": [
         "src-qwen38-repo",
-        "src-qwen38-flash"
+        "src-qwen38-flash",
+        "src-qwen38-max-spec"
       ]
     },
     {
@@ -624,7 +629,7 @@
       "variant": {
         "reasoning": true,
         "preview": false,
-        "long_context_max": 1000000
+        "long_context_max": 1010000
       },
       "tags": [
         "Flash",
@@ -635,16 +640,17 @@
       "summary": "125B main / 6B active；另有 deterministic n-gram memory，不能当作 active parameters。",
       "source_ids": [
         "src-qwen38-flash",
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-flash-hf"
       ]
     },
     {
-      "id": "qwen/qwen3.8-27b@2026-08-26",
+      "id": "qwen/qwen3.8-27b@2026-08-14",
       "family_id": "qwen/qwen3.8",
       "name": "Qwen3.8 27B",
       "provider": "Qwen",
       "mark": "Q",
-      "release_date": "2026-08-26",
+      "release_date": "2026-08-14",
       "status": "active",
       "access": "open_weights",
       "aliases": [
@@ -670,7 +676,8 @@
       ],
       "source_ids": [
         "src-qwen38-27b",
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-27b-hf"
       ]
     },
     {
@@ -1038,7 +1045,7 @@
       "modalities": [
         "text"
       ],
-      "context_window": null,
+      "context_window": 256000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -1053,7 +1060,8 @@
         "专用"
       ],
       "source_ids": [
-        "src-kimi-code"
+        "src-kimi-code",
+        "src-kimi-k2-hf"
       ]
     },
     {
@@ -1071,7 +1079,7 @@
       "modalities": [
         "text"
       ],
-      "context_window": null,
+      "context_window": 256000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -1087,7 +1095,8 @@
         "效率"
       ],
       "source_ids": [
-        "src-kimi-code"
+        "src-kimi-code",
+        "src-kimi-k2-hf"
       ]
     },
     {
@@ -1139,7 +1148,7 @@
       "modalities": [
         "text"
       ],
-      "context_window": null,
+      "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -1166,17 +1175,18 @@
       "mark": "Z",
       "release_date": "2026-08-27",
       "status": "active",
-      "access": "api",
+      "access": "open_weights",
       "aliases": [
         "glm-5.3-flash"
       ],
       "modalities": [
-        "text"
+        "text",
+        "image"
       ],
-      "context_window": null,
-      "params_total": null,
-      "params_active": null,
-      "open_weights": false,
+      "context_window": 1000000,
+      "params_total": 320000000000,
+      "params_active": 18000000000,
+      "open_weights": true,
       "variant": {
         "reasoning": true,
         "preview": false,
@@ -1188,7 +1198,8 @@
         "代码"
       ],
       "source_ids": [
-        "src-glm53-flash"
+        "src-glm53-flash",
+        "src-glm53-flash-hf"
       ]
     },
     {
@@ -1306,9 +1317,10 @@
         "image"
       ],
       "context_window": 1000000,
-      "params_total": null,
-      "params_active": null,
-      "open_weights": false,
+      "params_total": 428000000000,
+      "params_active": 23000000000,
+      "params_approximate": true,
+      "open_weights": true,
       "variant": {
         "reasoning": true,
         "preview": false
@@ -1320,7 +1332,8 @@
       ],
       "source_ids": [
         "src-minimax-m3",
-        "src-minimax-release"
+        "src-minimax-release",
+        "src-minimax-m3-hf"
       ]
     },
     {
@@ -1479,9 +1492,9 @@
         "audio"
       ],
       "context_window": 1000000,
-      "params_total": null,
-      "params_active": null,
-      "open_weights": false,
+      "params_total": 309000000000,
+      "params_active": 15000000000,
+      "open_weights": true,
       "variant": {
         "reasoning": true,
         "preview": false,
@@ -1494,7 +1507,8 @@
       ],
       "source_ids": [
         "src-mimo-models",
-        "src-mimo-updates"
+        "src-mimo-updates",
+        "src-mimo-v25-hf"
       ]
     },
     {
@@ -1538,7 +1552,7 @@
       "provider": "Google",
       "mark": "G",
       "release_date": "2026-02-19",
-      "status": "active",
+      "status": "preview",
       "access": "api",
       "aliases": [
         "gemini-3.1-pro",
@@ -1550,22 +1564,23 @@
         "video",
         "audio"
       ],
-      "context_window": null,
+      "context_window": 1048576,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
       "variant": {
         "reasoning": true,
-        "preview": false
+        "preview": true
       },
       "tags": [
         "多模态",
         "推理",
         "Agent"
       ],
-      "summary": "Legacy seed model retained as current comparison baseline. ",
+      "summary": "Gemini 3.1 Pro preview endpoint；1,048,576-token input、65,536-token max output，多模态原生能力。",
       "source_ids": [
-        "google-gemini31"
+        "google-gemini31",
+        "src-google-gemini31-spec"
       ]
     },
     {
@@ -1963,7 +1978,7 @@
       "modalities": [
         "text"
       ],
-      "context_window": null,
+      "context_window": 400000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
@@ -1979,6 +1994,7 @@
       "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
       "source_ids": [
         "src-openai-models",
+        "src-openai-gpt53-codex-spec",
         "src-epoch-benchmark-hub"
       ]
     },
@@ -2127,12 +2143,12 @@
       ]
     },
     {
-      "id": "qwen/qwen3.8-2.4t-a95b@2026-08-26",
+      "id": "qwen/qwen3.8-2.4t-a95b@2026-08-12",
       "family_id": "qwen/qwen3.8",
       "name": "Qwen3.8 2.4T A95B",
       "provider": "Qwen",
       "mark": "Q",
-      "release_date": "2026-08-26",
+      "release_date": "2026-08-12",
       "status": "active",
       "access": "open_weights",
       "aliases": [
@@ -2142,9 +2158,9 @@
       "modalities": [
         "text"
       ],
-      "context_window": null,
-      "params_total": null,
-      "params_active": null,
+      "context_window": 262144,
+      "params_total": 2400000000000,
+      "params_active": 95000000000,
       "open_weights": true,
       "variant": {
         "reasoning": true,
@@ -2155,9 +2171,10 @@
         "开放权重",
         "推理"
       ],
-      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "summary": "Qwen3.8 open-weight 2.4T MoE checkpoint；95B active、262,144 native context，使用自定义 qwen3.8-max 许可。",
       "source_ids": [
-        "src-qwen38-repo"
+        "src-qwen38-repo",
+        "src-qwen38-24t-hf"
       ]
     },
     {
@@ -2950,14 +2967,14 @@
       "access": "api",
       "aliases": ["gpt-5.4-pro", "gpt-5.4-pro-2026-03-05"],
       "modalities": ["text", "image"],
-      "context_window": null,
+      "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
       "variant": {"reasoning": true, "tier": "pro", "preview": false},
       "tags": ["推理", "高计算", "专业工作"],
-      "summary": "GPT-5.4 的 Pro 高计算 endpoint；参数量与稳定 context 上限保留为未知。",
-      "source_ids": ["src-openai-models"]
+      "summary": "GPT-5.4 的 Pro 高计算 endpoint；官方规格记录 1,050,000-token context，参数量未披露。",
+      "source_ids": ["src-openai-models", "src-openai-gpt54-pro-spec"]
     },
     {
       "id": "openai/gpt-5.4-nano@2026-03-17",
@@ -2977,7 +2994,7 @@
       "variant": {"reasoning": true, "tier": "nano", "preview": false},
       "tags": ["小模型", "效率", "多模态"],
       "summary": "GPT-5.4 nano dated snapshot；400K context、128K max output，支持 text/image input。",
-      "source_ids": ["src-openai-models"]
+      "source_ids": ["src-openai-models", "src-openai-gpt54-nano-spec"]
     },
     {
       "id": "openai/gpt-5-mini@2025-08-07",
@@ -3110,14 +3127,14 @@
       "access": "api",
       "aliases": ["gemini-3.7-flash"],
       "modalities": ["text", "image"],
-      "context_window": null,
+      "context_window": 1048576,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
       "variant": {"reasoning": true, "preview": false, "speed_variant": true},
       "tags": ["Flash", "最新", "多模态", "效率"],
-      "summary": "Google 官方目录中的当前 latest Flash endpoint；context 与参数规模未知。",
-      "source_ids": ["src-google-gemini-models"]
+      "summary": "Google 官方目录中的当前 latest Flash endpoint；1,048,576 input、65,536 max output，参数规模未披露。",
+      "source_ids": ["src-google-gemini-models", "src-google-gemini37-spec"]
     },
     {
       "id": "google/gemini-3.6-flash@current",
@@ -3190,14 +3207,14 @@
       "access": "api",
       "aliases": ["grok-4.6"],
       "modalities": ["text", "image"],
-      "context_window": null,
+      "context_window": 500000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
       "variant": {"reasoning": true, "preview": false},
       "tags": ["旗舰", "推理", "多模态"],
-      "summary": "xAI 当前 Grok 旗舰；参数规模与 context 保留为未知。",
-      "source_ids": ["src-xai-grok46"]
+      "summary": "xAI 当前 Grok 旗舰；官方 API 规格披露 500K context，参数规模未披露。",
+      "source_ids": ["src-xai-grok46", "src-xai-grok46-spec"]
     },
     {
       "id": "xai/grok-4.5@2026-07-16",
