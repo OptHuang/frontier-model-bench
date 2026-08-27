@@ -416,8 +416,9 @@ def assess_candidate(
         priority = "medium"
 
     candidate_id = row.get("candidate_id") or group.get("candidate_key")
+    review_fingerprint = _digest({"candidate_id": candidate_id, "row": row})
     return {
-        "review_id": f"review-{_digest({"candidate_id": candidate_id, "row": row})}",
+        "review_id": f"review-{review_fingerprint}",
         "candidate_id": candidate_id,
         "decision": "pending",
         "review_status": review_status,
