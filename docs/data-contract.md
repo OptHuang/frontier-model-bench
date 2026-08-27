@@ -23,9 +23,19 @@ data/
     latest.json              # 最新已批准快照指针
     matrix.json              # 页面读取的宽表索引
     health.json              # 新鲜度、冲突、覆盖率
+  public/
+    evidence.jsonl           # 公开榜单 reported/unverified 长表
+    unmapped.jsonl           # 尚未安全映射的完整候选
+    alternatives.jsonl       # 已映射但超过页面限额的候选
 ```
 
 `raw` 是不可变证据层，`observations` 是可审计事实层，`derived` 是可丢弃的构建产物。页面不应直接解析来源网页，也不应把 UI 排名写回事实层。
+
+公开榜单结果另有一个平行的 `public/reported evidence` 层（由
+`scripts/build_public_evidence.py` 生成）。它可以直接供页面展示大量来源报告值，但每行
+必须带 `verified: false`、`reviewStatus: unreviewed`、来源 URL/locator/retrieved_at/hash，
+并且不能参与 canonical atlas 的选值、排名或覆盖率。未安全映射的模型保留在
+`data/public/unmapped.jsonl`，不能因为页面需要填满矩阵而猜测 canonical release。
 
 ## 2. 当前 seed 兼容格式
 

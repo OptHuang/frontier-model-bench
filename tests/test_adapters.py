@@ -4,10 +4,12 @@ import unittest
 from pathlib import Path
 
 from scripts.adapters.arena import ArenaMetadataAdapter
+from scripts.adapters.aider import AiderPolyglotAdapter
 from scripts.adapters.base import AdapterRun
 from scripts.adapters.helm import HELMAdapter
 from scripts.adapters.huggingface import HuggingFaceLeaderboardAdapter
 from scripts.adapters.livebench import LiveBenchAdapter
+from scripts.adapters.mlebench import MLEBenchAdapter
 from scripts.adapters.swebench import SWEbenchOfficialAdapter
 
 
@@ -96,6 +98,25 @@ class AdapterFixtureTests(unittest.TestCase):
         self.assertEqual(run.candidates, [])
         self.assertTrue(run.metadata["metadata_only"])
         self.assertTrue(run.metadata["disabled"])
+
+    def test_aider_polyglot_emits_system_candidates_with_protocol(self):
+        rows = self.run_parse(AiderPolyglotAdapter(), "aider_polyglot_leaderboard.yml")
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["benchmark_ref"], "aider-polyglot")
+        self.assertEqual(rows[0]["value"], 62.2)
+        self.assertEqual(rows[0]["protocol"]["subject_type"], "system")
+        self.assertEqual(rows[0]["protocol"]["edit_format"], "diff")
+        self.assertEqual(rows[0]["metadata"]["date"], "2026-08-20")
+        self.assertEqual(rows[0]["status"], "candidate")
+
+    def test_mlebench_parses_main_table_and_complexity_splits(self):
+        rows = self.run_parse(MLEBenchAdapter(), "mlebench_readme.md")
+        self.assertEqual(len(rows), 4)
+        self.assertEqual({row["metric"] for row in rows}, {"lite", "medium", "high", "all"})
+        self.assertEqual(rows[0]["protocol"]["subject_type"], "system")
+        self.assertEqual(rows[0]["protocol"]["harness"], "DemoAgent")
+        self.assertEqual(rows[0]["metadata"]["date"], "2026-02-23")
+        self.assertEqual(rows[0]["value"], 80.3)
 
 
 if __name__ == "__main__":

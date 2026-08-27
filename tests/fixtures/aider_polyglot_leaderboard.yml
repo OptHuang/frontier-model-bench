@@ -1,0 +1,23 @@
+- dirname: 2026-08-20-10-00-00--gpt-5-6-diff
+  test_cases: 225
+  model: GPT-5.6
+  edit_format: diff
+  pass_rate_1: 62.2
+  pass_rate_2: 71.1
+  pass_num_1: 140
+  pass_num_2: 160
+  command: aider --model openai/gpt-5.6
+  date: 2026-08-20
+  versions: 0.86.0
+
+- dirname: 2026-08-21-10-00-00--qwen3-8
+  test_cases: 225
+  model: Qwen3.8
+  edit_format: whole
+  pass_rate_1: 48.0
+  pass_rate_2: 55.0
+  pass_num_1: 108
+  pass_num_2: 124
+  command: aider --model qwen/qwen3.8
+  date: 2026-08-21
+  versions: 0.86.0

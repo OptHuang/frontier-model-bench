@@ -12,11 +12,14 @@ from .ale import (
     AgentsLastExamAdapter,
     build_ale_adapters,
 )
+from .aider import AiderPolyglotAdapter
 from .arena import ArenaHFDatasetAdapter, ArenaMetadataAdapter, build_arena_adapters
 from .bfcl import BFCLAdapter, BFCLOfficialAdapter, build_bfcl_adapters
 from .helm import build_helm_adapters
 from .huggingface import build_huggingface_adapters
 from .livebench import LiveBenchAdapter
+from .mlebench import MLEBenchAdapter
+from .epoch import EpochBenchmarkAdapter
 from .swebench import SWEbenchOfficialAdapter
 
 
@@ -29,6 +32,9 @@ def all_adapters(
     adapters.update(build_huggingface_adapters())
     adapters["swebench-official"] = SWEbenchOfficialAdapter()
     adapters["livebench-official"] = LiveBenchAdapter()
+    adapters["src-aider-polyglot"] = AiderPolyglotAdapter()
+    adapters["src-mle-bench"] = MLEBenchAdapter()
+    adapters["src-epoch-benchmark-hub"] = EpochBenchmarkAdapter()
     adapters.update(build_helm_adapters())
     adapters.update(build_ale_adapters())
     adapters.update(build_bfcl_adapters())
@@ -42,6 +48,9 @@ def all_adapters(
 
 __all__ = [
     "all_adapters",
+    "AiderPolyglotAdapter",
+    "MLEBenchAdapter",
+    "EpochBenchmarkAdapter",
     "AgentsLastExamAdapter",
     "ALELeaderboardAdapter",
     "ALEV1Adapter",

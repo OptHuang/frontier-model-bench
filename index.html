@@ -37,7 +37,7 @@
           <div class="hero-copy">
             <p class="eyebrow"><span class="eyebrow-line"></span>MODEL INTELLIGENCE / 001</p>
             <h1 id="pageTitle">今天，谁在<br /><em>真正领先？</em></h1>
-            <p class="hero-lede">把分散在模型卡、论文与 benchmark 榜单里的成绩，压缩成一张可核验、可比较、可持续更新的地图。</p>
+            <p class="hero-lede">把分散在模型卡、论文与 benchmark 榜单里的成绩，压缩成一张可比较、可追溯、持续更新的地图；公开披露与本站复现明确分开。</p>
             <div class="hero-meta">
               <span class="meta-item"><span class="meta-label">SNAPSHOT</span><strong id="asOfLabel">—</strong></span>
               <span class="meta-divider"></span>
@@ -46,9 +46,9 @@
           </div>
           <div class="hero-aside" aria-label="数据说明">
             <div class="signal-card">
-              <div class="signal-top"><span class="signal-label">EVIDENCE QUALITY</span><span class="signal-value" id="qualityValue">—</span></div>
+              <div class="signal-top"><span class="signal-label">SOURCE QUALITY</span><span class="signal-value" id="qualityValue">—</span></div>
               <div class="quality-track"><span id="qualityBar"></span></div>
-              <p>已录入的分数保留设置与来源；这是记录质量，不是把不同口径合成的“总分”。</p>
+              <p>这是来源与协议的可追溯性，不是本站复现置信度；公开披露值仍标记“未复现”。</p>
             </div>
             <div class="quick-links">
               <a href="#matrix">查看全矩阵 <span>↘</span></a>
@@ -193,10 +193,22 @@
             <span><i class="legend-dot high"></i>高于 85</span>
             <span><i class="legend-dot mid"></i>70–85</span>
             <span><i class="legend-dot low"></i>低于 70</span>
-            <span><i class="legend-dash">—</i>未进入核验层（不等于未测试）</span>
+            <span><i class="legend-dash">—</i>暂无可展示公开值（不等于未测试）</span>
             <span class="legend-spacer"></span>
             <span><i class="source-chip">S</i>点击查看来源与设置</span>
+            <span class="evidence-legend"><i class="score-evidence evidence-approved">approved</i>已核验</span>
+            <span class="evidence-legend"><i class="score-evidence evidence-public">披露 · 未复现</i>公开来源</span>
           </div>
+          <section id="publicEvidenceSection" class="public-evidence-section" hidden aria-labelledby="publicEvidenceTitle">
+            <div class="public-evidence-heading">
+              <div>
+                <h3 id="publicEvidenceTitle">公开披露索引</h3>
+                <p>这里列出榜单、模型卡和公开 API 已报告的代表性行。它们会帮助填满信息地图，但每一行都明确标记“本站未复现”；点击可展开来源、定位、协议与快照。无法安全映射的来源原名不会被猜成另一个模型。</p>
+              </div>
+              <span class="public-evidence-actions"><span id="publicEvidenceCount" class="section-note"></span><a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">精选 JSONL ↗</a><a href="data/public/alternatives.jsonl" target="_blank" rel="noreferrer">其它映射 ↗</a></span>
+            </div>
+            <div id="publicEvidenceList" class="public-evidence-list"></div>
+          </section>
         </section>
 
         <section id="spotlightSection" class="spotlight-section" aria-labelledby="spotlightTitle">
@@ -214,7 +226,7 @@
           <div class="method-copy">
             <p class="section-index">03 / METHOD</p>
             <h2 id="methodTitle">把“一个分数”还原成一条证据链。</h2>
-            <p>这个页面不试图制造一个脱离语境的 SOTA 排名。每条 observation 至少应带有 benchmark 版本、指标、运行设置、观测时间与来源定位；不同协议之间默认不合并。</p>
+            <p>这个页面不试图制造一个脱离语境的 SOTA 排名。公开榜单值先作为“披露”展示，严格复现值另列为 canonical；每条记录尽量保留 benchmark 版本、指标、运行设置、观测时间与来源定位。不同协议之间默认不合并。</p>
             <div class="method-tags"><span>versioned</span><span>source-linked</span><span>protocol-aware</span><span>missing ≠ zero</span></div>
           </div>
           <div class="method-flow" aria-label="数据流">
@@ -228,7 +240,7 @@
 
         <footer class="footer">
           <span>Frontier Model Bench <span class="muted">· static MVP</span></span>
-          <span id="footerStatus">Data is illustrative until verified.</span>
+          <span id="footerStatus">公开披露值仅作参考；点击数值查看来源与口径。</span>
           <a href="README.md">Update guide ↗</a>
         </footer>
       </main>

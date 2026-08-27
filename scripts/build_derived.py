@@ -112,6 +112,32 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def load_public_evidence(root: Path) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
+    """Load the compact public/reported evidence layer if it exists.
+
+    Public leaderboard reports are intentionally kept outside canonical
+    observations.  The page index can still expose the curated, explicitly
+    unverified rows in one request; missing/older public artifacts simply
+    produce an empty layer and never block the canonical build.
+    """
+
+    path = root / "data" / "derived" / "public.json"
+    payload = load_json(path, {})
+    if not isinstance(payload, Mapping):
+        payload = {}
+    rows = payload.get("rows")
+    if not isinstance(rows, list):
+        rows = []
+    rows = [dict(row) for row in rows if isinstance(row, Mapping)]
+    meta = payload.get("meta")
+    stats = payload.get("stats")
+    return (
+        dict(meta) if isinstance(meta, Mapping) else {},
+        dict(stats) if isinstance(stats, Mapping) else {},
+        rows,
+    )
+
+
 def as_list(payload: Any, key: str | None = None) -> list[dict[str, Any]]:
     value = payload.get(key, []) if isinstance(payload, Mapping) and key else payload
     if not isinstance(value, list):
@@ -782,6 +808,12 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         run_for_site(row, models_by_id, benchmarks_by_id, source_by_id, harness_by_id)
         for row in sorted(registered_rows, key=lambda item: (str(item.get("observed_at") or ""), str(item.get("id"))), reverse=True)
     ]
+    # Public/reported evidence is a parallel display layer.  It is loaded
+    # after canonical selection so these rows cannot influence the default
+    # atlas ranking or coverage calculation.  The compact index is generated
+    # by ``scripts/build_public_evidence.py`` and keeps omitted/unmapped rows
+    # in a separate JSONL export.
+    public_meta, public_stats, public_rows = load_public_evidence(root)
     featured_ids = [item["id"] for item in site_benchmarks if item.get("featured")]
     numeric_rows = [
         row
@@ -838,6 +870,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "data/catalog/presets.json",
             "data/observations/results.jsonl",
             "data/models.json (legacy fallback)",
+            "data/derived/public.json (reported/unverified display layer, optional)",
         ],
     }
     site = {
@@ -850,6 +883,9 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "runs": site_runs,
         "presets": canonical_presets,
         "stats": stats,
+        "publicEvidence": public_rows,
+        "publicMeta": public_meta,
+        "publicStats": public_stats,
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:

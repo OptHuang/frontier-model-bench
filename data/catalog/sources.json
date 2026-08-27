@@ -655,5 +655,70 @@
     "license": "cc-by-nd-4.0",
     "license_note": "Catalog-only for now; leaderboard data is CC BY-ND 4.0 and must be checked before redistribution or automated ingestion.",
     "notes": "Distinct from Agents' Last Exam (ALE-V1): this ALE-Bench measures long-horizon algorithm engineering on AtCoder Heuristic Contests."
+  },
+  {
+    "id": "src-browsecomp",
+    "label": "OpenAI · BrowseComp benchmark",
+    "kind": "benchmark",
+    "publisher": "OpenAI",
+    "url": "https://openai.com/index/browsecomp/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "enabled": false,
+    "notes": "Official methodology/task release; no documented public leaderboard API. Keep provider-reported scores as candidate evidence with agent/tool setting and retrieval date."
+  },
+  {
+    "id": "src-aider-polyglot",
+    "label": "Aider · Polyglot coding leaderboard",
+    "kind": "official_repository",
+    "publisher": "Aider",
+    "url": "https://aider.chat/docs/leaderboards/",
+    "api_url": "https://raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml",
+    "download_url": "https://raw.githubusercontent.com/Aider-AI/aider/main/aider/website/_data/polyglot_leaderboard.yml",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "enabled": true,
+    "adapter_id": "src-aider-polyglot",
+    "notes": "Official repository YAML is machine-readable; page remains the human-facing context. Preserve the raw commit URL, edit format and date; rows are reported candidates, not reproduced runs."
+  },
+  {
+    "id": "src-androidworld",
+    "label": "Google Research · AndroidWorld",
+    "kind": "official_repository",
+    "publisher": "Google Research",
+    "url": "https://github.com/google-research/android_world",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "enabled": false,
+    "notes": "Repository documents tasks and evaluation; no stable leaderboard API. Results are system-level and must retain Android emulator/image, harness and task version."
+  },
+  {
+    "id": "src-mle-bench",
+    "label": "OpenAI · MLE-bench",
+    "kind": "official_repository",
+    "publisher": "OpenAI",
+    "url": "https://github.com/openai/mle-bench/",
+    "api_url": "https://raw.githubusercontent.com/openai/mle-bench/main/README.md",
+    "download_url": "https://raw.githubusercontent.com/openai/mle-bench/main/README.md",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "enabled": true,
+    "adapter_id": "src-mle-bench",
+    "notes": "Official repository README contains a versioned Markdown leaderboard table; rows are system candidates. Preserve grading report, environment, complexity split and date. New submissions are currently paused by the project."
+  },
+  {
+    "id": "src-epoch-benchmark-hub",
+    "label": "Epoch AI · Benchmarking Hub downloadable snapshot",
+    "kind": "official_artifact",
+    "publisher": "Epoch AI",
+    "url": "https://epoch.ai/benchmarks/use-this-data",
+    "api_url": "https://epoch.ai/data/benchmark_data.zip",
+    "download_url": "https://epoch.ai/data/benchmark_data.zip",
+    "default_evidence_level": "A",
+    "staleness_after_days": 14,
+    "adapter_id": "src-epoch-benchmark-hub",
+    "enabled": true,
+    "license": "CC-BY-4.0",
+    "license_note": "Epoch AI permits reuse/distribution with attribution; external tables retain original licences. Keep source file, row locator, and original source link."
   }
 ]

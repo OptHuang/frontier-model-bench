@@ -21,6 +21,9 @@ styles.css / app.js        # 无构建依赖的静态前端
 data/catalog/               # models / benchmarks / sources / harnesses / presets 注册表
 data/observations/results.jsonl # 追加式 canonical observation 长表
 data/derived/site.json      # 由脚本生成，供静态前端读取
+data/derived/public.json    # 公开榜单披露层的精选索引（当前约 1.9k 行）
+data/public/evidence.jsonl  # 精选公开证据长表（未复现，含来源定位）
+data/public/alternatives.jsonl # 已映射但未进入首屏的其它协议/版本
 data/models.json            # 旧 seed 兼容回退（逐步迁移中）
 docs/data-contract.md       # 长表 observation 与证据契约
 docs/model-catalog.md       # 模型身份、版本、endpoint 与淘汰规则
@@ -49,6 +52,12 @@ source snapshots → canonical observations → derived indexes → static UI
 - **Model Atlas**：每行一个 model release/config。适合 GPQA、MMLU-Pro、AIME、MMMU、LiveCodeBench 等直接评测；单元格仍显示 shots、effort、tools、evidence 与可比性。
 - **System Runs**：每行一个精确的 `model × endpoint × harness × protocol × benchmark version`。SWE-bench、Terminal-Bench、BFCL、τ-bench、OSWorld 等必须在这个视图中比较；不跨 harness 取最高值或平均值。
 
+页面默认还会叠加一个 **Public reported** 层：公开 leaderboard、模型卡和 provider
+披露的数字会直接进入矩阵，并显示 `披露 · 未复现`。这不是本站执行的结果，也不改变
+canonical 排名；点击单元格或公开披露索引，可以查看来源 URL、榜单行定位、抓取时间、
+快照 hash、harness/protocol 和原始 JSON。未安全映射的来源原名不猜测成 canonical
+release，而保留在维护 artifact/`unmapped.jsonl` 中供后验处理。
+
 预设由 `data/catalog/presets.json` 驱动，可切换 Frontier、Flash/Fast、小模型、数学、代码 Agent、工具、多模态、长上下文、中文/多语、开放权重、可靠性和参数规模等比较维度。`catalog-only` 模型只有打开“显示全量目录”才出现，缺失始终表示 `—`，不是 0。
 
 ## 更新数据
@@ -65,7 +74,7 @@ source snapshots → canonical observations → derived indexes → static UI
 
 4. 打开页面，检查矩阵横向滚动、筛选、详情抽屉、来源链接和缺失值语义，再提交一个小 PR。
 
-GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上先重建 `site.json` 再校验；Pages 发布同样只上传通过校验的静态产物。后续可按来源增加定时 adapter：抓取只生成候选数据和不可变快照，人工审阅后才进入默认矩阵。
+GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上先重建 `site.json` 再校验；Pages 发布同样只上传通过校验的静态产物。公开层可以先展示来源报告值，人工审阅后才追加到 canonical observations；两层都保留来源与状态，避免把“未复现”误读为“未测试”或“已证实”。
 
 ### 定期维护
 
@@ -75,6 +84,11 @@ GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上先�
 python3 scripts/maintenance_report.py --root . --output-dir /tmp/fmb-maintenance --check-sources
 # 可选：运行已注册公开来源 adapter（只写 candidate artifact）
 python3 scripts/fetch.py check --dry-run --root . --output-dir /tmp/fmb-fetch
+# 可选：从候选 artifact 重建公开披露层（仍不修改 approved observations）
+python3 scripts/build_public_evidence.py --root . --input-dir /tmp/fmb-fetch \
+  --output data/derived/public.json --jsonl-output data/public/evidence.jsonl \
+  --max-per-key 3
+python3 scripts/build_derived.py
 # 可选：整理候选为去重/分级审阅包，不修改 approved 数据
 python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \
   --output-dir /tmp/fmb-review --limit 50
@@ -84,9 +98,9 @@ python3 scripts/fetch.py check --sources lmarena-hf-dataset \
   --output-dir /tmp/fmb-arena-refresh
 ```
 
-候选必须经过来源定位、model/benchmark/version/protocol/evidence 审阅后，才通过 PR 追加到 `data/observations/results.jsonl`；详见 [`docs/maintenance-plan.md`](docs/maintenance-plan.md) 和 [data candidate issue template](.github/ISSUE_TEMPLATE/data-candidate.md)。
+候选中的数值行可以先由 `build_public_evidence.py` 放入公开披露层；只有经过来源定位、model/benchmark/version/protocol/evidence 审阅后，才通过 PR 追加到 `data/observations/results.jsonl`。详见 [`docs/maintenance-plan.md`](docs/maintenance-plan.md) 和 [data candidate issue template](.github/ISSUE_TEMPLATE/data-candidate.md)。
 
-目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release、Stanford HELM artifacts、Arena 官方 Hugging Face leaderboard dataset、BFCL V4 官方 CSV，以及 Agents' Last Exam（ALE-V1）公开 JSON endpoint；`scripts/fetch.py list` 会显示完整清单。BFCL 会保留 native FC / Prompt、固定 evaluator commit、成本、延迟和分类子指标；ALE 会按 `model × source harness × effort variant × split` 生成两项指标（Pass Rate / partial Score），二者都只进入候选审阅，不会伪装成未经协议说明的 model-only 分数。LMArena 互动页面仍只登记为 metadata-only，不抓取未文档化接口；`lmarena-hf-dataset` 只读取官方发布的版本化 dataset rows 并生成候选。SakanaAI 的 ALE-Bench 是独立的 algorithm-engineering benchmark，目前只登记 catalog，不与 Agents' Last Exam 合并。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
+目前已接入 Hugging Face leaderboard API、SWE-bench 官方 JSON、LiveBench dated release、Stanford HELM artifacts、Arena 官方 Hugging Face leaderboard dataset、BFCL V4 官方 CSV、Agents' Last Exam（ALE-V1）公开 JSON、Aider Polyglot 官方 YAML、MLE-bench README，以及 Epoch AI Benchmarking Hub 下载快照；`scripts/fetch.py list` 会显示完整清单。BFCL 会保留 native FC / Prompt、固定 evaluator commit、成本、延迟和分类子指标；ALE 会按 `model × source harness × effort variant × split` 生成两项指标（Pass Rate / partial Score），二者都只进入候选审阅，不会伪装成未经协议说明的 model-only 分数。LMArena 互动页面仍只登记为 metadata-only，不抓取未文档化接口；`lmarena-hf-dataset` 只读取官方发布的版本化 dataset rows 并生成候选。SakanaAI 的 ALE-Bench 是独立的 algorithm-engineering benchmark，目前只登记 catalog，不与 Agents' Last Exam 合并。维护步骤也封装在仓库内的 [`frontier-model-bench-maintenance` skill](skills/frontier-model-bench-maintenance/SKILL.md)，便于在其他 Codex 环境复用。
 
 ## 设计边界
 

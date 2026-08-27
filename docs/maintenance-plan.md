@@ -8,13 +8,17 @@
 来源页面 / API / Arena
         ↓（只读抓取，保留 URL、时间、hash、parser 版本）
 candidate 候选区（GitHub Actions artifact）
+        ├─→ public/reported evidence（数值先展示，明确“未复现”）
         ↓（人工确认身份、版本、协议、证据和许可证）
 approved observation（data/observations/results.jsonl）
         ↓
 build_derived.py → validate_data.py --strict → Pages
 ```
 
-定时任务永远不覆盖 `data/catalog/`、`data/observations/` 或已批准分数，也不自动把网页中的数字发布到首页。网络失败、网页改版和解析不确定性只能产生 warning/candidate；最后一步必须是人工审阅的 PR。
+定时任务永远不覆盖 `data/catalog/`、`data/observations/` 或已批准分数。数值完整且能
+安全保留来源定位的候选，可以先进入独立的 `public/reported evidence` 页面层；它必须
+显示“披露 · 未复现”，不参与 canonical 排名。网络失败、网页改版和解析不确定性只能
+产生 warning/candidate；进入 approved 仍必须是人工审阅的 PR。
 
 ## 2. 已配置的自动任务
 
@@ -31,6 +35,7 @@ build_derived.py → validate_data.py --strict → Pages
    - `source-status.json`：逐来源健康状态。
    - `artifacts/fetch/`：已注册公开 adapter 的 manifest、解析候选和汇总（`check --dry-run`，不保存原始 payload）。
    - `artifacts/review/`：由 `review_candidates.py` 生成的去重/分级审阅包；其中每条决策都保持 `pending`，不写入 approved 数据。
+   - `artifacts/maintenance/public*`：本次抓取可展示的 reported 快照、未映射队列和替代协议；只作公开信息层预览，不晋升 canonical。
 
 本地等价命令：
 
@@ -43,6 +48,9 @@ python3 scripts/fetch.py check --dry-run --root . --output-dir /tmp/fmb-fetch
 # 将候选整理成可逐条核对的 Markdown/JSON（仍是 candidate-only）
 python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \
   --output-dir /tmp/fmb-review --limit 50
+# 将数值完整的候选生成公开披露预览；仍不修改 approved 数据
+python3 scripts/build_public_evidence.py --root . --input-dir /tmp/fmb-fetch \
+  --output /tmp/fmb-public.json --jsonl-output /tmp/fmb-public.jsonl --max-per-key 3
 # Arena 人工分批扩展（定时任务仍使用 core/100 的安全默认）
 python3 scripts/fetch.py check --sources lmarena-hf-dataset \
   --arena-configs text,text_style_control --arena-max-rows 500 \
@@ -62,6 +70,8 @@ python3 scripts/validate_data.py --strict
 - 查看最近一次 `maintenance.yml` 的 `summary.md`。
 - 先处理 `high`：当前/preview 模型的 featured benchmark 缺口、来源失效、协议冲突和明显撤回。
 - 检查 source probe 的 4xx/5xx、重定向到登录页、robots/许可证变化；不要把 HTTP 200 当成数据解析成功。
+- 先看 public preview：它能快速告诉我们外部榜单已经报告了哪些值；确认来源、版本或
+  协议不清的行保留 `unreviewed`，不要因为矩阵想填满就手动改名或平均。
 - 用 `review.md`/`review.json` 逐条核对可确认事实，再放入一个小 PR；无法确认的只留在 candidate artifact，不手工“猜”分数。
 
 ### 每周：补全和冲突审阅
@@ -97,12 +107,13 @@ python3 scripts/validate_data.py --strict
 - **A：** benchmark owner 官方榜单、可复现运行产物。
 - **B：** provider model card/technical report，协议完整但属于 self-report。
 - **C：** 方法和设置公开的可信第三方榜单。
-- **D：** 二手报道、截图或协议不明；只进入 candidate，不进入默认矩阵。
+- **D：** 二手报道、截图或协议不明；数值完整时可进入 public/reported 索引并标记未复现，
+  但不进入 approved/canonical；缺值或无法定位的行只进入 candidate 队列。
 
 建议逐步为以下来源写 adapter（先做快照/解析，再做人工审阅）：
 
 - 官方与 benchmark owner：OpenAI、Anthropic、Google、Qwen、DeepSeek、Kimi、GLM、MiniMax、MiMo、HELM、SWE-bench、Terminal-Bench、LiveCodeBench、Humanity’s Last Exam、FrontierMath、BFCL、τ-bench、Toolathlon、OSWorld、CyberGym。
-- Arena/聚合观察：Arena 官方 `lmarena-hf-dataset`（HF `leaderboard-dataset` 的 text/vision/webdev/search/document/agent latest rows；默认每 config 100 行安全上限，超量显式标记 truncated）、Artificial Analysis、Hugging Face Open LLM Leaderboard、LiveBench、SuperCLUE 等；互动 Arena 页面仍禁用抓取。
+- Arena/聚合观察：Arena 官方 `lmarena-hf-dataset`（HF `leaderboard-dataset` 的 text/vision/webdev/search/document/agent latest rows；默认每 config 100 行安全上限，超量显式标记 truncated）、Epoch AI Benchmarking Hub（CC-BY 下载快照）、Aider Polyglot、MLE-bench、Artificial Analysis、Hugging Face Open LLM Leaderboard、LiveBench、SuperCLUE 等；互动 Arena 页面仍禁用抓取。
 
 Arena 的 Elo、聚合榜的 intelligence index 与 benchmark accuracy 是不同 metric；必须单独登记 benchmark/version/metric，不能合成一个“综合分”。聚合站可以帮助发现缺口，但若原始协议、采样和版本不完整，最多标 `conditional`，不冒充 exact。
 

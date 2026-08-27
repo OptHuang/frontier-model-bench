@@ -88,6 +88,21 @@ jobs:
             --output-dir artifacts/review \
             --limit 100
 
+      - name: Build public evidence preview
+        if: always() && hashFiles('artifacts/fetch/**/candidates.jsonl') != ''
+        # The broad source-reported layer is an artifact only.  It never
+        # promotes a candidate into canonical observations.
+        run: |
+          python scripts/build_public_evidence.py \
+            --root . \
+            --input-dir artifacts/fetch \
+            --output artifacts/maintenance/public.json \
+            --jsonl-output artifacts/maintenance/public-evidence.jsonl \
+            --unmapped-output artifacts/maintenance/public-unmapped.jsonl \
+            --alternatives-output artifacts/maintenance/public-alternatives.jsonl \
+            --max-per-key 3
+          python -c 'import json; s=json.load(open("artifacts/maintenance/public.json"))["stats"]; print("Public evidence preview: {selectedRows} selected / {deduplicatedRows} deduplicated rows; {mappedRows} mapped; {unmappedRows} unmapped.".format(**s))' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Add maintenance summary
         if: always()
         run: |

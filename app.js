@@ -18,9 +18,9 @@
     family: "all",
     harness: "all",
     runBenchmark: "all",
-    // Start with a readable current-frontier slice; “所有模型 / benchmark”
-    // remains available in the preset menu for the full registry.
-    preset: "frontier-current",
+    // Public evidence is broad by default; the preset menu still offers a
+    // compact current-frontier slice when a narrower view is preferable.
+    preset: "public-coverage",
     sort: "coverage",
     availableOnly: false,
     showCatalog: false,
@@ -39,7 +39,8 @@
     activeFilters: $("activeFilters"), presetHint: $("presetHint"), coverageNote: $("coverageNote"),
     matrixHead: $("matrixHead"), matrixBody: $("matrixBody"), matrixView: $("matrixView"), cardsView: $("cardsView"),
     emptyState: $("emptyState"), spotlightGrid: $("spotlightGrid"), spotlightSection: $("spotlightSection"),
-    atlasLegend: $("atlasLegend"), runsView: $("runsView"), runTableFrame: $("runTableFrame"),
+    atlasLegend: $("atlasLegend"), publicEvidenceSection: $("publicEvidenceSection"), publicEvidenceCount: $("publicEvidenceCount"), publicEvidenceList: $("publicEvidenceList"),
+    runsView: $("runsView"), runTableFrame: $("runTableFrame"),
     runTableHead: $("runTableHead"), runTableBody: $("runTableBody"), runCardsView: $("runCardsView"),
     runEmptyState: $("runEmptyState"), runCountLabel: $("runCountLabel"),
     atlasViewSwitcher: $("atlasViewSwitcher"), runViewSwitcher: $("runViewSwitcher"),
@@ -59,6 +60,7 @@
     if (value === null || value === undefined || value === "") return "—";
     const numeric = Number(value);
     if (!Number.isFinite(numeric)) return String(value);
+    if (Object.is(numeric, -0)) return "0";
     return Number.isInteger(numeric) ? String(numeric) : numeric.toFixed(digits).replace(/\.0$/, "");
   };
   const display = (value, fallback = "未注明") => {
@@ -66,19 +68,290 @@
     if (typeof value === "object") return Object.entries(value).map(([key, item]) => `${key}: ${item}`).join(" · ");
     return String(value);
   };
+  const unitLabel = (value, fallback = "%") => {
+    const unit = text(value, fallback);
+    const lowered = unit.toLowerCase();
+    return lowered === "percent" || lowered === "percentage" ? "%" : unit;
+  };
+
+  /*
+   * Public evidence is deliberately kept separate from our own run layer.
+   * Producers may call it `publicEvidence`, `evidenceRecords`, or simply
+   * `evidence`; this small adapter accepts all of those spellings and keeps
+   * provenance fields intact.  Evidence is ranked for display only — it is
+   * never silently upgraded to an independently reproduced result.
+   */
+  function evidenceStatus(raw, fallback = "reported") {
+    const value = raw && typeof raw === "object"
+      ? first(raw.approvalStatus, raw.approval_status, raw.status, raw.state,
+        raw.reviewStatus, raw.review_status, raw.verificationStatus, raw.verification_status,
+        raw.evidenceStatus, raw.evidence_status,
+        typeof raw.evidence === "string" ? raw.evidence : null, raw.kind)
+      : raw;
+    const status = String(first(value, fallback) || fallback).trim().toLowerCase().replace(/[\s_]+/g, "-");
+    if (["approved", "accepted", "verified", "reproduced", "canonical", "validated", "reviewed"].includes(status)) return "approved";
+    if (["candidate", "pending", "unreviewed", "discovered", "proposed", "queued"].includes(status)) return "candidate";
+    if (["reported", "published", "official", "provider", "provider-report", "self-report", "selfreported", "disclosed"].includes(status)) return "reported";
+    if (["missing", "unavailable", "not-reported"].includes(status)) return "missing";
+    return status || fallback;
+  }
+
+  function evidencePriority(item) {
+    const status = evidenceStatus(item, "reported");
+    return status === "approved" ? 3 : (status === "reported" ? 2 : (status === "candidate" ? 1 : 0));
+  }
+
+  function hasEvidencePayload(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    return [
+      "value", "score", "result", "percentage", "accuracy", "rawValue", "raw_value",
+      "status", "state", "approvalStatus", "approval_status", "evidenceLevel", "evidence_level",
+      "sourceId", "source_id", "sourceIds", "source_ids", "sourceUrl", "source_url", "url",
+      "locator", "sourceLocator", "source_locator", "evidenceId", "evidence_id", "candidateId",
+      "observedAt", "observed_at", "publishedAt", "published_at", "retrievedAt", "retrieved_at",
+      "fetchedAt", "fetched_at", "sha256", "snapshotHash", "snapshot_hash", "hash", "protocol",
+    ].some((key) => Object.prototype.hasOwnProperty.call(value, key));
+  }
+
+  function evidenceRelations(value, inherited = {}) {
+    const object = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+    const model = object.model && typeof object.model === "object" ? object.model : {};
+    const benchmark = object.benchmark && typeof object.benchmark === "object" ? object.benchmark : {};
+    return {
+      ...inherited,
+      modelId: first(object.modelId, object.model_id, object.canonicalModelId, object.canonical_model_id,
+        object.modelRef, object.model_ref, model.id, model.modelId, model.model_id,
+        object.sourceModel, object.source_model, object.sourceModelName, object.source_model_name,
+        object.modelName, object.model_name, inherited.modelId),
+      benchmarkId: first(object.benchmarkId, object.benchmark_id, object.benchmarkRef, object.benchmark_ref,
+        benchmark.id, benchmark.benchmarkId, benchmark.benchmark_id,
+        object.sourceBenchmark, object.source_benchmark, object.benchmarkName, object.benchmark_name, inherited.benchmarkId),
+    };
+  }
+
+  /* Recursively flatten common wrappers (`items`, `records`, keyed maps). */
+  function flattenEvidence(raw, inherited = {}, output = []) {
+    if (raw === null || raw === undefined || raw === "") return output;
+    if (Array.isArray(raw)) {
+      raw.forEach((item) => flattenEvidence(item, inherited, output));
+      return output;
+    }
+    if (typeof raw !== "object") {
+      output.push({ ...inherited, value: raw });
+      return output;
+    }
+    const relation = evidenceRelations(raw, inherited);
+    const wrappers = ["items", "records", "rows", "values", "evidence", "publicEvidence", "public_evidence", "evidenceRecords", "evidence_records"];
+    const nested = wrappers.filter((key) => Object.prototype.hasOwnProperty.call(raw, key));
+    if (hasEvidencePayload(raw) || (!nested.length && Object.keys(raw).length === 0)) {
+      output.push({ ...relation, ...raw });
+    }
+    nested.forEach((key) => {
+      const child = raw[key];
+      /* A string evidence level is metadata, not a standalone row. */
+      if (key === "evidence" && typeof child === "string") return;
+      flattenEvidence(child, relation, output);
+    });
+    if (!hasEvidencePayload(raw) && !nested.length) {
+      Object.entries(raw).forEach(([key, child]) => {
+        if (child === null || child === undefined) return;
+        const lower = key.toLowerCase();
+        const next = { ...relation };
+        if (lower.includes("model") && !next.modelId) next.modelId = key;
+        else if ((lower.includes("benchmark") || lower.includes("bench")) && !next.benchmarkId) next.benchmarkId = key;
+        else if (!next.modelId && (key.includes("/") || key.includes("@"))) next.modelId = key;
+        else if (!next.benchmarkId) next.benchmarkId = key;
+        flattenEvidence(child, next, output);
+      });
+    }
+    return output;
+  }
+
+  function normaliseEvidence(rawEvidence, fallback = {}) {
+    const raw = rawEvidence && typeof rawEvidence === "object" && !Array.isArray(rawEvidence)
+      ? { ...fallback, ...rawEvidence } : { ...fallback, value: rawEvidence };
+    const nestedEvidence = raw.evidence && typeof raw.evidence === "object" && !Array.isArray(raw.evidence) ? raw.evidence : {};
+    const rawValue = first(raw.value, raw.score, raw.result, raw.percentage, raw.accuracy, raw.rawValue, raw.raw_value);
+    const value = rawValue === null || rawValue === undefined || rawValue === ""
+      ? null : (Number.isFinite(Number(rawValue)) ? Number(rawValue) : rawValue);
+    const source = raw.source && typeof raw.source === "object" ? raw.source : {};
+    const sourceIds = list(first(raw.sourceIds, raw.source_ids, nestedEvidence.sourceIds, nestedEvidence.source_ids));
+    const sourceId = first(raw.sourceId, raw.source_id, typeof raw.source === "string" ? raw.source : null,
+      source.id, nestedEvidence.sourceId, nestedEvidence.source_id, ...sourceIds);
+    const sourceUrl = first(raw.sourceUrl, raw.source_url, raw.evidenceUrl, raw.evidence_url, raw.url, source.url, nestedEvidence.sourceUrl, nestedEvidence.source_url, nestedEvidence.evidenceUrl, nestedEvidence.evidence_url, nestedEvidence.url);
+    const sourceLabel = first(raw.sourceLabel, raw.source_label, raw.sourceTitle, raw.source_title,
+      raw.title, source.label, source.title, nestedEvidence.sourceLabel, nestedEvidence.source_label);
+    const subject = raw.subject && typeof raw.subject === "object" ? raw.subject : {};
+    const protocol = raw.protocol && typeof raw.protocol === "object" ? raw.protocol : {};
+    const level = first(raw.level, raw.evidenceLevel, raw.evidence_level, nestedEvidence.level,
+      nestedEvidence.evidenceLevel, nestedEvidence.evidence_level);
+    const status = evidenceStatus(raw, value === null ? "missing" : "reported");
+    const modelId = first(raw.canonicalModelId, raw.canonical_model_id, raw.modelId, raw.model_id,
+      raw.canonicalModel, raw.canonical_model,
+      raw.modelRef, raw.model_ref, raw.sourceModel, raw.source_model, raw.sourceModelName, raw.source_model_name,
+      raw.modelName, raw.model_name, fallback.modelId, fallback.model_id);
+    const benchmarkId = first(raw.benchmarkId, raw.benchmark_id, raw.benchmarkRef, raw.benchmark_ref,
+      raw.sourceBenchmark, raw.source_benchmark, raw.benchmarkName, raw.benchmark_name,
+      fallback.benchmarkId, fallback.benchmark_id);
+    return {
+      ...raw,
+      id: first(raw.id, raw.evidenceId, raw.evidence_id, raw.candidateId, raw.candidate_id),
+      evidenceId: first(raw.evidenceId, raw.evidence_id, raw.id, raw.candidateId, raw.candidate_id),
+      modelId,
+      benchmarkId,
+      subjectType: first(raw.subjectType, raw.subject_type, subject.type, subject.subjectType, subject.subject_type, protocol.subjectType, protocol.subject_type),
+      sourceModel: first(raw.sourceModel, raw.source_model, raw.sourceModelName, raw.source_model_name, raw.modelName, raw.model_name),
+      value,
+      unit: (() => {
+        const rawUnit = first(raw.unit, raw.displayUnit, raw.display_unit);
+        if (!rawUnit) return raw.unit;
+        const lowered = String(rawUnit).toLowerCase();
+        return lowered === "percent" || lowered === "percentage" ? "%" : rawUnit;
+      })(),
+      rawValue: first(raw.rawValue, raw.raw_value, raw.value, raw.score, raw.result),
+      status,
+      evidenceStatus: status,
+      level,
+      evidenceLevel: level,
+      sourceId,
+      sourceUrl,
+      sourceLabel,
+      locator: first(raw.locator, raw.sourceLocator, raw.source_locator, raw.evidenceLocator, raw.evidence_locator),
+      fetchedAt: first(raw.fetchedAt, raw.fetched_at, raw.retrievedAt, raw.retrieved_at, raw.retrievedOn, raw.retrieved_on),
+      snapshotHash: first(raw.snapshotHash, raw.snapshot_hash, raw.sha256, raw.hash, raw.checksum, raw.payloadSha256, raw.payload_sha256),
+      publishedAt: first(raw.publishedAt, raw.published_at),
+      observedAt: first(raw.observedAt, raw.observed_at, raw.date),
+      protocol: first(raw.protocol, raw.protocolConfig, raw.protocol_config, raw.setting, raw.config),
+      notes: first(raw.notes, raw.note, raw.description),
+      preferred: raw.preferred === true || raw.isPreferred === true || raw.is_preferred === true,
+      public: raw.public === true || raw.publicEvidence === true || raw.public_evidence === true || raw.origin === "public" || raw.evidenceOrigin === "public" || raw.verificationStatus === "not_reproduced",
+      evidenceOrigin: first(raw.evidenceOrigin, raw.evidence_origin, raw.origin, raw.public === true || raw.verificationStatus === "not_reproduced" ? "public" : "canonical"),
+    };
+  }
+
+  function evidenceItems(raw) {
+    if (!raw || typeof raw !== "object") return [];
+    const rawItems = [];
+    if (Array.isArray(raw.evidenceItems)) rawItems.push(...raw.evidenceItems);
+    ["publicEvidence", "public_evidence", "evidenceRecords", "evidence_records"].forEach((key) => {
+      if (raw[key] !== undefined && raw[key] !== null) rawItems.push(raw[key]);
+    });
+    if (Array.isArray(raw.evidence) || (raw.evidence && typeof raw.evidence === "object")) rawItems.push(raw.evidence);
+    if (!rawItems.length && hasEvidencePayload(raw)) rawItems.push(raw);
+    const flattened = [];
+    rawItems.forEach((item) => flattenEvidence(item, evidenceRelations(raw), flattened));
+    const normalised = flattened.map((item) => normaliseEvidence(item, evidenceRelations(raw))).filter((item) => item.value !== null || item.sourceUrl || item.sourceId || item.locator || item.status);
+    const seen = new Set();
+    return normalised.filter((item) => {
+      const key = [item.evidenceId || "", item.sourceId || "", item.sourceUrl || "", item.locator || "", item.status || "", item.value ?? ""].join("|");
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  /* A canonical run/score often stores the value on the parent object and
+     keeps only source metadata in `evidence`.  Hydrate that metadata row with
+     the parent value so the drawer does not render a misleading “missing”
+     evidence item. */
+  function hydrateEvidenceItems(items, raw, value) {
+    if (value === null || value === undefined || value === "") return items;
+    const fallbackStatus = evidenceStatus(raw, "reported");
+    const rawValue = first(raw?.rawValue, raw?.raw_value, raw?.value, raw?.score, raw?.result, value);
+    return (items || []).map((item) => {
+      if (item.value !== null && item.value !== undefined && item.value !== "") return item;
+      return normaliseEvidence({ ...item, value, rawValue, status: fallbackStatus, evidenceStatus: fallbackStatus }, {
+        ...evidenceRelations(raw),
+        value,
+        rawValue,
+        status: fallbackStatus,
+        evidenceLevel: first(item.evidenceLevel, item.evidence_level, raw?.evidenceLevel, raw?.evidence_level),
+      });
+    });
+  }
+
+  function chooseEvidence(items) {
+    return [...(items || [])].sort((a, b) => {
+      return Number(Boolean(b.preferred)) - Number(Boolean(a.preferred))
+        || evidencePriority(b) - evidencePriority(a)
+        || Number(Boolean(b.public || b.evidenceOrigin !== "public")) - Number(Boolean(a.public || a.evidenceOrigin !== "public"))
+        || (Number(a.selectionRank || 999) - Number(b.selectionRank || 999))
+        || String(b.observedAt || b.publishedAt || b.fetchedAt || "").localeCompare(String(a.observedAt || a.publishedAt || a.fetchedAt || ""));
+    })[0] || null;
+  }
+
+  function mergeScoreEntries(base, incoming) {
+    if (!base) return incoming;
+    if (!incoming) return base;
+    const merged = { ...base, ...incoming };
+    const items = evidenceItems(base).concat(evidenceItems(incoming));
+    const unique = [];
+    const seen = new Set();
+    items.forEach((item) => {
+      const key = [item.evidenceId || "", item.sourceId || "", item.sourceUrl || "", item.locator || "", item.status || "", item.value ?? ""].join("|");
+      if (!seen.has(key)) { seen.add(key); unique.push(item); }
+    });
+    const selected = chooseEvidence(unique);
+    if (selected) {
+      ["value", "rawValue", "sourceId", "sourceUrl", "sourceLabel", "locator", "fetchedAt", "snapshotHash", "publishedAt", "observedAt", "protocol", "notes", "evidenceLevel"].forEach((key) => {
+        if (selected[key] !== undefined && selected[key] !== null && selected[key] !== "") merged[key] = selected[key];
+      });
+      merged.evidenceStatus = selected.status;
+      merged.approvalStatus = selected.status;
+      merged.verified = selected.status;
+      merged.status = selected.status;
+      merged.public = Boolean(selected.public || selected.evidenceOrigin === "public");
+      merged.evidenceOrigin = selected.evidenceOrigin || (merged.public ? "public" : "canonical");
+      merged.subjectType = first(selected.subjectType, merged.subjectType);
+    }
+    merged.evidenceItems = unique;
+    merged.publicEvidence = unique;
+    return merged;
+  }
 
   function normaliseScore(rawEntry) {
-    if (rawEntry === null || rawEntry === undefined || rawEntry === "") return { value: null, verified: "missing" };
-    if (typeof rawEntry === "number") return { value: rawEntry, verified: "reported" };
-    if (typeof rawEntry === "string" && Number.isFinite(Number(rawEntry))) return { value: Number(rawEntry), verified: "reported" };
+    if (rawEntry === null || rawEntry === undefined || rawEntry === "") return { value: null, verified: "missing", evidenceItems: [] };
+    if (typeof rawEntry === "number") {
+      const evidence = normaliseEvidence({ value: rawEntry, status: "reported" });
+      return { value: rawEntry, verified: "reported", evidenceStatus: "reported", evidenceItems: [evidence], publicEvidence: [evidence] };
+    }
+    if (typeof rawEntry === "string" && Number.isFinite(Number(rawEntry))) {
+      const value = Number(rawEntry);
+      const evidence = normaliseEvidence({ value, rawValue: rawEntry, status: "reported" });
+      return { value, rawValue: rawEntry, verified: "reported", evidenceStatus: "reported", evidenceItems: [evidence], publicEvidence: [evidence] };
+    }
     const entry = { ...(typeof rawEntry === "object" ? rawEntry : { value: rawEntry }) };
     const rawValue = first(entry.value, entry.score, entry.result, entry.percentage, entry.accuracy);
     entry.value = rawValue === null || rawValue === undefined || rawValue === "" ? null : (Number.isFinite(Number(rawValue)) ? Number(rawValue) : rawValue);
     entry.setting = first(entry.setting, entry.protocol, entry.prompt, entry.config, "未说明");
-    entry.verified = first(entry.verified, entry.status, entry.evidence, entry.evidenceLevel, entry.evidence_level, entry.value === null ? "missing" : "reported");
-    entry.evidenceLevel = first(entry.evidenceLevel, entry.evidence_level, entry.evidence, entry.verified);
-    entry.observedAt = first(entry.observedAt, entry.observed_at, entry.date);
-    entry.sourceId = first(entry.sourceId, entry.source_id, entry.source, ...(list(entry.sourceIds || entry.source_ids)));
+    const items = hydrateEvidenceItems(evidenceItems(entry), entry, entry.value);
+    const selected = chooseEvidence(items);
+    const directEvidence = typeof entry.evidence === "string" ? entry.evidence : null;
+    entry.verified = first(entry.verified, entry.approvalStatus, entry.approval_status, entry.status, directEvidence,
+      selected?.status, entry.value === null ? "missing" : "reported");
+    entry.evidenceStatus = evidenceStatus(entry, selected?.status || (entry.value === null ? "missing" : "reported"));
+    entry.evidenceLevel = first(entry.evidenceLevel, entry.evidence_level, selected?.level, entry.verified);
+    entry.observedAt = first(entry.observedAt, entry.observed_at, entry.date, selected?.observedAt);
+    entry.sourceId = first(entry.sourceId, entry.source_id, typeof entry.source === "string" ? entry.source : null,
+      ...(list(entry.sourceIds || entry.source_ids)), selected?.sourceId);
+    entry.sourceUrl = first(entry.sourceUrl, entry.source_url, entry.url, selected?.sourceUrl);
+    entry.sourceLabel = first(entry.sourceLabel, entry.source_label, entry.sourceTitle, entry.source_title, selected?.sourceLabel);
+    entry.locator = first(entry.locator, entry.sourceLocator, entry.source_locator, selected?.locator);
+    entry.fetchedAt = first(entry.fetchedAt, entry.fetched_at, entry.retrievedAt, entry.retrieved_at, selected?.fetchedAt);
+    entry.snapshotHash = first(entry.snapshotHash, entry.snapshot_hash, entry.sha256, entry.hash, selected?.snapshotHash);
+    entry.publishedAt = first(entry.publishedAt, entry.published_at, selected?.publishedAt);
+    entry.protocol = first(entry.protocol, selected?.protocol);
+    entry.subjectType = first(entry.subjectType, entry.subject_type, selected?.subjectType);
+    entry.public = Boolean(entry.public || selected?.public || selected?.evidenceOrigin === "public");
+    entry.evidenceOrigin = first(entry.evidenceOrigin, entry.evidence_origin, selected?.evidenceOrigin, entry.public ? "public" : "canonical");
+    entry.publicEvidence = items;
+    entry.evidenceItems = items;
+    /* A public record can be the only value for a cell.  Promote the chosen
+       record's value for display, while retaining every alternative above. */
+    if (selected && selected.value !== null && selected.value !== undefined && selected.value !== "") {
+      entry.value = selected.value;
+      entry.rawValue = first(selected.rawValue, entry.rawValue, entry.value);
+    }
     entry.comparability = first(entry.comparability, entry.comparable, "conditional");
     entry.harnessId = first(entry.harnessId, entry.harness_id);
     entry.benchmarkVersion = first(entry.benchmarkVersion, entry.benchmark_version, entry.version);
@@ -87,19 +360,24 @@
 
   function scoresFor(model) {
     const out = {};
+    const addScore = (benchmarkId, rawEntry) => {
+      if (!benchmarkId) return;
+      const entry = normaliseScore(rawEntry);
+      out[benchmarkId] = mergeScoreEntries(out[benchmarkId], entry);
+    };
     const rawScores = first(model.scores, model.scorecard, model.results, model.observationsByBenchmark, {});
     if (Array.isArray(rawScores)) {
       rawScores.forEach((entry) => {
         const benchmarkId = first(entry?.benchmarkId, entry?.benchmark_id, entry?.benchmark, entry?.id);
-        if (benchmarkId) out[benchmarkId] = normaliseScore(entry);
+        addScore(benchmarkId, entry);
       });
     } else if (rawScores && typeof rawScores === "object") {
-      Object.entries(rawScores).forEach(([benchmarkId, entry]) => { out[benchmarkId] = normaliseScore(entry); });
+      Object.entries(rawScores).forEach(([benchmarkId, entry]) => addScore(benchmarkId, entry));
     }
     // Some early canonical drafts put observations directly on the model.
     list(model.observations).forEach((entry) => {
       const benchmarkId = first(entry?.benchmarkId, entry?.benchmark_id, entry?.benchmark, entry?.id);
-      if (benchmarkId && !out[benchmarkId]) out[benchmarkId] = normaliseScore(entry);
+      addScore(benchmarkId, entry);
     });
     return out;
   }
@@ -189,6 +467,9 @@
     const benchmarkId = text(first(run.benchmarkId, run.benchmark_id, benchmark.id, run.benchmarkName, run.benchmark_name), "unknown-benchmark");
     const rawValue = first(run.value, run.score, run.result, run.percentage);
     const numericValue = rawValue === null || rawValue === undefined || rawValue === "" ? null : (Number.isFinite(Number(rawValue)) ? Number(rawValue) : rawValue);
+    const runEvidence = hydrateEvidenceItems(evidenceItems(run), run, numericValue);
+    const selectedEvidence = chooseEvidence(runEvidence);
+    const directEvidence = typeof run.evidence === "string" ? run.evidence : null;
     return {
       ...run,
       id: text(first(run.id, run.runId, run.run_id), `run-${index + 1}`),
@@ -200,14 +481,25 @@
       benchmarkVersion: first(run.benchmarkVersion, run.benchmark_version, run.version, benchmark.version),
       metric: first(run.metric, run.metricName, run.metric_name, benchmark.metric),
       value: numericValue,
-      unit: text(first(run.unit, benchmark.unit), "%"),
+      unit: unitLabel(first(run.unit, benchmark.unit), "%"),
       protocol: first(run.protocol, run.protocolConfig, run.protocol_config, run.setting, run.config),
-      evidence: first(run.evidence, run.evidenceLevel, run.evidence_level, run.verified, "reported"),
-      evidenceLevel: first(run.evidenceLevel, run.evidence_level, run.evidence, run.verified, "reported"),
+      evidenceRaw: run.evidence,
+      evidence: first(directEvidence, run.status, run.verificationStatus, selectedEvidence?.status, "reported"),
+      evidenceStatus: evidenceStatus(run, selectedEvidence?.status || "reported"),
+      evidenceLevel: first(run.evidenceLevel, run.evidence_level, selectedEvidence?.level, "reported"),
       comparability: first(run.comparability, run.comparable, "conditional"),
-      status: first(run.status, run.verificationStatus, run.verification_status, "reported"),
-      sourceId: first(run.sourceId, run.source_id, run.source, ...(list(run.sourceIds || run.source_ids))),
-      observedAt: first(run.observedAt, run.observed_at, run.date),
+      status: first(run.status, run.verificationStatus, run.verification_status, selectedEvidence?.status, "reported"),
+      sourceId: first(run.sourceId, run.source_id, typeof run.source === "string" ? run.source : null,
+        ...(list(run.sourceIds || run.source_ids)), selectedEvidence?.sourceId),
+      sourceUrl: first(run.sourceUrl, run.source_url, run.url, selectedEvidence?.sourceUrl),
+      sourceLabel: first(run.sourceLabel, run.source_label, run.sourceTitle, run.source_title, selectedEvidence?.sourceLabel),
+      locator: first(run.locator, run.sourceLocator, run.source_locator, selectedEvidence?.locator),
+      fetchedAt: first(run.fetchedAt, run.fetched_at, run.retrievedAt, run.retrieved_at, selectedEvidence?.fetchedAt),
+      snapshotHash: first(run.snapshotHash, run.snapshot_hash, run.sha256, run.hash, selectedEvidence?.snapshotHash),
+      publishedAt: first(run.publishedAt, run.published_at, selectedEvidence?.publishedAt),
+      observedAt: first(run.observedAt, run.observed_at, run.date, selectedEvidence?.observedAt),
+      evidenceItems: runEvidence,
+      publicEvidence: runEvidence,
       cost: first(run.cost, run.costUsd, run.cost_usd, run.price),
       latency: first(run.latency, run.latencyMs, run.latency_ms),
       tokens: first(run.tokens, run.outputTokens, run.output_tokens),
@@ -270,6 +562,40 @@
     };
   }
 
+  function publicBenchmarkFromEvidence(item) {
+    const id = text(first(item?.benchmarkId, item?.benchmark_id), "public-benchmark");
+    const sourceName = text(first(item?.benchmarkName, item?.benchmark_name), id);
+    const lower = id.toLowerCase();
+    let family = "public / other";
+    let familyLabel = "公开切片";
+    if (lower.startsWith("livebench-")) { family = "coding / reasoning"; familyLabel = "LiveBench"; }
+    else if (lower.startsWith("helm-")) { family = "general / knowledge"; familyLabel = "HELM"; }
+    else if (lower.startsWith("arena-")) { family = lower.includes("agent") || lower.includes("web") || lower.includes("search") ? "agent / preference" : "preference"; familyLabel = "Arena"; }
+    else if (lower.includes("aime") || lower.includes("math") || lower.includes("hmmt")) { family = "math / science"; familyLabel = "Math"; }
+    else if (lower.includes("swe") || lower.includes("terminal") || lower.includes("code")) { family = "coding"; familyLabel = "Coding"; }
+    const unitRaw = text(first(item?.unit, "%"), "%");
+    const unit = unitRaw.toLowerCase() === "percent" || unitRaw.toLowerCase() === "percentage" ? "%" : unitRaw;
+    const scale = unit === "%" ? 100 : (unit.toLowerCase() === "fraction" ? { min: 0, max: 1 } : null);
+    const subjectType = text(first(item?.subjectType, item?.subject_type), "model");
+    return normaliseBenchmark({
+      id,
+      name: sourceName === id ? id.replace(/^(livebench|helm)-/i, "$1 · ").replace(/-/g, " ") : sourceName,
+      short: sourceName === id ? id.replace(/^(livebench|helm)-/i, "").replace(/-/g, " ") : sourceName,
+      family,
+      familyLabel,
+      metric: first(item?.metricId, item?.metric_id, "score"),
+      metricLabel: first(item?.metricId, item?.metric_id, "score"),
+      unit,
+      ...(scale ? { scale } : {}),
+      direction: "higher",
+      version: first(item?.benchmarkVersionId, item?.benchmarkVersion, item?.benchmark_version),
+      evaluationMode: subjectType.toLowerCase() === "system" ? "system" : "direct",
+      publicOnly: true,
+      sourceId: item?.sourceId,
+      description: "来自公开榜单或模型卡的切片；本站未独立复现。",
+    });
+  }
+
   function normalise(raw) {
     const source = raw && typeof raw === "object" ? raw : {};
     const benchmarks = list(source.benchmarks).map(normaliseBenchmark);
@@ -280,7 +606,7 @@
     catalogModels.forEach((model) => { if (!known.has(model.id)) { merged.push(model); known.add(model.id); } });
     const harnesses = list(source.harnesses).map(normaliseHarness);
     const rawRuns = list(source.runs).map(normaliseRun);
-    const runs = rawRuns.length ? rawRuns : deriveRuns(models, benchmarks);
+    let runs = rawRuns.length ? rawRuns : deriveRuns(models, benchmarks);
     // Be forgiving when a producer ships a run before its registry row. The
     // row is surfaced as catalog-only rather than silently dropping evidence.
     const knownModelIds = new Set(merged.map((model) => model.id));
@@ -297,6 +623,114 @@
         knownBenchmarkIds.add(run.benchmarkId);
       }
     });
+    /*
+     * Public leaderboard rows are useful context even when they have not
+     * passed our own review.  Map only exact canonical ids/names/aliases;
+     * unmatched rows stay in `unmappedEvidence` for inspection and are never
+     * turned into a fabricated model row.
+     */
+    const rawPublicEvidence = ["publicEvidence", "public_evidence", "evidenceRecords", "evidence_records"]
+      .filter((key) => source[key] !== undefined && source[key] !== null)
+      .map((key) => source[key]);
+    const flattenedPublicEvidence = [];
+    rawPublicEvidence.forEach((item) => flattenEvidence(item, {}, flattenedPublicEvidence));
+    const publicEvidence = flattenedPublicEvidence
+      .map((item) => ({ ...normaliseEvidence(item), public: true, evidenceOrigin: "public" }))
+      .filter((item) => item.value !== null || item.sourceUrl || item.sourceId || item.locator || item.status);
+    // Public adapters may expose a benchmark slice before it has a canonical
+    // registry row (for example each LiveBench or HELM sub-suite). Add a
+    // display-only definition rather than dropping those cells or implying
+    // that two differently evaluated suites are identical.
+    const benchmarkIds = new Set(benchmarks.map((benchmark) => benchmark.id));
+    publicEvidence.forEach((item) => {
+      const id = first(item.benchmarkId, item.benchmark_id);
+      if (id && !benchmarkIds.has(String(id))) {
+        const benchmark = publicBenchmarkFromEvidence(item);
+        benchmarks.push(benchmark);
+        benchmarkIds.add(benchmark.id);
+      }
+    });
+    const modelLookup = new Map();
+    const benchmarkLookup = new Map();
+    const addLookup = (map, value, object) => {
+      if (value === undefined || value === null || value === "") return;
+      map.set(String(value).trim().toLowerCase(), object);
+    };
+    merged.forEach((model) => {
+      [model.id, model.name, ...(model.aliases || [])].forEach((value) => addLookup(modelLookup, value, model));
+    });
+    benchmarks.forEach((benchmark) => {
+      [benchmark.id, benchmark.name, benchmark.short].forEach((value) => addLookup(benchmarkLookup, value, benchmark));
+    });
+    const unmappedEvidence = [];
+    publicEvidence.forEach((evidence) => {
+      const modelKey = first(evidence.canonicalModelId, evidence.canonical_model_id, evidence.modelId, evidence.model_id, evidence.modelRef, evidence.model_ref);
+      const benchmarkKey = first(evidence.benchmarkId, evidence.benchmark_id);
+      const model = modelLookup.get(String(modelKey || "").trim().toLowerCase());
+      const benchmark = benchmarkLookup.get(String(benchmarkKey || "").trim().toLowerCase());
+      if (!model || !benchmark) {
+        unmappedEvidence.push(evidence);
+        return;
+      }
+      const mapped = { ...evidence, modelId: model.id, benchmarkId: benchmark.id, public: true, evidenceOrigin: "public" };
+      model.scores[benchmark.id] = mergeScoreEntries(model.scores[benchmark.id], normaliseScore(mapped));
+      evidence.mappedModelId = model.id;
+      evidence.mappedBenchmarkId = benchmark.id;
+      evidence.mappingStatus = "mapped";
+    });
+    // Keep agent/tool/environment measurements in System Runs as well. The
+    // atlas cell remains useful for coverage, but its explicit system badge
+    // prevents it being mistaken for a bare-model score.
+    const publicRuns = [];
+    publicEvidence.forEach((evidence, index) => {
+      if (evidence.value === null || evidence.value === undefined) return;
+      const mappedModel = merged.find((item) => item.id === first(evidence.canonicalModelId, evidence.modelId, evidence.modelRef));
+      const benchmark = benchmarks.find((item) => item.id === evidence.benchmarkId);
+      const subject = String(first(evidence.subjectType, evidence.subject_type, benchmark?.evaluationMode, "model")).toLowerCase();
+      if (!mappedModel || subject !== "system") return;
+      publicRuns.push(normaliseRun({
+        ...evidence,
+        id: `public-${evidence.id || index + 1}`,
+        modelId: mappedModel.id,
+        modelName: mappedModel.name,
+        benchmarkId: benchmark.id,
+        benchmarkVersion: evidence.benchmarkVersion || evidence.benchmarkVersionId || benchmark.version,
+        metric: evidence.metricId || benchmark.metric,
+        value: evidence.value,
+        unit: evidence.unit || benchmark.unit,
+        status: "reported",
+        evidenceStatus: "reported",
+        evidenceLevel: evidence.evidenceLevel || "D",
+        public: true,
+        evidenceOrigin: "public",
+        evidenceItems: [evidence],
+      }, index));
+    });
+    const runIds = new Set(runs.map((run) => run.id));
+    runs = runs.concat(publicRuns.filter((run) => !runIds.has(run.id)));
+    const harnessIds = new Set(harnesses.map((harness) => harness.id));
+    publicEvidence.forEach((item) => {
+      const id = first(item.harnessId, item.harness_id, item.harness);
+      if (id && !harnessIds.has(String(id))) {
+        harnesses.push(normaliseHarness({
+          id: String(id),
+          name: item.harness || id,
+          publicOnly: true,
+          description: "公开来源标注的 harness；本站未独立复现。",
+        }));
+        harnessIds.add(String(id));
+      }
+    });
+    const presets = list(source.presets).map(normalisePreset);
+    if (publicEvidence.length && !presets.some((preset) => preset.id === "public-coverage")) {
+      presets.unshift(normalisePreset({
+        id: "public-coverage",
+        label: "公开覆盖 / 全量切片",
+        description: "展示目录与公开榜单已报告的全部 benchmark 切片；每个披露值均标记为本站未复现。",
+        model_filter: { status: ["active", "preview", "restricted"] },
+        mode: "atlas",
+      }));
+    }
     return {
       ...source,
       meta: source.meta || {},
@@ -305,8 +739,10 @@
       catalogModels,
       harnesses,
       runs,
-      presets: list(source.presets).map(normalisePreset),
+      presets,
       sources: list(source.sources),
+      publicEvidence,
+      unmappedEvidence,
     };
   }
 
@@ -316,6 +752,7 @@
     const match = (state.data?.sources || []).find((source) => source.id === idOrSource || source.url === idOrSource);
     return match || (String(idOrSource).startsWith("http") ? { id: idOrSource, url: idOrSource, label: idOrSource } : null);
   };
+  const sourceContextUrl = (source) => first(source?.web_url, source?.page_url, source?.homepage, source?.website, source?.url);
   const benchmarkFor = (id) => (state.data?.benchmarks || []).find((benchmark) => benchmark.id === id);
   const harnessFor = (id) => (state.data?.harnesses || []).find((harness) => harness.id === id);
   const modelById = (id) => (state.data?.models || []).find((model) => model.id === id);
@@ -472,6 +909,8 @@
 
   function scoreClass(entry, benchmark) {
     if (!entry || entry.value === null || entry.value === undefined || !Number.isFinite(Number(entry.value))) return "score-missing";
+    const unit = String(benchmark?.unit || "").toLowerCase();
+    if (unit && !["%", "percent", "percentage", "fraction"].includes(unit) && benchmark?.publicOnly) return "score-neutral";
     const ratio = scoreRatio(entry.value, benchmark);
     if (benchmark?.direction === "lower") {
       if (ratio <= 0.15) return "score-high";
@@ -491,25 +930,53 @@
   function statusLabel(entry) {
     const value = entry?.value;
     if (value === null || value === undefined || value === "") return "未报告";
-    const status = String(first(entry.verified, entry.status, entry.evidence, "reported")).toLowerCase();
-    if (status === "verified" || status === "reproduced") return "已核验";
-    if (status === "reported" || status === "official") return "官方披露";
+    const selected = chooseEvidence(evidenceItems(entry));
+    const publicEvidence = Boolean(entry?.public || entry?.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public");
+    const status = evidenceStatus(entry, selected?.status || "reported");
+    if (publicEvidence && status === "candidate") return "榜单候选 · 未复现";
+    if (publicEvidence) return "榜单披露 · 未复现";
+    if (status === "approved" || status === "verified" || status === "reproduced") return "已核验";
+    if (status === "reported" || status === "official" || status === "published") return "官方披露 · 未复现";
+    if (status === "candidate") return "候选 · 未复现";
     if (status === "conditional") return "条件性";
     if (status === "demo" || status === "illustrative") return "示例数据";
     return status;
   }
   function statusClass(entry) {
     if (!entry || entry.value === null || entry.value === undefined || entry.value === "") return "missing";
-    const status = String(first(entry.verified, entry.status, entry.evidence, "reported")).toLowerCase();
-    if (["reported", "official", "verified", "reproduced"].includes(status)) return "reported";
+    const selected = chooseEvidence(evidenceItems(entry));
+    const publicEvidence = Boolean(entry?.public || entry?.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public");
+    if (publicEvidence) return "conditional";
+    const status = evidenceStatus(entry, selected?.status || "reported");
+    if (status === "approved" || ["reported", "official", "verified", "reproduced", "published"].includes(status)) return status === "approved" ? "approved" : "reported";
+    if (status === "candidate") return "conditional";
     if (status === "conditional") return "conditional";
     if (status === "demo" || status === "illustrative") return "demo";
     return "conditional";
   }
+  function isPublicEvidence(entry) {
+    const selected = chooseEvidence(evidenceItems(entry));
+    return Boolean(entry?.public || entry?.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public");
+  }
+  function evidenceBadge(entry, compact = false) {
+    if (!entry || entry.value === null || entry.value === undefined || entry.value === "") return "";
+    const items = evidenceItems(entry);
+    const selected = chooseEvidence(items);
+    if (!selected && !entry?.evidenceStatus && !entry?.status) return "";
+    const status = evidenceStatus(entry, selected?.status || "reported");
+    const publicEvidence = isPublicEvidence(entry);
+    const system = String(first(entry?.subjectType, entry?.subject_type, selected?.subjectType, "")).toLowerCase() === "system";
+    const label = publicEvidence
+      ? (status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")
+      : (status === "approved" ? "approved" : (status === "candidate" ? "candidate · 未复现" : "官方披露 · 未复现"));
+    const count = items.length > 1 ? ` +${items.length - 1}` : "";
+    const systemMark = system ? " · system" : "";
+    return `<span class="score-evidence evidence-${slug(status)}${publicEvidence ? " evidence-public" : ""}${system ? " evidence-system" : ""}" title="${esc(status === "approved" ? `${items.length || 1} 条已核验证据` : "来源披露数字，本项目尚未独立复现")}">${esc(label)}${compact ? "" : count}${esc(systemMark)}</span>`;
+  }
   function evidenceWeight(entry) {
-    const tier = String(first(entry?.evidenceLevel, entry?.evidence_level, "")).toUpperCase();
+    const tier = String(first(entry?.evidenceLevel, entry?.evidence_level, chooseEvidence(evidenceItems(entry))?.level, "")).toUpperCase();
     const tierWeight = { A: 1, B: 0.85, C: 0.65, D: 0.4 }[tier];
-    const status = String(first(entry?.verified, entry?.status, entry?.evidence, "reported")).toLowerCase();
+    const status = evidenceStatus(entry, chooseEvidence(evidenceItems(entry))?.status || "reported");
     const fallback = ["verified", "reproduced"].includes(status) ? 1 : (["reported", "official", "published"].includes(status) ? 0.8 : 0.45);
     const comparability = String(first(entry?.comparability, "conditional")).toLowerCase();
     const comparabilityWeight = comparability === "exact" ? 1 : (comparability === "none" ? 0.7 : 0.9);
@@ -587,7 +1054,7 @@
     const cards = [...document.querySelectorAll(".stat-card")];
     if (cards.length < 4) return;
     const labels = mode === "runs" ? ["SYSTEM MODELS", "RUN BENCHMARKS", "SYSTEM RUNS", "VALUE COVERAGE"] : ["TRACKED MODELS", "BENCHMARKS", "OBSERVATIONS", "COVERAGE"];
-    const notes = mode === "runs" ? ["参与当前筛选的模型", "当前运行记录覆盖的 benchmark", "有 protocol 的系统记录", "运行记录非缺失率"] : ["当前目录中的 model release", "跨能力面的 benchmark", "直接 model-level 成绩", "矩阵非缺失率"];
+    const notes = mode === "runs" ? ["参与当前筛选的模型", "当前运行记录覆盖的 benchmark", "有 protocol 的系统记录", "运行记录非缺失率"] : ["当前目录中的 model release", "跨能力面的 benchmark", "canonical + 公开披露值", "矩阵非缺失率"];
     cards.forEach((card, index) => {
       const kicker = card.querySelector(".stat-kicker");
       const note = card.querySelector(".stat-note");
@@ -637,35 +1104,77 @@
       if (els.qualityBar) els.qualityBar.style.width = `${qualityPct}%`;
       setStatCopy("atlas");
     }
-    if (els.asOfLabel) els.asOfLabel.textContent = state.data?.meta?.asOf || state.data?.meta?.lastUpdated?.slice?.(0, 10) || "—";
+    if (els.asOfLabel) els.asOfLabel.textContent = state.data?.publicMeta?.generatedAt?.slice?.(0, 10) || state.data?.meta?.asOf || state.data?.meta?.lastUpdated?.slice?.(0, 10) || "—";
     if (els.cadenceLabel) els.cadenceLabel.textContent = state.data?.meta?.updateCadence || state.data?.meta?.update_cadence || "—";
     if (els.coverageNote) {
       const stats = state.data?.stats || {};
-      const candidateHint = stats.candidateRows ? `；另有 ${fmt(stats.candidateRows, 0)} 条公开候选待审` : "；公开榜单候选由日常维护任务另行审阅";
-      els.coverageNote.innerHTML = `矩阵空白表示尚未进入 approved 核验层，不代表没人测试${candidateHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
+      const publicStats = state.data?.publicStats || {};
+      const publicHint = publicStats.rows
+        ? `；公开层已载入 ${fmt(publicStats.rows, 0)} 条精选披露（原始去重 ${fmt(publicStats.deduplicatedRows || 0, 0)} 条，${fmt(publicStats.unmappedRows || 0, 0)} 条待映射/替代行另存）`
+        : "；公开榜单候选由日常维护任务另行审阅";
+      const canonicalHint = stats.observedCells !== undefined ? `；canonical 已整理 ${fmt(stats.observedCells, 0)} 个单元格` : "";
+      els.coverageNote.innerHTML = `矩阵数值包含公开来源报告值；“披露 · 未复现”不代表本站复现，空白也不代表没人测试${canonicalHint}${publicHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
     }
     const status = String(state.data?.meta?.status || "curated").toLowerCase();
     const isDemo = ["demo", "illustrative", "seed"].includes(status);
-    if (els.freshnessPill) els.freshnessPill.innerHTML = `<span class="status-dot"></span><span>${isDemo ? "seed snapshot" : "curated snapshot"}</span>`;
-    if (els.footerStatus) els.footerStatus.textContent = isDemo ? "Seed data: replace or verify before citing." : `${state.data?.runs?.length || 0} system runs · sources linked per observation.`;
+    if (els.freshnessPill) els.freshnessPill.innerHTML = `<span class="status-dot"></span><span>${isDemo ? "seed snapshot" : (state.data?.publicStats?.rows ? "public + curated" : "curated snapshot")}</span>`;
+    if (els.footerStatus) els.footerStatus.textContent = isDemo ? "Seed data: replace or verify before citing." : `${state.data?.runs?.length || 0} system runs · public reports are marked not reproduced.`;
   }
 
   function renderMatrix() {
     const benchmarks = filteredBenchmarks();
     const models = filteredModels();
-    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}</small></span></th>`).join("")}</tr>`;
+    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}${benchmark.publicOnly ? " · public" : ""}</small></span></th>`).join("")}</tr>`;
     if (els.matrixBody) els.matrixBody.innerHTML = models.map((model) => {
       const cells = benchmarks.map((benchmark) => {
         const entry = scoreEntry(model, benchmark.id);
         const missing = entry.value === null || entry.value === undefined;
-        const source = sourceFor(entry.sourceId);
+        const selectedEvidence = chooseEvidence(evidenceItems(entry));
+        const source = sourceFor(first(entry.sourceId, entry.sourceUrl, selectedEvidence?.sourceId, selectedEvidence?.sourceUrl));
         const sourceMark = source ? '<span class="source-chip">S</span>' : "";
         const runHint = missing && entry.systemRunCount ? `<span class="score-run-hint">↗ ${entry.systemRunCount} run${entry.systemRunCount === 1 ? "" : "s"}</span>` : "";
-        return `<td class="score-cell ${scoreClass(entry, benchmark)}" data-model="${esc(model.id)}" data-benchmark="${esc(benchmark.id)}" tabindex="0" role="button" aria-label="${esc(model.name)} ${esc(benchmark.name)} ${missing ? (entry.systemRunCount ? `${entry.systemRunCount} system runs；切换 System Runs` : "未报告") : fmt(entry.value) + (benchmark.unit || "")}"><span class="score-value">${missing ? "—" : fmt(entry.value)}${!missing && benchmark.unit ? `<small>${esc(benchmark.unit)}</small>` : ""}${sourceMark}</span>${runHint}<span class="score-setting">${esc(display(entry.setting, "未说明"))}</span></td>`;
+        const evidenceMarkup = evidenceBadge(entry);
+        const ariaEvidence = !missing && evidenceMarkup ? `；${statusLabel(entry)}` : "";
+        return `<td class="score-cell ${scoreClass(entry, benchmark)}" data-model="${esc(model.id)}" data-benchmark="${esc(benchmark.id)}" tabindex="0" role="button" aria-label="${esc(model.name)} ${esc(benchmark.name)} ${missing ? (entry.systemRunCount ? `${entry.systemRunCount} system runs；切换 System Runs` : "未报告") : fmt(entry.value) + (benchmark.unit || "") + ariaEvidence}"><span class="score-value">${missing ? "—" : fmt(entry.value)}${!missing && benchmark.unit ? `<small>${esc(benchmark.unit)}</small>` : ""}${sourceMark}</span>${evidenceMarkup}${runHint}<span class="score-setting">${esc(display(entry.setting, "未说明"))}</span></td>`;
       }).join("");
       return `<tr><td class="model-cell" data-model="${esc(model.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)}">${modelMarkup(model)}</td>${cells}</tr>`;
     }).join("");
     if (els.emptyState) els.emptyState.hidden = models.length !== 0;
+  }
+
+  function renderPublicEvidence() {
+    const recordMap = new Map();
+    [...(state.data?.publicEvidence || []), ...(state.data?.unmappedEvidence || [])].forEach((item, index) => {
+      recordMap.set(item?.id || `public-${index}`, item);
+    });
+    const records = [...recordMap.values()];
+    if (!els.publicEvidenceSection || !els.publicEvidenceList) return;
+    const query = state.search.trim().toLowerCase();
+    const filtered = records.filter((item) => {
+      if (!query) return true;
+      return [item.modelName, item.modelRef, item.canonicalModelId, item.benchmarkName, item.benchmarkId,
+        item.metricId, item.sourceLabel, item.sourceId, item.harness, item.harnessId, display(item.protocol)].filter(Boolean).join(" ").toLowerCase().includes(query);
+    });
+    const visible = filtered.slice(0, 60);
+    els.publicEvidenceSection.hidden = state.mode !== "atlas" || records.length === 0;
+    if (els.publicEvidenceCount) {
+      const stats = state.data?.publicStats || {};
+      const total = stats.deduplicatedRows || records.length;
+      const unmapped = stats.unmappedRows || 0;
+      els.publicEvidenceCount.textContent = `${visible.length}${filtered.length > visible.length ? ` / ${filtered.length}` : ""} 条精选披露 · 原始 ${fmt(total, 0)} 条 · 未映射 ${fmt(unmapped, 0)}`;
+    }
+    els.publicEvidenceList.innerHTML = visible.map((item) => {
+      const source = sourceFor(first(item.sourceId, item.sourceUrl));
+      const status = evidenceStatus(item, "reported");
+      const sourceName = first(item.sourceModel, item.modelName, item.modelRef, item.modelId, "unmapped model");
+      const benchmarkName = first(item.sourceBenchmark, item.benchmarkName, item.benchmarkId, "unmapped benchmark");
+      const score = item.value === null || item.value === undefined ? "—" : fmt(item.value);
+      const protocol = display(item.protocol, "protocol 未注明");
+      const sourceLink = item.evidenceUrl || item.sourceUrl || source?.url;
+      const mapped = item.mappedModelId || item.canonicalModelId;
+      const subject = String(first(item.subjectType, "model")).toLowerCase() === "system" ? "system" : "model";
+      return `<article class="public-evidence-row" data-public-evidence="${esc(item.id || "")}" tabindex="0" role="button" aria-label="查看 ${esc(sourceName)} 的公开 ${esc(benchmarkName)} 证据"><div class="public-evidence-main"><div class="public-evidence-title"><strong>${esc(sourceName)}</strong><span>×</span><strong>${esc(benchmarkName)}</strong></div><div class="public-evidence-meta"><span class="score-evidence evidence-${slug(status)} evidence-public${subject === "system" ? " evidence-system" : ""}">${esc(status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")}</span>${mapped ? "" : '<span class="model-badge">未映射</span>'}<span class="model-badge">${esc(subject)}</span><strong class="public-evidence-score">${esc(score)}${item.unit && score !== "—" ? esc(item.unit) : ""}</strong><span>${esc(item.rawValue && item.rawValue !== item.value ? item.rawValue : "")}</span><span>${esc(protocol)}</span></div></div><div class="public-evidence-source">${sourceLink ? `<a href="${esc(sourceLink)}" target="_blank" rel="noreferrer">↗ ${esc(item.sourceLabel || source?.label || sourceLink)}</a>` : "<span>来源未注明</span>"}<small>${esc(item.locator || item.sourceLocator || "locator 未注明")}</small><small>${esc(item.fetchedAt || item.retrievedAt || item.observedAt || "retrieved 未注明")}${item.snapshotHash || item.payloadSha256 ? ` · hash ${esc(String(item.snapshotHash || item.payloadSha256).slice(0, 12))}…` : ""}</small></div></article>`;
+    }).join("");
   }
 
   function renderCards() {
@@ -704,14 +1213,28 @@
     if (run.endpointId) parts.push(run.endpointId);
     return parts.join(" · ") || "未说明";
   }
-  function runScoreEntry(run) { return { value: run.value, verified: first(run.status, run.verificationStatus, run.evidence, "reported"), evidenceLevel: run.evidenceLevel, status: run.status }; }
+  function runScoreEntry(run) {
+    const items = hydrateEvidenceItems(evidenceItems(run), run, run.value);
+    const selected = chooseEvidence(items);
+    return {
+      value: run.value,
+      verified: first(run.status, run.verificationStatus, selected?.status, "reported"),
+      evidenceLevel: first(run.evidenceLevel, selected?.level),
+      status: first(run.status, selected?.status, "reported"),
+      evidenceStatus: evidenceStatus(run, selected?.status || "reported"),
+      public: Boolean(run.public || run.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public"),
+      evidenceOrigin: first(run.evidenceOrigin, selected?.evidenceOrigin),
+      subjectType: first(run.subjectType, run.subject_type, selected?.subjectType),
+      evidenceItems: items,
+    };
+  }
   function runRow(run) {
     const model = modelById(run.modelId) || normaliseModel({ id: run.modelId, name: run.modelName, provider: run.provider });
     const benchmark = benchmarkFor(run.benchmarkId) || { id: run.benchmarkId, name: run.benchmarkId, short: run.benchmarkId, scale: 100, unit: run.unit || "%" };
     const entry = runScoreEntry(run);
-    const source = sourceFor(run.sourceId);
+    const source = sourceFor(first(run.sourceId, run.sourceUrl, chooseEvidence(evidenceItems(run))?.sourceId, chooseEvidence(evidenceItems(run))?.sourceUrl));
     const evidence = statusLabel(entry);
-    const badges = `${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}`;
+    const badges = `${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}${evidenceBadge(entry)}`;
     return `<tr class="run-row" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 的 ${esc(benchmark.name)} system run"><td class="run-model-cell">${modelMarkup(model)}</td><td><span class="run-benchmark-name">${esc(benchmark.short || benchmark.name)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></td><td class="run-score-cell ${scoreClass(entry, benchmark)}"><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${run.value !== null && run.value !== undefined ? esc(run.unit || benchmark.unit || "") : ""}</strong><small>${esc(run.metric || benchmark.metric || "score")}</small></td><td><div class="run-badges">${badges}</div></td><td><span class="status-badge ${statusClass(entry)}">${esc(evidence)}</span><small class="run-date">${esc(run.observedAt || "未注明")}</small></td><td class="run-source-cell">${source ? '<span class="source-chip">S</span>' : "—"}</td></tr>`;
   }
   function renderRuns() {
@@ -724,7 +1247,7 @@
       const model = modelById(run.modelId) || normaliseModel({ id: run.modelId, name: run.modelName, provider: run.provider });
       const benchmark = benchmarkFor(run.benchmarkId) || { name: run.benchmarkId, short: run.benchmarkId, scale: 100 };
       const entry = runScoreEntry(run);
-      return `<article class="run-card" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} system run"><div class="run-card-top"><div>${modelMarkup(model)}</div><strong class="run-card-score ${scoreClass(entry, benchmark)}">${run.value === null || run.value === undefined ? "—" : fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small></strong></div><div class="run-card-benchmark"><span>${esc(benchmark.name || benchmark.short)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></div><div class="run-badges">${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}<span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span></div><p class="run-card-note">${esc(run.notes || `observed ${run.observedAt || "未注明"}`)}</p></article>`;
+      return `<article class="run-card" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} system run"><div class="run-card-top"><div>${modelMarkup(model)}</div><strong class="run-card-score ${scoreClass(entry, benchmark)}">${run.value === null || run.value === undefined ? "—" : fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small></strong></div><div class="run-card-benchmark"><span>${esc(benchmark.name || benchmark.short)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></div><div class="run-badges">${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}${evidenceBadge(entry)}<span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span></div><p class="run-card-note">${esc(run.notes || `observed ${run.observedAt || "未注明"}`)}</p></article>`;
     }).join("");
   }
 
@@ -732,7 +1255,7 @@
     const benchmarks = filteredBenchmarks();
     const models = filteredModels().filter((model) => hasScore(model));
     const signals = benchmarks.map((benchmark, order) => {
-      const values = models.map((model) => ({ model, entry: scoreEntry(model, benchmark.id) })).filter(({ entry }) => entry.value !== null && entry.value !== undefined).sort((a, b) => benchmark.direction === "lower" ? Number(a.entry.value) - Number(b.entry.value) : Number(b.entry.value) - Number(a.entry.value));
+      const values = models.map((model) => ({ model, entry: scoreEntry(model, benchmark.id) })).filter(({ entry }) => entry.value !== null && entry.value !== undefined && String(entry.subjectType || entry.subject_type || "model").toLowerCase() !== "system").sort((a, b) => benchmark.direction === "lower" ? Number(a.entry.value) - Number(b.entry.value) : Number(b.entry.value) - Number(a.entry.value));
       return { benchmark, best: values[0], count: values.length, order };
     }).filter((signal) => signal.best).sort((a, b) => b.count - a.count || a.order - b.order).slice(0, 3);
     if (els.spotlightGrid) els.spotlightGrid.innerHTML = signals.map(({ benchmark, best, count }) => `<article class="spotlight-card"><span class="spotlight-kicker">${esc(benchmark.familyLabel || benchmark.family)} / ${esc(benchmark.short || benchmark.name)}</span><h3>${esc(best.model.name)}</h3><p><span class="spotlight-number">${fmt(best.entry.value)}${esc(benchmark.unit || "")}</span> · column leader among ${count}/${models.length} reported observations</p></article>`).join("");
@@ -768,14 +1291,63 @@
     renderActiveFilters();
     renderStats();
     renderMatrix();
+    renderPublicEvidence();
     renderCards();
     renderRuns();
     renderSpotlights();
     updateModeCopy();
   }
 
+  function evidenceDetails(raw, title = "Public evidence") {
+    const parentValue = raw && typeof raw === "object"
+      ? first(raw.value, raw.score, raw.result, raw.percentage, raw.accuracy)
+      : null;
+    const numericValue = parentValue === null || parentValue === undefined || parentValue === ""
+      ? null
+      : (Number.isFinite(Number(parentValue)) ? Number(parentValue) : parentValue);
+    const items = hydrateEvidenceItems(evidenceItems(raw), raw, numericValue);
+    if (!items.length) return "";
+    const unverified = items.some((item) => Boolean(item.public || item.evidenceOrigin === "public") || evidenceStatus(item, "reported") !== "approved");
+    const rows = items.map((item, index) => {
+      const status = evidenceStatus(item, item.value === null ? "missing" : "reported");
+      const publicItem = Boolean(item.public || item.evidenceOrigin === "public");
+      const statusText = publicItem
+        ? (status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")
+        : (status === "approved" ? "approved" : (status === "reported" ? "官方披露 · 未复现" : `${status || "reported"} · 未复现`));
+      const source = sourceFor(first(item.sourceId, item.sourceUrl));
+      const sourceUrl = item.evidenceUrl || item.evidence_url || item.sourceUrl || source?.url;
+      const sourceText = item.sourceLabel || source?.label || source?.title || sourceUrl || item.sourceId || "来源未注明";
+      const hash = item.snapshotHash || item.sha256 || item.hash;
+      const rawModel = first(item.sourceModel, item.source_model, item.modelName, item.model_name, item.modelId);
+      const rawBenchmark = first(item.sourceBenchmark, item.source_benchmark, item.benchmarkName, item.benchmark_name, item.benchmarkId);
+      const rawValue = first(item.rawValue, item.raw_value);
+      const qualityFlags = list(first(item.qualityFlags, item.quality_flags)).filter(Boolean).join(" · ");
+      return `<div class="evidence-row"><div class="evidence-row-head"><span class="evidence-index">${String(index + 1).padStart(2, "0")}</span><span class="score-evidence evidence-${slug(status)}${publicItem ? " evidence-public" : ""}${String(item.subjectType || "").toLowerCase() === "system" ? " evidence-system" : ""}">${esc(statusText)}</span><strong>${item.value === null || item.value === undefined ? "—" : esc(fmt(item.value))}</strong>${item.unit ? `<small>${esc(item.unit)}</small>` : ""}</div><div class="evidence-row-grid"><span><label>source</label>${sourceUrl ? `<a href="${esc(sourceUrl)}" target="_blank" rel="noreferrer">↗ ${esc(sourceText)}</a>` : `<em>${esc(sourceText)}</em>`}</span><span><label>raw model / bench</label><em>${esc([rawModel, rawBenchmark].filter(Boolean).join(" × ") || "未注明")}</em></span><span><label>raw value</label><em>${esc(rawValue === undefined || rawValue === null ? "未注明" : display(rawValue))}</em></span><span><label>locator</label><em>${esc(item.locator || item.sourceLocator || "未注明")}</em></span><span><label>retrieved</label><em>${esc(item.fetchedAt || item.retrievedAt || "未注明")}</em></span><span><label>published / observed</label><em>${esc([item.publishedAt, item.observedAt].filter(Boolean).join(" · ") || "未注明")}</em></span><span><label>snapshot hash</label><em class="evidence-hash" title="${esc(hash || "")}">${esc(hash || "未保存")}</em></span><span><label>subject / harness</label><em>${esc([item.subjectType, item.harnessId || item.harness].filter(Boolean).join(" · ") || "model")}</em></span><span><label>protocol</label><em>${esc(display(item.protocol, "未注明"))}</em></span>${qualityFlags ? `<span><label>quality flags</label><em>${esc(qualityFlags)}</em></span>` : ""}${item.parserVersion || item.parser_version ? `<span><label>parser</label><em>${esc(item.parserVersion || item.parser_version)}</em></span>` : ""}</div>${item.notes || item.evidenceNote ? `<p class="evidence-row-note">${esc(item.notes || item.evidenceNote)}</p>` : ""}</div>`;
+    }).join("");
+    return `<section class="detail-section evidence-section"><h4>${esc(title)} · ${items.length}</h4>${unverified ? '<p class="evidence-disclaimer">公开榜单 / provider 披露仅作参考；本项目尚未独立复现这些数字。</p>' : ""}<details class="evidence-details"${items.length === 1 ? " open" : ""}><summary>展开来源、locator、抓取时间、hash 与 protocol</summary><div class="evidence-list">${rows}</div></details></section>`;
+  }
+
   function detailGrid(items) {
     return `<div class="detail-grid">${items.map(([label, value]) => `<div class="detail-item"><label>${esc(label)}</label><span>${esc(display(value))}</span></div>`).join("")}</div>`;
+  }
+  function publicEvidenceById(id) {
+    return [...(state.data?.publicEvidence || []), ...(state.data?.unmappedEvidence || [])].find((item) => item.id === id) || null;
+  }
+  function openEvidenceDrawer(id) {
+    const item = publicEvidenceById(id);
+    if (!item || !els.drawerContent) return;
+    state.selected = { type: "public-evidence", evidenceId: id };
+    const source = sourceFor(first(item.sourceId, item.sourceUrl));
+    const subject = first(item.subjectType, item.subject_type, "model");
+    const link = item.evidenceUrl || item.sourceUrl || source?.url;
+    const benchmark = benchmarkFor(item.benchmarkId);
+    const protocol = item.protocol && typeof item.protocol === "object" ? JSON.stringify(item.protocol) : item.protocol;
+    const sourcePage = first(item.sourcePageUrl, sourceContextUrl(source));
+    const benchmarkVersion = first(item.benchmarkVersionId, item.benchmarkVersion, item.benchmarkVersionHint, "version 未注明");
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">E</span><div><h3>${esc(item.modelName || item.modelRef || "公开模型行")}</h3><p>${esc(item.benchmarkName || item.benchmarkId || "公开 benchmark")} · ${esc(item.sourceLabel || source?.label || item.sourceId || "source 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge conditional">披露 · 未复现</span><div class="big-score">${item.value === null || item.value === undefined ? "—" : `${fmt(item.value)}<small>${esc(item.unit || "")}</small>`}</div><p>${esc(item.metricId || "score")} · ${esc(benchmarkVersion)}</p></div><section class="detail-section"><h4>Mapping</h4>${detailGrid([["Source model", item.modelRef || item.sourceModel], ["Canonical release", item.canonicalModelId || item.mappedModelId || "未安全映射"], ["Benchmark", item.benchmarkId], ["Mapping status", item.mappingStatus || "unmatched"], ["Subject", subject], ["Harness", item.harnessId || item.harness]])}</section>${benchmark?.description ? `<section class="detail-section"><h4>What this measures</h4><p class="detail-note">${esc(benchmark.description)}</p></section>` : ""}${evidenceDetails(item, "Public evidence")}${link ? `<section class="detail-section"><h4>Snapshot / API</h4><a class="source-link" href="${esc(link)}" target="_blank" rel="noreferrer">↗ ${esc(link)}</a>${sourcePage && sourcePage !== link ? `<p class="detail-note"><a href="${esc(sourcePage)}" target="_blank" rel="noreferrer">打开来源说明页 ↗</a></p>` : ""}</section>` : (sourcePage ? `<section class="detail-section"><h4>Source page</h4><a class="source-link" href="${esc(sourcePage)}" target="_blank" rel="noreferrer">↗ ${esc(sourcePage)}</a></section>` : "")}${protocol ? `<section class="detail-section"><h4>Protocol</h4><p class="detail-note">${esc(protocol)}</p></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制公开证据 JSON</button>`;
+    showDrawer();
+    const copyButton = $("copyObservation");
+    if (copyButton) copyButton.addEventListener("click", () => copyJson(item, "已复制公开证据 JSON"));
   }
   function openModelDrawer(modelId, benchmarkId = null) {
     const model = modelById(modelId);
@@ -783,14 +1355,15 @@
     state.selected = { type: "model", modelId, benchmarkId };
     const benchmark = benchmarkId ? benchmarkFor(benchmarkId) : null;
     const entry = benchmark ? scoreEntry(model, benchmark.id) : null;
-    const source = entry ? sourceFor(entry.sourceId) : null;
+    const source = entry ? sourceFor(first(entry.sourceId, entry.sourceUrl, chooseEvidence(evidenceItems(entry))?.sourceId, chooseEvidence(evidenceItems(entry))?.sourceUrl)) : null;
     const benchmarks = state.data?.benchmarks || [];
     const recorded = benchmarks.map((item) => ({ benchmark: item, entry: scoreEntry(model, item.id) })).filter(({ entry: itemEntry }) => itemEntry.value !== null && itemEntry.value !== undefined);
     const mainScore = entry || (recorded[0]?.entry || { value: null });
     const mainBenchmark = benchmark || recorded[0]?.benchmark;
     const relatedRuns = (state.data?.runs || []).filter((run) => run.modelId === model.id).slice(0, 8);
     const runLinks = relatedRuns.map((run) => `<button class="drawer-run-link" type="button" data-run="${esc(run.id)}"><span>${esc(benchmarkFor(run.benchmarkId)?.short || run.benchmarkId)}</span><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${esc(run.unit || "%")}</strong></button>`).join("");
-    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · release ${esc(model.release || "未注明")} · ${esc(model.status || model.access || "access 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge ${statusClass(mainScore)}">${esc(statusLabel(mainScore))}</span><div class="big-score">${mainScore.value !== null && mainScore.value !== undefined ? `${fmt(mainScore.value)}<small>${esc(mainBenchmark?.unit || "")}</small>` : "—"}</div><p>${mainBenchmark ? `${esc(mainBenchmark.name)} · ${esc(display(mainScore.setting, "设置未说明"))}` : "选择一个单元格查看具体 observation。"}</p></div><section class="detail-section"><h4>Model note</h4><p class="detail-note">${esc(model.summary)}</p></section><section class="detail-section"><h4>Model registry</h4>${detailGrid([["Status", model.status], ["Access", model.access], ["Params total", model.paramsTotal], ["Params active", model.paramsActive], ["Context", model.context], ["Endpoint", model.endpoint]])}</section><section class="detail-section"><h4>Protocol & provenance</h4>${detailGrid([["Benchmark version", mainScore.benchmarkVersion || mainScore.version || mainBenchmark?.version], ["Observed", mainScore.observedAt || mainScore.observed_at || state.data?.meta?.asOf], ["Comparability", mainScore.comparability || "conditional"], ["Evidence", mainScore.evidenceLevel || mainScore.evidence_level || mainScore.verified]])}${mainScore.note || mainScore.notes ? `<p class="detail-note">${esc(mainScore.note || mainScore.notes)}</p>` : ""}</section>${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || source.url)}</a>${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}<section class="detail-section"><h4>Recorded signals</h4><div class="timeline">${recorded.map(({ benchmark: itemBenchmark, entry: itemEntry }) => `<div class="timeline-row"><span>${esc(itemBenchmark.short || itemBenchmark.name)}</span><span class="timeline-track"><i style="width:${Math.min(100, Math.max(0, scoreRatio(itemEntry.value, itemBenchmark) * 100))}%"></i></span><strong>${fmt(itemEntry.value)}${esc(itemBenchmark.unit || "")}</strong></div>`).join("") || '<p class="detail-note">暂无可显示的成绩。</p>'}</div></section>${runLinks ? `<section class="detail-section"><h4>System runs</h4><div class="drawer-run-list">${runLinks}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 JSON</button>`;
+    const modelSourcePage = sourceContextUrl(source);
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · release ${esc(model.release || "未注明")} · ${esc(model.status || model.access || "access 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge ${statusClass(mainScore)}">${esc(statusLabel(mainScore))}</span><div class="big-score">${mainScore.value !== null && mainScore.value !== undefined ? `${fmt(mainScore.value)}<small>${esc(mainBenchmark?.unit || "")}</small>` : "—"}</div><p>${mainBenchmark ? `${esc(mainBenchmark.name)} · ${esc(display(mainScore.setting, "设置未说明"))}` : "选择一个单元格查看具体 observation。"}</p></div><section class="detail-section"><h4>Model note</h4><p class="detail-note">${esc(model.summary)}</p></section><section class="detail-section"><h4>Model registry</h4>${detailGrid([["Status", model.status], ["Access", model.access], ["Params total", model.paramsTotal], ["Params active", model.paramsActive], ["Context", model.context], ["Endpoint", model.endpoint]])}</section><section class="detail-section"><h4>Protocol & provenance</h4>${detailGrid([["Benchmark version", mainScore.benchmarkVersion || mainScore.version || mainBenchmark?.version], ["Observed", mainScore.observedAt || mainScore.observed_at || state.data?.meta?.asOf], ["Comparability", mainScore.comparability || "conditional"], ["Evidence", mainScore.evidenceLevel || mainScore.evidence_level || mainScore.verified], ["Source URL", mainScore.sourceUrl], ["Locator", mainScore.locator], ["Retrieved", mainScore.fetchedAt], ["Snapshot hash", mainScore.snapshotHash]])}${mainScore.note || mainScore.notes ? `<p class="detail-note">${esc(mainScore.note || mainScore.notes)}</p>` : ""}</section>${evidenceDetails(mainScore)}${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(modelSourcePage || source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || modelSourcePage || source.url)}</a>${source.url && modelSourcePage && source.url !== modelSourcePage ? `<p class="detail-note"><a href="${esc(source.url)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}<section class="detail-section"><h4>Recorded signals</h4><div class="timeline">${recorded.map(({ benchmark: itemBenchmark, entry: itemEntry }) => `<div class="timeline-row"><span>${esc(itemBenchmark.short || itemBenchmark.name)}</span><span class="timeline-track"><i style="width:${Math.min(100, Math.max(0, scoreRatio(itemEntry.value, itemBenchmark) * 100))}%"></i></span><strong>${fmt(itemEntry.value)}${esc(itemBenchmark.unit || "")}</strong></div>`).join("") || '<p class="detail-note">暂无可显示的成绩。</p>'}</div></section>${runLinks ? `<section class="detail-section"><h4>System runs</h4><div class="drawer-run-list">${runLinks}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 JSON</button>`;
     showDrawer();
     const copyButton = $("copyObservation");
     if (copyButton) copyButton.addEventListener("click", () => copyJson(benchmark ? { model_id: model.id, benchmark_id: benchmark.id, ...mainScore } : model, "已复制 JSON"));
@@ -803,10 +1376,11 @@
     const model = modelById(run.modelId) || normaliseModel({ id: run.modelId, name: run.modelName, provider: run.provider });
     const benchmark = benchmarkFor(run.benchmarkId) || { name: run.benchmarkId, short: run.benchmarkId, unit: run.unit || "%" };
     const harness = harnessFor(run.harnessId);
-    const source = sourceFor(run.sourceId);
+    const source = sourceFor(first(run.sourceId, run.sourceUrl, chooseEvidence(evidenceItems(run))?.sourceId, chooseEvidence(evidenceItems(run))?.sourceUrl));
     const entry = runScoreEntry(run);
     const related = (state.data?.runs || []).filter((item) => item.modelId === run.modelId && item.benchmarkId === run.benchmarkId && item.id !== run.id).slice(0, 6);
-    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(run.endpointId || model.endpoint || "endpoint 未注明")}</p></div></div><div class="drawer-score run-drawer-score"><span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span><div class="big-score">${run.value === null || run.value === undefined ? "—" : `${fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small>`}</div><p>${esc(benchmark.name)} · ${esc(run.benchmarkVersion || benchmark.version || "version 未注明")}</p></div><section class="detail-section"><h4>Harness & protocol</h4>${detailGrid([["Harness", harness ? `${harness.name}${harness.version ? ` · ${harness.version}` : ""}` : "model-only"], ["Endpoint", run.endpointId], ["Protocol", protocolLabel(run)], ["Effort", run.effort], ["Steps", run.steps], ["Tools", run.tools || run.toolPolicy || run.tool_policy]])}</section><section class="detail-section"><h4>Run provenance</h4>${detailGrid([["Benchmark", benchmark.name], ["Metric", run.metric || benchmark.metric], ["Observed", run.observedAt], ["Comparability", run.comparability], ["Evidence", run.evidenceLevel || run.evidence], ["Cost", run.cost], ["Latency", run.latency]])}${run.notes ? `<p class="detail-note">${esc(run.notes)}</p>` : ""}</section>${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || source.url)}</a>${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}${related.length ? `<section class="detail-section"><h4>Same model / benchmark</h4><div class="drawer-run-list">${related.map((item) => `<button class="drawer-run-link" type="button" data-run="${esc(item.id)}"><span>${esc(harnessFor(item.harnessId)?.name || "model-only")}</span><strong>${item.value === null || item.value === undefined ? "—" : fmt(item.value)}${esc(item.unit || benchmark.unit || "")}</strong></button>`).join("")}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 run JSON</button>`;
+    const runSourcePage = sourceContextUrl(source);
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(run.endpointId || model.endpoint || "endpoint 未注明")}</p></div></div><div class="drawer-score run-drawer-score"><span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span><div class="big-score">${run.value === null || run.value === undefined ? "—" : `${fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small>`}</div><p>${esc(benchmark.name)} · ${esc(run.benchmarkVersion || benchmark.version || "version 未注明")}</p></div><section class="detail-section"><h4>Harness & protocol</h4>${detailGrid([["Harness", harness ? `${harness.name}${harness.version ? ` · ${harness.version}` : ""}` : "model-only"], ["Endpoint", run.endpointId], ["Protocol", protocolLabel(run)], ["Effort", run.effort], ["Steps", run.steps], ["Tools", run.tools || run.toolPolicy || run.tool_policy]])}</section><section class="detail-section"><h4>Run provenance</h4>${detailGrid([["Benchmark", benchmark.name], ["Metric", run.metric || benchmark.metric], ["Observed", run.observedAt], ["Published", run.publishedAt], ["Retrieved", run.fetchedAt], ["Comparability", run.comparability], ["Evidence", run.evidenceLevel || run.evidence], ["Source URL", run.sourceUrl], ["Locator", run.locator], ["Snapshot hash", run.snapshotHash], ["Cost", run.cost], ["Latency", run.latency]])}${run.notes ? `<p class="detail-note">${esc(run.notes)}</p>` : ""}</section>${evidenceDetails(run, "Evidence trail")}${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(runSourcePage || source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || runSourcePage || source.url)}</a>${source.url && runSourcePage && source.url !== runSourcePage ? `<p class="detail-note"><a href="${esc(source.url)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}${related.length ? `<section class="detail-section"><h4>Same model / benchmark</h4><div class="drawer-run-list">${related.map((item) => `<button class="drawer-run-link" type="button" data-run="${esc(item.id)}"><span>${esc(harnessFor(item.harnessId)?.name || "model-only")}</span><strong>${item.value === null || item.value === undefined ? "—" : fmt(item.value)}${esc(item.unit || benchmark.unit || "")}</strong></button>`).join("")}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 run JSON</button>`;
     showDrawer();
     const copyButton = $("copyObservation");
     if (copyButton) copyButton.addEventListener("click", () => copyJson(run, "已复制 run JSON"));
@@ -834,7 +1408,7 @@
   }
 
   function resetFilters() {
-    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = "all"; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.availableOnly = false; state.showCatalog = false;
+    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = state.data?.presets?.some((preset) => preset.id === "public-coverage") ? "public-coverage" : "all"; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.availableOnly = false; state.showCatalog = false;
     if (els.searchInput) els.searchInput.value = "";
     if (els.availableOnly) els.availableOnly.checked = false;
     if (els.showCatalog) els.showCatalog.checked = false;
@@ -865,10 +1439,13 @@
     document.querySelectorAll(".view-tab[data-view]").forEach((tab) => tab.addEventListener("click", () => { state.atlasView = tab.dataset.view; render(); }));
     document.querySelectorAll(".view-tab[data-run-view]").forEach((tab) => tab.addEventListener("click", () => { state.runView = tab.dataset.runView; render(); }));
     document.addEventListener("click", (event) => {
+      if (event.target.closest("a")) return;
       const runTarget = event.target.closest("[data-run]");
       if (runTarget) return openRunDrawer(runTarget.dataset.run);
       const cell = event.target.closest("[data-model][data-benchmark]");
       if (cell) return openModelDrawer(cell.dataset.model, cell.dataset.benchmark);
+      const evidenceTarget = event.target.closest("[data-public-evidence]");
+      if (evidenceTarget) return openEvidenceDrawer(evidenceTarget.dataset.publicEvidence);
       const modelTarget = event.target.closest("[data-model]");
       if (modelTarget) openModelDrawer(modelTarget.dataset.model);
     });
@@ -876,6 +1453,7 @@
       if (event.key === "/" && document.activeElement !== els.searchInput) { event.preventDefault(); els.searchInput?.focus(); }
       if (event.key === "Escape") closeDrawer();
       if (event.key === "Enter" && document.activeElement?.matches("[data-run]")) openRunDrawer(document.activeElement.dataset.run);
+      else if (event.key === "Enter" && document.activeElement?.matches("[data-public-evidence]")) openEvidenceDrawer(document.activeElement.dataset.publicEvidence);
       else if (event.key === "Enter" && document.activeElement?.matches("[data-model]")) openModelDrawer(document.activeElement.dataset.model, document.activeElement.dataset.benchmark || null);
     });
     $("closeDrawer")?.addEventListener("click", closeDrawer); els.drawerBackdrop?.addEventListener("click", closeDrawer);
