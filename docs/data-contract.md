@@ -8,9 +8,11 @@
 data/
   catalog/
     models.json              # 模型 release registry
+    model_profiles.json      # 可读的能力、endpoint、限制与来源补充
     benchmarks.json          # benchmark/version/metric registry
+    benchmark_profiles.json  # 逐项任务、数据、协议与比较说明（非成绩）
     sources.json             # 来源 registry
-    aliases.json             # source model name -> canonical model id
+    aliases.json             # source model name -> canonical model id (legacy/approved layer)
   observations/
     results.jsonl            # 规范化长表：每行一个 observation
   raw/<source_id>/<date>/
@@ -26,6 +28,7 @@ data/
   public/
     evidence.jsonl           # 公开榜单 reported/unverified 长表
     unmapped.jsonl           # 尚未安全映射的完整候选
+    unmapped-summary.json     # 按 source modelRef 聚合的 alias 审计索引
     alternatives.jsonl       # 已映射但超过页面限额的候选
 ```
 
@@ -36,6 +39,13 @@ data/
 必须带 `verified: false`、`reviewStatus: unreviewed`、来源 URL/locator/retrieved_at/hash，
 并且不能参与 canonical atlas 的选值、排名或覆盖率。未安全映射的模型保留在
 `data/public/unmapped.jsonl`，不能因为页面需要填满矩阵而猜测 canonical release。
+仓库的 `data/public/model_aliases.json` 是一个 source-scoped、显式维护的同 release
+别名注册表；它只保留高置信度的 endpoint/effort/上下文展示变体，原始 `modelRef`、
+来源和 mapping evidence 仍写入公开行。无法安全归属的原名及其 benchmark/locator
+摘要写入 `unmapped-summary.json`，完整行写入 `unmapped.jsonl`。
+当来源表把 task score 与 token、latency、cost、eval/train count 等遥测混在一起时，公开行
+仍完整保留，但必须写入 `matrixExcluded: true` 与 `matrixExcludedReason:
+telemetry_metric`；这类行只进入可检索证据索引，不进入 Atlas 分数或 System Runs。
 
 ## 2. 当前 seed 兼容格式
 
@@ -51,6 +61,20 @@ data/
 ```
 
 每个 benchmark 至少有 `id`、`name`、`metric`、`scale`、`unit`、`direction` 和 `source`；每个 model 至少有 `id`、`name`、`provider`、`release` 和 `scores`。`scores` 是以 benchmark id 为键的 object，score object 至少有数值 `value`；推荐同时给出 `setting`、`sourceId` 和 `verified`。
+
+模型目录的长文说明放在可选的 `data/catalog/model_profiles.json`，按 canonical
+model id 索引。它承载 positioning、capabilities、endpoint、reasoning modes、
+context/parameter 口径和 caveats；这些字段是带来源的目录事实，不是 benchmark
+observation。`null`/空数组表示当前尚未从公开资料核验，页面应显示“未注明”，不得推断为
+0 或“不支持”。`scripts/build_derived.py` 会把匹配 profile 合并到 `site.json` 的
+`catalogModels[*].profile`，因此 profile 更新不会改写成绩长表。
+
+模型生命周期与成绩覆盖必须分开：`status` 只表示 `active`、`previous`、`preview`、
+`restricted` 或 `deprecated` 等身份/生命周期；“当前是否有 canonical score”是派生的
+`scoreCoverage`。现有静态快照用 `catalogModels[*].catalogOnly` 表达这一层：`true`
+等价于 `scoreCoverage: catalog-only`，`false` 等价于 `scoreCoverage: scored`。
+`catalog-only` 不得写回 `status`，也不表示模型身份未确认；它只说明当前 canonical
+observation 长表为空，公开披露层仍可能有未复现记录。
 
 校验器保留这个形状是为了让静态 MVP 可以先运行。新增真实数据时，推荐把它转换成下面的长表；不要在 seed 的嵌套结构中继续增加只有某个页面理解的特殊字段。
 
@@ -81,6 +105,9 @@ data/
 ```
 
 上下文长度、价格、速率限制等会变化的属性不要当作永恒的 model metadata。规模扩大后使用 `model_facts.jsonl`，每行包含 `model_id`、`field`、`value`、`as_of` 和 `evidence_id`。
+
+`scoreCoverage` 不是 canonical registry 的写入字段；构建产物按 observation 是否存在
+计算它。尤其不要用 `status: catalog-only` 表示“暂无分数”。
 
 ### 3.2 Benchmark version and metric
 
@@ -122,6 +149,26 @@ benchmark 本体和具体版本分开。Live/滚动 benchmark 的月份、数据
 ```
 
 `unit` 不是装饰信息。常见值包括 `percent`、`fraction`、`elo`、`seconds`、`usd` 和 `count`；不要为了画一张图而把 Elo 或 latency 强行缩放成百分比。
+
+#### 3.2.1 Benchmark profile（目录深度说明）
+
+`data/catalog/benchmark_profiles.json` 为每个 canonical benchmark 提供可读的背景资料，
+并由 `build_derived.py` 透传到 `site.json` 的对应 benchmark。它只描述评测定义，不承载
+模型成绩，也不能用来推断矩阵空白。每个 id 应至少包含以下五组字段：
+
+```json
+{
+  "task": {"summary": "测什么", "input": "输入", "output": "输出"},
+  "dataset": {"size": "规模或未固定说明", "splits": ["切分/track"], "availability": "公开状态"},
+  "protocol": {"mode": "model/system/preference", "grader": "判定器", "tools": "工具与环境", "sampling": "采样与聚合"},
+  "comparison": {"recommended": "建议怎样对齐", "avoid": "哪些结果不能混合"},
+  "source_locator": "官方论文、数据卡或榜单中的定位提示"
+}
+```
+
+规模只在官方来源明确给出时填写；动态榜单或保密评测使用“随 release/snapshot 变化”等
+文字，不把未知数量猜成数值。`source_ids` 仍是可点击的原始链接，`source_locator` 用于
+告诉读者应在该来源中查找哪一段；两者都不代表本站已经复现该 benchmark。
 
 ### 3.3 Source and evidence
 

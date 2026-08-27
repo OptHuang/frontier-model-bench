@@ -1,0 +1,3323 @@
+{
+  "meta": {
+    "version": "0.2.0-model-profiles",
+    "as_of": "2026-08-28",
+    "description": "模型目录的可读 profile 层。事实只在来源明确时填写；null/[] 表示尚未从公开资料核验，不代表能力不存在。"
+  },
+  "profiles": {
+    "openai/gpt-5.6-sol@2026-07-09": {
+      "positioning": "GPT-5.6 旗舰 reasoning tier，面向复杂专业工作。",
+      "capabilities": [
+        "复杂推理",
+        "代码",
+        "工具调用",
+        "电脑使用",
+        "视觉输入",
+        "多语言"
+      ],
+      "best_for": [
+        "复杂研究与长程 agent",
+        "高质量代码与调试",
+        "需要最高准确度的专业任务"
+      ],
+      "endpoint_ids": [
+        "gpt-5.6-sol",
+        "gpt-5.6"
+      ],
+      "availability": [
+        "api",
+        "chat",
+        "codex"
+      ],
+      "reasoning_modes": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "architecture": null,
+      "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": "2026-02-16",
+      "max_output_tokens": 128000,
+      "license": null,
+      "caveats": [
+        "Sol/Terra/Luna 是能力与成本 tier，不应当作相同 endpoint 的平均分。",
+        "公开成绩必须同时记录 reasoning effort、工具和 harness。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.6-terra@2026-07-09": {
+      "positioning": "GPT-5.6 balanced/production tier，在能力与成本之间取平衡。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用",
+        "电脑使用",
+        "视觉输入",
+        "多语言"
+      ],
+      "best_for": [
+        "通用生产工作流",
+        "中高难度代码和知识工作",
+        "需要稳定成本的 agent"
+      ],
+      "endpoint_ids": [
+        "gpt-5.6-terra"
+      ],
+      "availability": [
+        "api",
+        "chat",
+        "codex"
+      ],
+      "reasoning_modes": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "architecture": null,
+      "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": "2026-02-16",
+      "max_output_tokens": 128000,
+      "license": null,
+      "caveats": [
+        "与 Sol/Luna 的成本和 effort 设置不同，跨 tier 分数需保留 endpoint。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.6-luna@2026-07-09": {
+      "positioning": "GPT-5.6 的低延迟、低成本 tier，面向高吞吐工作负载。",
+      "capabilities": [
+        "快速推理",
+        "代码",
+        "工具调用",
+        "电脑使用",
+        "视觉输入",
+        "多语言"
+      ],
+      "best_for": [
+        "高频 API 调用",
+        "交互式产品和路由",
+        "对延迟敏感的轻量 agent"
+      ],
+      "endpoint_ids": [
+        "gpt-5.6-luna"
+      ],
+      "availability": [
+        "api",
+        "chat",
+        "codex"
+      ],
+      "reasoning_modes": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh",
+        "max"
+      ],
+      "architecture": null,
+      "context_note": "API catalog 记录 1.05M context、128K max output；具体产品 surface 可能不同。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": "2026-02-16",
+      "max_output_tokens": 128000,
+      "license": null,
+      "caveats": [
+        "低价/低延迟定位不等于与 Sol 使用同一计算预算；比较时应标注 tier。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.5@current": {
+      "positioning": "OpenAI 的通用 frontier baseline，覆盖知识工作、代码和工具型工作流。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "知识工作",
+        "工具调用",
+        "电脑使用",
+        "视觉输入"
+      ],
+      "best_for": [
+        "长程知识工作",
+        "代码 agent",
+        "专业文档与数据任务"
+      ],
+      "endpoint_ids": [
+        "gpt-5.5"
+      ],
+      "availability": [
+        "chat",
+        "codex",
+        "api"
+      ],
+      "reasoning_modes": [
+        "thinking",
+        "pro"
+      ],
+      "architecture": null,
+      "context_note": "发布页注明 API 1M context；具体 endpoint/配额随 rollout 变化。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "GPT-5.5 与 GPT-5.5 Pro 是产品/计算 tier；不要把 Pro 当作独立权重而忽略 endpoint。",
+        "发布页中的内部评测和公开 benchmark 需区分。"
+      ],
+      "fact_source_ids": [
+        "src-openai-gpt55"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.5-pro@current": {
+      "positioning": "GPT-5.5 的高计算、最高质量产品 tier，面向最难的专业任务。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "知识工作",
+        "工具调用",
+        "视觉输入"
+      ],
+      "best_for": [
+        "高准确度研究",
+        "复杂分析与审阅",
+        "高价值低吞吐任务"
+      ],
+      "endpoint_ids": [
+        "gpt-5.5-pro"
+      ],
+      "availability": [
+        "chat",
+        "codex",
+        "api"
+      ],
+      "reasoning_modes": [
+        "pro"
+      ],
+      "architecture": null,
+      "context_note": "发布页注明 API 1M context；API rollout 和价格可能变化。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "这是高计算 serving tier；不能与默认 GPT-5.5 的结果直接混排。",
+        "模型页当前将其作为独立 endpoint 记录，以保留可追溯性。"
+      ],
+      "fact_source_ids": [
+        "src-openai-gpt55"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.4@current": {
+      "positioning": "面向专业工作的主线 reasoning 模型，强调代码、工具和原生 computer use。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "电脑使用",
+        "视觉",
+        "工具搜索",
+        "专业知识工作"
+      ],
+      "best_for": [
+        "浏览器/桌面 agent",
+        "文档、表格和演示文稿",
+        "长程代码任务"
+      ],
+      "endpoint_ids": [
+        "gpt-5.4",
+        "gpt-5.4-pro"
+      ],
+      "availability": [
+        "api",
+        "chat",
+        "codex"
+      ],
+      "reasoning_modes": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "xhigh"
+      ],
+      "architecture": null,
+      "context_note": "发布页注明标准 context 约 272K，并提供 Codex 1M experimental context；不要把两者混为一个限制。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "computer-use 成绩高度依赖工具、截图/DOM 设置和 harness。",
+        "Pro 是独立 serving tier，需单独记录。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.4-mini@current": {
+      "positioning": "GPT-5.4 的效率/小型 tier，优先考虑吞吐、成本和交互延迟。",
+      "capabilities": [
+        "轻量推理",
+        "代码",
+        "工具调用",
+        "视觉输入"
+      ],
+      "best_for": [
+        "高吞吐应用",
+        "路由后的中等难度任务",
+        "成本敏感的代码辅助"
+      ],
+      "endpoint_ids": [
+        "gpt-5.4-mini"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "none",
+        "low",
+        "medium",
+        "high"
+      ],
+      "architecture": null,
+      "context_note": "当前公开目录未给出稳定的 context 数值；保留未注明。",
+      "parameter_note": "参数量未公开；mini 是产品 tier，不等于公开权重规模。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "不要用 GPT-5.4 主模型的 benchmark 分数代填 mini。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5@2025-08-07": {
+      "positioning": "GPT-5 代际 baseline，保留用于历史纵向比较。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用",
+        "视觉输入"
+      ],
+      "best_for": [
+        "与 GPT-5.4/5.5 的代际对照",
+        "历史 benchmark 时间线"
+      ],
+      "endpoint_ids": [
+        "gpt-5"
+      ],
+      "availability": [
+        "api",
+        "chat"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "本目录未从当前公开资料统一核验 context，保留未注明。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "旧 release 的榜单值可能使用不同 endpoint、prompt 或工具；必须查看 observation 详情。"
+      ],
+      "fact_source_ids": [
+        "openai-gpt5"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus-5@2026-07-24": {
+      "positioning": "Anthropic 当前 Opus 旗舰，面向复杂推理、代码和 agent 工作。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "视觉输入",
+        "长程 agent",
+        "工具调用"
+      ],
+      "best_for": [
+        "复杂研究与编程",
+        "高难度 agent workflow",
+        "长文档和多步任务"
+      ],
+      "endpoint_ids": [
+        "claude-opus-5"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；Fast mode 约为默认速度的 2.5 倍，属于 serving mode。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "Fast mode 改变延迟/价格，不应与默认模式合并为单一分数。",
+        "安全设置和 tool scaffold 会显著影响 agent benchmark。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-opus5",
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus@4": {
+      "positioning": "Claude Opus 4 历史旗舰，作为 Opus 系列上一代对照。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent",
+        "extended thinking"
+      ],
+      "best_for": [
+        "代际比较",
+        "历史 Claude Code / agent 结果"
+      ],
+      "endpoint_ids": [
+        "claude-opus-4"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "本目录未统一核验当前 context/配额。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "历史结果经常绑定 Claude Code scaffold；不能当作裸模型结果。"
+      ],
+      "fact_source_ids": [
+        "anthropic-claude4"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-fable-5@2026-06-09": {
+      "positioning": "受限访问的 Fable 5 endpoint，面向高难度推理与代码工作。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent",
+        "长上下文"
+      ],
+      "best_for": [
+        "受控研究访问",
+        "需要 frontier reasoning 的 agent 任务"
+      ],
+      "endpoint_ids": [
+        "claude-fable-5"
+      ],
+      "availability": [
+        "restricted",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；具体 trusted-access 配额未统一公开。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "安全分类器可能 fallback 到 Opus 4.8；评测必须记录是否发生 fallback。",
+        "restricted endpoint 不应与公开 API 结果直接混排。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-fable5",
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-mythos-5@2026-06-09": {
+      "positioning": "与 Fable 5 同基础模型谱系、但面向 trusted access 的 Mythos 5 变体。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "视觉输入",
+        "Agent",
+        "长上下文"
+      ],
+      "best_for": [
+        "受控安全研究",
+        "需要更高能力上限的专业任务"
+      ],
+      "endpoint_ids": [
+        "claude-mythos-5"
+      ],
+      "availability": [
+        "restricted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；trusted-access 限制和配额需以 provider 页面为准。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "不能把 Mythos 与 Fable 的安全策略、fallback 或可访问性视为相同。",
+        "公开比较应保留 restricted 标签。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-fable5",
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-sonnet-5@2026-06-30": {
+      "positioning": "Claude Sonnet 5 production tier，在能力、速度和成本之间平衡。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent",
+        "adaptive thinking"
+      ],
+      "best_for": [
+        "日常生产 agent",
+        "代码协作",
+        "多模态知识工作"
+      ],
+      "endpoint_ids": [
+        "claude-sonnet-5"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "adaptive thinking"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；不同 API/hosted surface 的输出上限需单独核验。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "adaptive thinking 是运行模式，不是新的权重 release。",
+        "工具和 prompt template 会影响 agent 结果。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-sonnet5",
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus-4.8@current": {
+      "positioning": "Opus 4.8 serving release，作为 Opus 5 的近代对照和 fallback 目标。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent"
+      ],
+      "best_for": [
+        "Opus 5 fallback 对照",
+        "历史/近代 agent benchmark"
+      ],
+      "endpoint_ids": [
+        "claude-opus-4.8"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；具体产品限制需按 endpoint 复核。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "作为 fallback 时，系统实际 subject 可能是 Fable/Opus + fallback，而非裸 Opus 4.8。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus-4.7@current": {
+      "positioning": "Opus 系列上一代代码/推理 baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent"
+      ],
+      "best_for": [
+        "与 Opus 5 的代际比较",
+        "历史代码 agent 结果"
+      ],
+      "endpoint_ids": [
+        "claude-opus-4.7"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "不同 system card / Claude Code scaffold 的结果不可直接合并。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-sonnet-4.6@current": {
+      "positioning": "Sonnet 5 的上一代效率与代码 baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "Agent"
+      ],
+      "best_for": [
+        "Sonnet 代际比较",
+        "成本/质量平衡的历史基线"
+      ],
+      "endpoint_ids": [
+        "claude-sonnet-4.6"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "extended thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "上一代模型仍可能在 provider/aggregator 上路由到不同 snapshot。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3.8-max@2026-08-02": {
+      "positioning": "Qwen3.8 Max 托管旗舰 endpoint；本目录将它与 Qwen3.8 2.4T A95B open-weight checkpoint 分开登记。",
+      "capabilities": [
+        "复杂推理",
+        "代码",
+        "视觉",
+        "多语言"
+      ],
+      "best_for": [
+        "中文/多语言知识工作",
+        "复杂代码和推理",
+        "托管多模态工作"
+      ],
+      "endpoint_ids": [
+        "qwen3.8-max",
+        "qwen-3-8-max"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未从逐型号的一手 endpoint 文档核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开；不得从 Qwen3.8 2.4T A95B open-weight checkpoint 继承。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "Max 服务名与 Qwen3.8 2.4T A95B open-weight checkpoint 不应自动视为同一权重或 endpoint。",
+        "当前来源只支持 family/discovery scope；架构、参数和 context 保持未知。"
+      ],
+      "fact_source_ids": [
+        "src-qwen38-repo",
+        "src-qwen38-flash"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.8-flash-next@2026-08-26": {
+      "positioning": "Qwen3.8 Flash-Next 高吞吐 open-weight variant，强调低成本和长上下文。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "长上下文",
+        "中文/多语言"
+      ],
+      "best_for": [
+        "高吞吐代码任务",
+        "成本敏感 agent",
+        "长文档批处理"
+      ],
+      "endpoint_ids": [
+        "Qwen/Qwen3.8-Flash-Next",
+        "qwen3.8-flash"
+      ],
+      "availability": [
+        "open-weights",
+        "hosted-preview"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": "MoE + deterministic n-gram memory",
+      "context_note": "262K native；官方资料描述可通过 YaRN 扩展到约 1M。",
+      "parameter_note": "125B main / 6B active；另有 51B n-gram memory，不计入 active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "n-gram memory 是额外组件，不应加进模型 active 参数。",
+        "Flash-Next checkpoint 与 hosted qwen3.8-flash 的 serving 版本需分开记录。"
+      ],
+      "fact_source_ids": [
+        "src-qwen38-flash",
+        "src-qwen38-repo"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3.8-27b@2026-08-26": {
+      "positioning": "Qwen3.8 27B dense open-weight 模型，作为小模型/效率对照。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "中文/多语言"
+      ],
+      "best_for": [
+        "本地部署",
+        "小模型能力比较",
+        "成本受限的代码/文本任务"
+      ],
+      "endpoint_ids": [
+        "Qwen/Qwen3.8-27B"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": "dense",
+      "context_note": "原生 context 262K；部署端可用长度取决于显存与推理框架。",
+      "parameter_note": "27B total / 27B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "本地量化、推理框架和 batch size 会改变吞吐，不改变基础参数量。"
+      ],
+      "fact_source_ids": [
+        "src-qwen38-27b",
+        "src-qwen38-repo"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3.7-plus@current": {
+      "positioning": "Qwen3.7 Plus 上一代托管服务 endpoint，用于 Qwen 3.8/3.7 的服务代际对照。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉",
+        "中文/多语言",
+        "Agent"
+      ],
+      "best_for": [
+        "Qwen 3.8/3.7 代际比较",
+        "托管中文/多模态工作"
+      ],
+      "endpoint_ids": [
+        "qwen3.7-plus"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未从逐型号的一手 endpoint 文档核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开；不得从名称相近但不同的 open-weight checkpoint 继承。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "服务 endpoint 与名称相近的公开权重不应自动视为同一 release。",
+        "架构、参数和 context 在逐型号一手资料确认前保持未知。"
+      ],
+      "fact_source_ids": [
+        "src-qwen38-repo"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.6-max@preview": {
+      "positioning": "Qwen3.6 Max Preview，作为正在迭代的前沿预览条目。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉",
+        "中文/多语言"
+      ],
+      "best_for": [
+        "预览能力观察",
+        "Qwen 代际时间线"
+      ],
+      "endpoint_ids": [
+        "qwen3.6-max-preview"
+      ],
+      "availability": [
+        "hosted-preview",
+        "api"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前公开页面未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "Preview 结果可能随 checkpoint/服务路由变化，不进入严格稳定排名。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3-max@thinking": {
+      "positioning": "Qwen3-Max-Thinking 历史 reasoning 服务 release。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "工具调用",
+        "中文/多语言"
+      ],
+      "best_for": [
+        "Qwen reasoning 时间线",
+        "复杂数学/代码历史对照"
+      ],
+      "endpoint_ids": [
+        "qwen3-max-2026-01-23",
+        "qwen3-max-thinking"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "Thinking 是运行模式/endpoint 标识，不应和 Qwen3-Max-Instruct 混合。"
+      ],
+      "fact_source_ids": [
+        "qwen3-max"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3-coder@current": {
+      "positioning": "Qwen3-Coder 480B-A35B 开放权重代码模型，面向仓库级软件工程与 agent 工作流。",
+      "capabilities": [
+        "代码生成",
+        "代码补全",
+        "仓库理解",
+        "工具调用"
+      ],
+      "best_for": [
+        "本地代码助手",
+        "代码 agent",
+        "仓库级重构"
+      ],
+      "endpoint_ids": [
+        "qwen3-coder",
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": "MoE",
+      "context_note": "原生 256K（262,144 tokens）；模型卡给出可扩展至 1M 的配置，扩展方法与实际服务限制必须随 run 记录。",
+      "parameter_note": "480B total / 35B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "专用 coding 模型与通用 Qwen release 不应仅按名称比较。",
+        "1M 是扩展配置而非原生 context；SWE/Terminal 类成绩必须保留 harness、工具和预算。"
+      ],
+      "fact_source_ids": [
+        "src-qwen3-coder"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "deepseek/v4-pro@2026-04-24": {
+      "positioning": "DeepSeek V4 Pro 旗舰 MoE release，面向推理、代码和长程任务。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "长上下文",
+        "Agent"
+      ],
+      "best_for": [
+        "复杂代码/数学",
+        "长上下文 agent",
+        "开放权重规模对比"
+      ],
+      "endpoint_ids": [
+        "deepseek-v4-pro"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE",
+      "context_note": "目录记录 1M context；API 与本地权重的限制要分开。",
+      "parameter_note": "1.6T total / 49B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "V4 preview/API release 的 serving 版本和公开权重可能不同。",
+        "DeepSeek harness 的工具策略需写入 system run。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v4-flash@2026-07-31": {
+      "positioning": "DeepSeek V4 Flash 高吞吐/低成本 beta variant。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "长上下文",
+        "代码 Agent"
+      ],
+      "best_for": [
+        "高吞吐代码 agent",
+        "Flash/Fast 横向比较",
+        "成本敏感部署"
+      ],
+      "endpoint_ids": [
+        "deepseek-v4-flash",
+        "deepseek-v4-flash-0731"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE",
+      "context_note": "目录记录 1M context；0731 是 repost-trained snapshot。",
+      "parameter_note": "284B total / 13B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "public beta 和 snapshot 更新会影响可复现性；保留 observed date 与 endpoint。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v3.2@2025-12-01": {
+      "positioning": "DeepSeek V3.2 上一代通用/代码 baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "V4 代际比较",
+        "开放权重/服务历史时间线"
+      ],
+      "endpoint_ids": [
+        "deepseek-v3.2",
+        "deepseek-chat"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": [
+        "同一 API alias 可能路由到更新 snapshot，历史成绩需保留抓取日期。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/r1@0528": {
+      "positioning": "DeepSeek-R1-0528 历史 reasoning release，保留作开放权重推理基线。",
+      "capabilities": [
+        "深度推理",
+        "数学",
+        "代码"
+      ],
+      "best_for": [
+        "数学/推理时间线",
+        "开放权重 reasoning 对照"
+      ],
+      "endpoint_ids": [
+        "DeepSeek-R1-0528"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "模型卡、量化和推理框架不同会改变速度/显存；benchmark 仍需保留 protocol。"
+      ],
+      "fact_source_ids": [
+        "deepseek-r1-0528"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k3@2026-07-16": {
+      "positioning": "Kimi K3 开放 3T-class 旗舰，强调长程 coding、知识工作和 reasoning。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "原生视觉",
+        "长上下文",
+        "Agent"
+      ],
+      "best_for": [
+        "长程代码 agent",
+        "多模态知识工作",
+        "大参数开放权重比较"
+      ],
+      "endpoint_ids": [
+        "k3",
+        "kimi-k3"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "max"
+      ],
+      "architecture": "Kimi Delta Attention + Attention Residuals",
+      "context_note": "官方技术博客记录 1M native context，并强调 native vision。",
+      "parameter_note": "2.8T total；active 参数未公开。",
+      "license": null,
+      "caveats": [
+        "Kimi Code、Claude Code、Codex harness 会产生不同 system subject。",
+        "K3 与 256K endpoint 是同一 release 的 context/quota 变体。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-k3",
+        "src-kimi-code"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k3-256k@2026-07-16": {
+      "positioning": "Kimi K3 的 256K context/quota endpoint variant。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "原生视觉",
+        "Agent"
+      ],
+      "best_for": [
+        "成本/上下文受限的 K3 使用",
+        "与 1M endpoint 做 context 对照"
+      ],
+      "endpoint_ids": [
+        "k3-256k",
+        "kimi-k3-256k"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "max"
+      ],
+      "architecture": "同 Kimi K3 release",
+      "context_note": "256K context；不是新的训练权重。",
+      "parameter_note": "继承 K3 的 2.8T total 目录记录；active 未公开。",
+      "license": null,
+      "caveats": [
+        "不要把 256K 与 1M endpoint 的结果合并成一个无条件分数。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-k3",
+        "src-kimi-code"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k2.7-code@current": {
+      "positioning": "Kimi Code 面向软件工程的 serving tier。",
+      "capabilities": [
+        "代码",
+        "仓库理解",
+        "工具调用",
+        "Agent"
+      ],
+      "best_for": [
+        "代码 agent",
+        "终端/IDE 工作流",
+        "高吞吐编程"
+      ],
+      "endpoint_ids": [
+        "kimi-for-coding",
+        "kimi-k2.7-code"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "Kimi Code 文档列出 coding endpoint；context/配额需按当前配置复核。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "这是 coding serving tier；SWE/Terminal 分数不能冒充裸 K2.7 模型分数。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-code"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k2.7-code-highspeed@current": {
+      "positioning": "Kimi Code 的 high-speed serving variant，优先吞吐和延迟。",
+      "capabilities": [
+        "代码",
+        "仓库理解",
+        "工具调用",
+        "Agent"
+      ],
+      "best_for": [
+        "交互式 coding",
+        "高并发代码任务",
+        "Flash/Fast 对比"
+      ],
+      "endpoint_ids": [
+        "kimi-for-coding-highspeed"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "同 Kimi K2.7 Code serving family",
+      "context_note": "速度 variant 的 context/配额需按 Kimi Code 配置页复核。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Highspeed 是 serving variant，不应新增或复用独立权重分数。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-code"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k2.6@2026-04-20": {
+      "positioning": "Kimi K2.6 上一代开放权重/服务模型，覆盖代码、视觉和 agent。",
+      "capabilities": [
+        "代码",
+        "视觉",
+        "推理",
+        "Agent"
+      ],
+      "best_for": [
+        "Kimi 代际比较",
+        "多模态代码 agent"
+      ],
+      "endpoint_ids": [
+        "kimi-k2.6"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "不同 Kimi Code 配置和开放权重 checkpoint 需分开记录。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-code"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "zai/glm-5.3@2026-08-14": {
+      "positioning": "GLM-5.3 前沿预览，聚焦代码 agent 与复杂 reasoning。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "代码 Agent",
+        "工具调用"
+      ],
+      "best_for": [
+        "预览 frontier coding",
+        "GLM 代际比较"
+      ],
+      "endpoint_ids": [
+        "glm-5.3"
+      ],
+      "availability": [
+        "api",
+        "hosted-preview"
+      ],
+      "reasoning_modes": [
+        "max"
+      ],
+      "architecture": null,
+      "context_note": "公开 blog 尚未给出可稳定复用的 context 数值。",
+      "parameter_note": "参数量未公开；weights release timing 需按官方公告更新。",
+      "license": null,
+      "caveats": [
+        "预览服务与后续 weights release 可能不是同一 snapshot。",
+        "榜单 reported 值必须保留发布日期和 endpoint。"
+      ],
+      "fact_source_ids": [
+        "src-glm53"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "zai/glm-5.3-flash@2026-08-27": {
+      "positioning": "GLM-5.3 Flash 低延迟/低成本 serving variant。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "Flash 横向比较",
+        "高吞吐代码和工具任务"
+      ],
+      "endpoint_ids": [
+        "glm-5.3-flash"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前公开 blog 未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 速度/成本 tier 与 GLM-5.3 主模型不应直接合并排名。"
+      ],
+      "fact_source_ids": [
+        "src-glm53-flash"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "zai/glm-5.2@2026-06-16": {
+      "positioning": "GLM-5.2 上一代开放权重/托管 baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "长上下文",
+        "工具调用"
+      ],
+      "best_for": [
+        "GLM 5.3 代际对照",
+        "开放权重长上下文比较"
+      ],
+      "endpoint_ids": [
+        "glm-5.2"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "目录记录 1M context；部署端限制需按 provider/权重版本区分。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "公开权重与 hosted endpoint 的 tokenizer/serving 配置可能不同。"
+      ],
+      "fact_source_ids": [
+        "src-glm52"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "zai/glm-5.1@2026-04-07": {
+      "positioning": "GLM-5.1 代码/Agent 上一代 baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "代码 Agent",
+        "工具调用"
+      ],
+      "best_for": [
+        "GLM 代际时间线",
+        "软件工程 agent 对照"
+      ],
+      "endpoint_ids": [
+        "glm-5.1"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Agent benchmark 必须记录工具和 scaffold。"
+      ],
+      "fact_source_ids": [
+        "src-glm52"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "zai/glm-5@2026-02-12": {
+      "positioning": "GLM-5 早期开放权重 Agent/reasoning baseline。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "Agent",
+        "工具调用"
+      ],
+      "best_for": [
+        "开放权重规模比较",
+        "GLM 历史 benchmark"
+      ],
+      "endpoint_ids": [
+        "glm-5"
+      ],
+      "availability": [
+        "api",
+        "hosted",
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE",
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "744B total / 40B active。",
+      "license": null,
+      "caveats": [
+        "参数口径仅适用于来源所述 checkpoint；量化不会改变基础参数量。"
+      ],
+      "fact_source_ids": [
+        "src-glm52"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "minimax/m3@2026-05-31": {
+      "positioning": "MiniMax M3 coding/agentic flagship，采用 Sparse Attention 并支持多模态。",
+      "capabilities": [
+        "代码",
+        "Agent",
+        "推理",
+        "视觉",
+        "长视频理解"
+      ],
+      "best_for": [
+        "长程代码 agent",
+        "多模态 agent",
+        "1M context 工作流"
+      ],
+      "endpoint_ids": [
+        "MiniMax-M3",
+        "m3"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MiniMax Sparse Attention (MSA)",
+      "context_note": "官方模型页记录最多 1M、保证至少 512K context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "长视频/agent 结果依赖工具、上下文截断策略和 serving 配置。"
+      ],
+      "fact_source_ids": [
+        "src-minimax-m3",
+        "src-minimax-release"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "minimax/m2.7@2026-03-18": {
+      "positioning": "MiniMax M2.7 上一代代码/Agent serving release。",
+      "capabilities": [
+        "代码",
+        "Agent",
+        "推理",
+        "工具调用"
+      ],
+      "best_for": [
+        "M3 代际比较",
+        "代码 agent 历史 baseline"
+      ],
+      "endpoint_ids": [
+        "MiniMax-M2.7",
+        "m2.7"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前公开 release notes 未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "M2.7 与 HighSpeed 是不同 serving 条件，需分行保存。"
+      ],
+      "fact_source_ids": [
+        "src-minimax-release"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "minimax/m2.7-highspeed@2026-03-18": {
+      "positioning": "MiniMax M2.7 的 high-speed serving variant。",
+      "capabilities": [
+        "代码",
+        "Agent",
+        "工具调用"
+      ],
+      "best_for": [
+        "交互式 coding",
+        "高吞吐 agent",
+        "速度/成本对比"
+      ],
+      "endpoint_ids": [
+        "MiniMax-M2.7-highspeed"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "同 MiniMax M2.7 serving family",
+      "context_note": "HighSpeed endpoint 的 context/配额需按 release notes 复核。",
+      "parameter_note": "继承 M2.7 的公开参数口径（若有）；本目录未统一核验。",
+      "license": null,
+      "caveats": [
+        "速度 variant 不是新训练 release；不要重复计入模型族规模。"
+      ],
+      "fact_source_ids": [
+        "src-minimax-release"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "minimax/m2.5@2026-02": {
+      "positioning": "MiniMax M2.5 历史生产 baseline。",
+      "capabilities": [
+        "代码",
+        "Agent",
+        "推理"
+      ],
+      "best_for": [
+        "MiniMax 代际时间线",
+        "历史代码 agent 对照"
+      ],
+      "endpoint_ids": [
+        "MiniMax-M2.5",
+        "m2.5"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "release_label 为 2026-02；具体发布日期和 alias 需要后续从 release notes 补齐。"
+      ],
+      "fact_source_ids": [
+        "src-minimax-release"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xiaomi/mimo-v2.5-pro@2026-04-23": {
+      "positioning": "MiMo-V2.5-Pro 万亿级 MoE 旗舰，面向推理和复杂 agent 工作。",
+      "capabilities": [
+        "深度推理",
+        "代码",
+        "Agent",
+        "视觉",
+        "长上下文"
+      ],
+      "best_for": [
+        "复杂 agent workflow",
+        "长文档/代码任务",
+        "万亿参数规模对比"
+      ],
+      "endpoint_ids": [
+        "mimo-v2.5-pro"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE",
+      "context_note": "官方 MiMo model docs 记录 1M context。",
+      "parameter_note": "1T total / 42B active。",
+      "license": null,
+      "caveats": [
+        "Pro 与 UltraSpeed 是同 release 的不同 serving/deployment 条件。",
+        "Agent 成绩需记录是否使用 OpenClaw/工具集成。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xiaomi/mimo-v2.5@2026-04-23": {
+      "positioning": "MiMo-V2.5 omni-modal production model，覆盖文本、图像、视频和音频。",
+      "capabilities": [
+        "全模态理解",
+        "语音",
+        "视频",
+        "Agent",
+        "长上下文"
+      ],
+      "best_for": [
+        "多模态/语音应用",
+        "视频理解",
+        "跨模态 agent"
+      ],
+      "endpoint_ids": [
+        "mimo-v2.5"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "官方 MiMo model docs 记录 1M context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "不同输入模态的 API 处理、采样和费用不同；benchmark 必须标注 modality。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xiaomi/mimo-v2.5-pro-ultraspeed@current": {
+      "positioning": "MiMo-V2.5-Pro 的 UltraSpeed 部署 variant，优化吞吐而非新增权重。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "Agent",
+        "视觉",
+        "高速推理"
+      ],
+      "best_for": [
+        "低延迟 agent",
+        "高吞吐 API",
+        "部署/速度比较"
+      ],
+      "endpoint_ids": [
+        "mimo-v2.5-pro-ultraspeed"
+      ],
+      "availability": [
+        "api",
+        "early-access"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "同 MiMo-V2.5-Pro；FP4 + DFlash serving optimization",
+      "context_note": "目录记录 1M context；UltraSpeed 的实际配额需按当前服务核验。",
+      "parameter_note": "继承 Pro 的 1T total / 42B active 目录口径。",
+      "license": null,
+      "caveats": [
+        "FP4 lossless quantization、DFlash 和 TileRT 是部署优化，不应当作新 model release。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "google/gemini-3.1-pro@2026-02-19": {
+      "positioning": "Gemini 3.1 Pro 多模态 reasoning baseline，覆盖长上下文和 agent 场景。",
+      "capabilities": [
+        "推理",
+        "文本",
+        "图像",
+        "视频",
+        "音频",
+        "工具调用"
+      ],
+      "best_for": [
+        "多模态知识工作",
+        "Google 生态工具任务",
+        "跨模态 reasoning"
+      ],
+      "endpoint_ids": [
+        "gemini-3.1-pro",
+        "gemini-3-1-pro-preview"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "本目录未从当前 model card 统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Preview alias 与稳定 endpoint 可能路由不同；保留 source snapshot 和日期。"
+      ],
+      "fact_source_ids": [
+        "google-gemini31"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "google/gemini-2.5-pro@2025-06-05": {
+      "positioning": "Gemini 2.5 Pro 上一代多模态 reasoning baseline。",
+      "capabilities": [
+        "推理",
+        "文本",
+        "图像",
+        "视频",
+        "音频",
+        "长上下文"
+      ],
+      "best_for": [
+        "Gemini 3.1 代际比较",
+        "多模态历史 benchmark"
+      ],
+      "endpoint_ids": [
+        "gemini-2.5-pro"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context；不同 Google API surface 可能有不同上限。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Gemini benchmark 常区分 thinking budget、tools 和 modality；不可只按显示名合并。"
+      ],
+      "fact_source_ids": [
+        "google-gemini25"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "google/gemini-2.5-flash@current": {
+      "positioning": "Gemini 2.5 Flash 上一代快速/成本敏感多模态 tier。",
+      "capabilities": [
+        "快速推理",
+        "文本",
+        "图像",
+        "视频",
+        "音频",
+        "工具调用"
+      ],
+      "best_for": [
+        "高吞吐多模态应用",
+        "Flash/Fast 横向比较",
+        "实时交互"
+      ],
+      "endpoint_ids": [
+        "gemini-2.5-flash"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "thinking"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 的 thinking budget 和 latency setting 需要写进 protocol。"
+      ],
+      "fact_source_ids": [
+        "google-gemini25"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xai/grok-4-fast@2025-09-19": {
+      "positioning": "Grok 4 Fast 高吞吐、实时导向的上一代 serving tier。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "实时信息",
+        "视觉输入"
+      ],
+      "best_for": [
+        "实时问答",
+        "高吞吐 API",
+        "Grok 代际速度比较"
+      ],
+      "endpoint_ids": [
+        "grok-4-fast"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "实时检索和工具开关会改变结果；需要区分裸模型与带 search 的 system。"
+      ],
+      "fact_source_ids": [
+        "xai-grok4fast"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xai/grok-4@current": {
+      "positioning": "Grok 4 通用 reasoning/代码模型，保留作为 xAI 历史 frontier 对照。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "视觉输入",
+        "实时信息",
+        "工具调用"
+      ],
+      "best_for": [
+        "Grok 代际比较",
+        "实时信息与工具任务"
+      ],
+      "endpoint_ids": [
+        "grok-4"
+      ],
+      "availability": [
+        "api",
+        "hosted"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "当前目录未统一核验 context。",
+      "parameter_note": "参数量未公开。",
+      "license": null,
+      "caveats": [
+        "联网、系统提示和实时数据 snapshot 必须随成绩记录。"
+      ],
+      "fact_source_ids": [
+        "xai-grok4fast"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.1@2025-11-13": {
+      "positioning": "GPT-5.1：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.1",
+        "gpt-5.1-2025-11-13"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.1-codex@2025-11-12": {
+      "positioning": "GPT-5.1 Codex：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.1-codex"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.1-codex-max@2025-11-19": {
+      "positioning": "GPT-5.1 Codex Max：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.1-codex-max"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.1-codex-mini@2025-11-17": {
+      "positioning": "GPT-5.1 Codex Mini：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.1-codex-mini"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.2@2025-12-11": {
+      "positioning": "GPT-5.2：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.2",
+        "gpt-5.2-2025-12-11"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.2-pro@2025-12-11": {
+      "positioning": "GPT-5.2 Pro：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.2-pro",
+        "gpt-5.2-pro-2025-12-11"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.2-codex@2025-12-18": {
+      "positioning": "GPT-5.2 Codex：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.2-codex"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "openai/gpt-5.3-codex@2026-02-05": {
+      "positioning": "GPT-5.3 Codex：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "gpt-5.3-codex"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus-4.5@2025-11-01": {
+      "positioning": "Claude Opus 4.5：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "claude-opus-4-5-20251101",
+        "claude-opus-4.5"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-opus-4.6@2026-02-05": {
+      "positioning": "Claude Opus 4.6：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "claude-opus-4-6",
+        "claude-opus-4.6"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-sonnet-4.5@2025-09-29": {
+      "positioning": "Claude Sonnet 4.5：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "claude-sonnet-4-5-20250929",
+        "claude-sonnet-4.5"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "anthropic/claude-haiku-4.5@2025-10-01": {
+      "positioning": "Claude Haiku 4.5：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "claude-haiku-4-5-20251001",
+        "claude-haiku-4.5"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3.8-2.4t-a95b@2026-08-26": {
+      "positioning": "Qwen3.8 2.4T A95B：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "Qwen/Qwen3.8-2.4T-A95B",
+        "qwen3.8-2.4t-a95b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-qwen38-repo"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "qwen/qwen3.5-397b-a17b@2026-02-13": {
+      "positioning": "Qwen3.5 系列的 open-weight 397B/A17B 标识条目；公开报告只归到这个明确 checkpoint 名称。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "Qwen3.5 open-weight 代际对照",
+        "同代 MoE 规模档位比较"
+      ],
+      "endpoint_ids": [
+        "qwen3.5-397b-a17b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE（结构细节待逐型号来源核验）",
+      "context_note": "该 checkpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "397B/A17B 来自型号名；在参数 scope 与 locator 补齐前不提升为机器参数事实。",
+      "license": null,
+      "caveats": [
+        "型号名中的 total/active 标识仍需 source-backed parameter scope。",
+        "量化、搜索、effort 与 harness 结果必须保留各自 protocol。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-122b-a10b@2026-02-13": {
+      "positioning": "Qwen3.5 系列的 open-weight 122B/A10B 标识条目，处在 397B/A17B 与 27B 档之间。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "Qwen3.5 open-weight 档位比较",
+        "MoE 部署候选的能力追踪"
+      ],
+      "endpoint_ids": [
+        "qwen3.5-122b-a10b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE（结构细节待逐型号来源核验）",
+      "context_note": "该 checkpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "122B/A10B 来自型号名；在参数 scope 与 locator 补齐前不提升为机器参数事实。",
+      "license": null,
+      "caveats": [
+        "型号名中的 total/active 标识仍需 source-backed parameter scope。",
+        "不能把不同量化或 serving 配置的吞吐归因于基础权重。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-27b@2026-02-24": {
+      "positioning": "Qwen3.5 系列的 27B open-weight 条目，作为较小部署档位保留。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "本地部署候选比较",
+        "Qwen 27B 代际对照"
+      ],
+      "endpoint_ids": [
+        "qwen3.5-27b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 checkpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "27B 来自型号名；parameter scope 与精确计数尚未在目录中逐项核验。",
+      "license": null,
+      "caveats": [
+        "较小档位不等于已验证低成本；VRAM、量化和吞吐需 deployment evidence。",
+        "不同 Qwen 27B 代际不能按规模名自动合并。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-plus@2026-02-16": {
+      "positioning": "Qwen3.5 Plus 上一代托管多模态 reasoning endpoint。",
+      "capabilities": [
+        "推理",
+        "文本生成",
+        "视觉输入"
+      ],
+      "best_for": [
+        "Qwen Plus 托管端点代际对照",
+        "图文 reasoning 报告追踪"
+      ],
+      "endpoint_ids": [
+        "qwen3.5-plus"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Plus 服务名不能自动映射到名称相近的 open-weight checkpoint。",
+        "视觉与纯文本结果必须按输入模态分列。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-flash@2026-02-25": {
+      "positioning": "Qwen3.5 Flash 上一代托管效率 endpoint；Flash 是产品层级标签，不是实测速度结论。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "Qwen Flash 代际对照",
+        "质量/成本/延迟 Pareto 候选"
+      ],
+      "endpoint_ids": [
+        "qwen3.5-flash"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 标签不能替代 TTFT、tokens/s、价格和 batch 条件。",
+        "不能把该服务 endpoint 当作已公开权重。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.6-plus@2026-03-31": {
+      "positioning": "Qwen3.6 Plus 上一代托管多模态 reasoning endpoint，位于 3.5 Plus 与 3.7 Plus 之间。",
+      "capabilities": [
+        "推理",
+        "文本生成",
+        "视觉输入"
+      ],
+      "best_for": [
+        "Qwen Plus 连续代际对照",
+        "托管图文 reasoning 报告追踪"
+      ],
+      "endpoint_ids": [
+        "qwen3.6-plus"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Plus endpoint 不自动继承同代 open-weight checkpoint 的参数事实。",
+        "视觉与纯文本结果必须按输入模态分列。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.6-27b@2026-04-22": {
+      "positioning": "Qwen3.6 系列的 27B open-weight 条目，用于较小部署档位和 27B 代际比较。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "本地部署候选比较",
+        "Qwen 27B 代际对照"
+      ],
+      "endpoint_ids": [
+        "qwen3.6-27b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 checkpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "27B 来自型号名；parameter scope 与精确计数尚未在目录中逐项核验。",
+      "license": null,
+      "caveats": [
+        "较小档位不等于已验证低成本；VRAM、量化和吞吐需 deployment evidence。",
+        "不同 Qwen 27B 代际不能按规模名自动合并。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.6-35b-a3b@2026-04-14": {
+      "positioning": "Qwen3.6 系列的 35B/A3B open-weight MoE 标识条目，作为低 active-parameter 候选。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "MoE 部署效率候选比较",
+        "Qwen3.6 open-weight 档位对照"
+      ],
+      "endpoint_ids": [
+        "qwen3.6-35b-a3b"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": "MoE（结构细节待逐型号来源核验）",
+      "context_note": "该 checkpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "35B/A3B 来自型号名；在参数 scope 与 locator 补齐前不提升为机器参数事实。",
+      "license": null,
+      "caveats": [
+        "active 参数标签不能替代实测显存、吞吐或成本。",
+        "不同量化与推理框架必须作为 deployment 条件记录。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.6-flash@2026-04-27": {
+      "positioning": "Qwen3.6 Flash 上一代托管效率 endpoint，用于 Qwen Flash 时间线。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "Qwen Flash 代际对照",
+        "质量/成本/延迟 Pareto 候选"
+      ],
+      "endpoint_ids": [
+        "qwen3.6-flash"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 标签不能替代 TTFT、tokens/s、价格和 batch 条件。",
+        "该 endpoint 与 open-weight Flash-Next 不应自动合并。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.7-max@2026-05-19": {
+      "positioning": "Qwen3.7 Max 上一代托管旗舰 endpoint，保留作 3.8 Max 的服务代际基线。",
+      "capabilities": [
+        "推理",
+        "文本生成",
+        "视觉输入"
+      ],
+      "best_for": [
+        "Qwen Max 代际对照",
+        "托管多模态旗舰报告追踪"
+      ],
+      "endpoint_ids": [
+        "qwen3.7-max"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Max 服务名不能自动映射到名称相近的 open-weight checkpoint。",
+        "服务路由或 snapshot 变化会影响跨日期比较。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.7-flash@2026-07-27": {
+      "positioning": "Qwen3.7 Flash 当前托管效率 endpoint，用于 Flash/Fast 质量与服务指标对照。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "Qwen Flash 代际对照",
+        "质量/成本/延迟 Pareto 候选"
+      ],
+      "endpoint_ids": [
+        "qwen3.7-flash"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该托管 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "托管 endpoint 参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 标签不能替代 TTFT、tokens/s、价格和 batch 条件。",
+        "不能把不同日期或路由的 hosted snapshot 静默合并。"
+      ],
+      "fact_source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "deepseek/v3.1@2025-08-21": {
+      "positioning": "DeepSeek V3.1：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "deepseek-v3.1"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v3.1-terminus@2025-09-22": {
+      "positioning": "DeepSeek V3.1 Terminus：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "deepseek-v3.1-terminus"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v3.2-exp@2025-09-29": {
+      "positioning": "DeepSeek V3.2 Exp：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "deepseek-v3.2-exp"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v4-pro@2026-08-13": {
+      "positioning": "DeepSeek V4 Pro (0813)：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "deepseek-v4-pro-0813"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "deepseek/v4-flash-vision-exp@current": {
+      "positioning": "DeepSeek V4 Flash Vision Exp：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "多模态"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "deepseek-v4-flash-vision-exp"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "moonshot/kimi-k2.5@2026-01-27": {
+      "positioning": "Kimi K2.5 上一代托管多模态/Agent endpoint，保留作 K2.6 与 K3 的代际基线。",
+      "capabilities": [
+        "推理",
+        "工具调用",
+        "多模态"
+      ],
+      "best_for": [
+        "Kimi K2/K3 代际对照",
+        "托管多模态 Agent 报告追踪"
+      ],
+      "endpoint_ids": [
+        "kimi-k2.5"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Kimi Code、通用 API 与第三方 agent harness 是不同 system subject。",
+        "文本与视觉输入结果必须按 modality 和 endpoint 分列。"
+      ],
+      "fact_source_ids": [
+        "src-kimi-code",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "zai/glm-4.7@2025-12-22": {
+      "positioning": "GLM-4.7 上一代托管 reasoning/coding endpoint，保留作 GLM-5 系列之前的基线。",
+      "capabilities": [
+        "推理",
+        "代码"
+      ],
+      "best_for": [
+        "GLM 4.x/5.x 代际对照",
+        "托管代码与 reasoning 报告追踪"
+      ],
+      "endpoint_ids": [
+        "glm-4.7"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "代码 Agent 成绩必须保留工具、scaffold 与预算。",
+        "不得把 GLM-4.7 Flash 的服务结果合并到本条目。"
+      ],
+      "fact_source_ids": [
+        "src-glm52",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "zai/glm-4.7-flash@current": {
+      "positioning": "GLM-4.7 Flash 上一代托管效率 endpoint；Flash 只表示产品层级候选。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "GLM Flash 代际对照",
+        "质量/成本/延迟 Pareto 候选"
+      ],
+      "endpoint_ids": [
+        "glm-4.7-flash"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 标签不能替代 TTFT、tokens/s、价格和 batch 条件。",
+        "不能把该 endpoint 的结果静默并入 GLM-4.7 主端点。"
+      ],
+      "fact_source_ids": [
+        "src-glm52"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "minimax/m2.1@2025-12-23": {
+      "positioning": "MiniMax M2.1：公开榜单中有可追溯的 release/endpoint 记录。",
+      "capabilities": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "best_for": [
+        "代际 benchmark 对照",
+        "查看不同 effort/harness 下的公开报告"
+      ],
+      "endpoint_ids": [
+        "minimax-m2.1"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "公开目录未统一核验；以每条结果的 protocol/context 记录为准。",
+      "parameter_note": "参数量未在本目录统一核验。",
+      "license": null,
+      "caveats": [
+        "同一 release 的 effort、上下文、搜索和 quantization 展示保留在 source alias/raw modelRef；不可把它们当作独立复现。",
+        "跨来源比较前请检查 benchmark version、harness 和 subject type。"
+      ],
+      "fact_source_ids": [
+        "src-minimax-release",
+        "src-epoch-benchmark-hub"
+      ],
+      "last_checked": "2026-08-27"
+    },
+    "xiaomi/mimo-v2-flash@current": {
+      "positioning": "MiMo V2 Flash 上一代托管效率 endpoint，用于 MiMo Flash/Fast 时间线。",
+      "capabilities": [
+        "文本生成",
+        "推理"
+      ],
+      "best_for": [
+        "MiMo 效率端点代际对照",
+        "质量/成本/延迟 Pareto 候选"
+      ],
+      "endpoint_ids": [
+        "mimo-v2-flash"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Flash 标签不能替代 TTFT、tokens/s、价格和 batch 条件。",
+        "该 endpoint 不自动继承 MiMo V2 Pro 或 Omni 的能力与参数事实。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "xiaomi/mimo-v2-pro@current": {
+      "positioning": "MiMo V2 Pro 上一代托管 reasoning/Agent endpoint，保留作 V2.5 Pro 的代际基线。",
+      "capabilities": [
+        "推理",
+        "工具调用"
+      ],
+      "best_for": [
+        "MiMo Pro 代际对照",
+        "托管 Agent 与工具调用报告追踪"
+      ],
+      "endpoint_ids": [
+        "mimo-v2-pro"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "Agent 成绩必须保留工具集、scaffold、预算与 endpoint。",
+        "不能从 V2.5 Pro 反向继承参数或 context。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "xiaomi/mimo-v2-omni@current": {
+      "positioning": "MiMo V2 Omni 上一代全模态托管 endpoint，覆盖文本、图像、音频与视频输入。",
+      "capabilities": [
+        "推理",
+        "视觉输入",
+        "音频输入",
+        "视频输入"
+      ],
+      "best_for": [
+        "MiMo Omni 代际对照",
+        "跨模态公开报告追踪"
+      ],
+      "endpoint_ids": [
+        "mimo-v2-omni"
+      ],
+      "availability": [
+        "api"
+      ],
+      "reasoning_modes": [
+        "reasoning"
+      ],
+      "architecture": null,
+      "context_note": "该 endpoint 的 context 上限尚未在目录中逐项核验。",
+      "parameter_note": "该托管 endpoint 的参数量未公开。",
+      "license": null,
+      "caveats": [
+        "不同输入模态的采样、费用和 grader 不可混为同一协议。",
+        "不能从 V2.5 Omni 类产品反向继承 context 或参数事实。"
+      ],
+      "fact_source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "openai/gpt-5.4-pro@2026-03-05": {
+      "positioning": "GPT-5.4 的 Pro 高计算 endpoint，面向低吞吐但高价值的复杂专业任务。",
+      "capabilities": ["深度推理", "代码", "工具调用", "视觉输入", "专业知识工作"],
+      "best_for": ["复杂研究与审阅", "高准确度代码任务", "需要 Pro 计算预算的评测"],
+      "endpoint_ids": ["gpt-5.4-pro", "gpt-5.4-pro-2026-03-05"],
+      "availability": ["api"],
+      "reasoning_modes": ["pro"],
+      "architecture": null,
+      "context_note": "该 Pro snapshot 的稳定 context 上限未从当前官方目录单独核验。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["Pro 是独立高计算 endpoint；不得把基础 GPT-5.4 的 protocol 或分数直接代入。", "Epoch 的 none/unknown/xhigh/web-app 拼写保留为 source protocol，不是四个 release。"],
+      "fact_source_ids": ["src-openai-models"],
+      "last_checked": "2026-08-28"
+    },
+    "openai/gpt-5.4-nano@2026-03-17": {
+      "positioning": "GPT-5.4 家族的 nano 效率 tier，提供大输入窗口与较长输出上限。",
+      "capabilities": ["轻量推理", "文本输入", "图像输入", "长上下文", "结构化输出"],
+      "best_for": ["高吞吐 API 工作流", "长输入抽取与分类", "成本敏感的多模态任务"],
+      "endpoint_ids": ["gpt-5.4-nano", "gpt-5.4-nano-2026-03-17"],
+      "availability": ["api"],
+      "reasoning_modes": ["none", "low", "medium", "high", "xhigh"],
+      "architecture": null,
+      "context_note": "官方目录记录 400K context。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": 128000,
+      "license": null,
+      "caveats": ["128K 是 max output，不应与 400K input context 相加后当作单一窗口。", "LiveBench/Arena/Epoch 的 effort 后缀属于 run protocol。"],
+      "fact_source_ids": ["src-openai-models"],
+      "last_checked": "2026-08-28"
+    },
+    "openai/gpt-5-mini@2025-08-07": {
+      "positioning": "GPT-5 代际的 dated mini release，保留作成本/能力折中和历史公开榜单基线。",
+      "capabilities": ["推理", "代码", "工具调用", "视觉输入"],
+      "best_for": ["GPT-5 大小 tier 对照", "成本敏感的通用任务", "2025 年公开榜单回溯"],
+      "endpoint_ids": ["gpt-5-mini-2025-08-07"],
+      "availability": ["api"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "该 dated mini release 的 context 上限未在本轮官方目录核验。",
+      "parameter_note": "参数量未公开；mini 是产品 tier，不是公开参数规模。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["BFCL、Epoch 和 Arena 的不同拼写只在各自 source scope 映射。", "minimal/low/medium/high 后缀必须保留在 protocol。"],
+      "fact_source_ids": ["src-openai-models"],
+      "last_checked": "2026-08-28"
+    },
+    "openai/gpt-5-nano@2025-08-07": {
+      "positioning": "GPT-5 代际的 dated nano release，面向最轻量、高吞吐的历史 API 比较。",
+      "capabilities": ["轻量推理", "代码辅助", "工具调用", "视觉输入"],
+      "best_for": ["批量分类与抽取", "低成本路由", "GPT-5 nano 历史评测复盘"],
+      "endpoint_ids": ["gpt-5-nano-2025-08-07"],
+      "availability": ["api"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "该 dated nano release 的 context 上限未在本轮官方目录核验。",
+      "parameter_note": "参数量未公开；nano 标签不提供可推断的参数数值。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["不要从 GPT-5.4 nano 继承 400K/128K 限制。", "Epoch effort 与 Arena high 是评测设置，不是不同模型。"],
+      "fact_source_ids": ["src-openai-models"],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-35b-a3b@current": {
+      "positioning": "Qwen3.5 的 35B-A3B 多模态 MoE 开放权重版本，强调低 active-parameter 部署效率。",
+      "capabilities": ["文本", "图像", "推理", "代码", "多语言"],
+      "best_for": ["3B active 的本地/私有部署", "多模态开源模型比较", "Qwen3.5 小型 MoE 研究"],
+      "endpoint_ids": ["Qwen/Qwen3.5-35B-A3B"],
+      "availability": ["open-weights"],
+      "reasoning_modes": [],
+      "architecture": "MoE",
+      "context_note": "原生 262,144-token context。",
+      "parameter_note": "35B total / 3B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": "Apache-2.0",
+      "caveats": ["total 与 active 参数不可互换。", "本地量化与视觉预处理属于 deployment/protocol，而非新 release。"],
+      "fact_source_ids": ["src-qwen35"],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-9b@current": {
+      "positioning": "Qwen3.5 9B dense 多模态开放权重模型，作为轻量 dense 基线。",
+      "capabilities": ["文本", "图像", "代码", "中文/多语言"],
+      "best_for": ["单机部署", "dense 与 MoE 对照", "轻量多模态实验"],
+      "endpoint_ids": ["Qwen/Qwen3.5-9B"],
+      "availability": ["open-weights"],
+      "reasoning_modes": [],
+      "architecture": "Dense",
+      "context_note": "本轮来源未确认可稳定复用的 context 数值。",
+      "parameter_note": "9B dense；按 dense 口径 total 与 active 均为 9B。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["未确认字段保持 null，不从相邻 Qwen3.5 checkpoint 继承。", "视觉 benchmark 需记录分辨率和预处理。"],
+      "fact_source_ids": ["src-qwen35"],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3.5-max-preview@2026-03-18": {
+      "positioning": "Qwen3.5 Max 的 hosted preview endpoint，用于观察托管旗舰迭代而非开放权重部署。",
+      "capabilities": ["推理", "代码", "中文/多语言", "托管服务"],
+      "best_for": ["Qwen hosted Max 时间线", "preview 公开报告审计", "服务端旗舰对照"],
+      "endpoint_ids": ["qwen3.5-max-preview"],
+      "availability": ["hosted-preview", "api"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "Preview endpoint 的 context 上限未确认。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["Preview 路由可变化，结果必须保留 observed date。", "不得与 35B/9B 开放权重条目按名称自动合并。"],
+      "fact_source_ids": ["src-qwen35-max-preview"],
+      "last_checked": "2026-08-28"
+    },
+    "qwen/qwen3-coder-next@2026-02-03": {
+      "positioning": "Qwen3-Coder-Next 80B-A3B non-thinking 开放权重代码模型，偏向高效软件工程推理。",
+      "capabilities": ["代码生成", "仓库理解", "工具调用", "代码 Agent"],
+      "best_for": ["SWE-bench 类任务", "本地代码 agent", "3B active 的高吞吐 coding"],
+      "endpoint_ids": ["Qwen/Qwen3-Coder-Next", "qwen3-coder-next"],
+      "availability": ["open-weights"],
+      "reasoning_modes": ["non-thinking"],
+      "architecture": "MoE",
+      "context_note": "原生 262,144-token context。",
+      "parameter_note": "80B total / 3B active。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": "Apache-2.0",
+      "caveats": ["non-thinking 是该 release 的工作模式，不应用 thinking 分数补齐。", "SWE/Terminal 成绩必须保留 harness、工具、预算和 checkpoint。"],
+      "fact_source_ids": ["src-qwen3-coder-next"],
+      "last_checked": "2026-08-28"
+    },
+    "google/gemini-3.7-flash@current": {
+      "positioning": "Google 官方目录中的 latest Flash endpoint，代表当前 Gemini 快速通用 tier。",
+      "capabilities": ["快速推理", "文本", "图像", "工具型工作流"],
+      "best_for": ["当前 Flash 横向比较", "高吞吐多模态应用", "低延迟交互"],
+      "endpoint_ids": ["gemini-3.7-flash"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "官方 catalog 条目存在，但本轮未确认 context 数值。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["latest 表示 catalog 生命周期，不授权映射 floating latest alias。", "high/medium/minimal 等后缀属于来源 protocol。"],
+      "fact_source_ids": ["src-google-gemini-models"],
+      "last_checked": "2026-08-28"
+    },
+    "google/gemini-3.6-flash@current": {
+      "positioning": "Google 官方目录标注的 previous-generation Flash，保留作 3.7 的直接代际基线。",
+      "capabilities": ["快速推理", "文本", "图像", "多模态交互"],
+      "best_for": ["Gemini 3.7/3.6 代际比较", "历史 Arena/LiveBench 回溯", "Flash 服务迁移评估"],
+      "endpoint_ids": ["gemini-3.6-flash"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "本轮官方 catalog 未给出可登记的 context 数值。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["previous-generation 不等于 deprecated。", "Arena/LiveBench 的 high 展示不得与默认 endpoint 分数静默合并。"],
+      "fact_source_ids": ["src-google-gemini-models"],
+      "last_checked": "2026-08-28"
+    },
+    "google/gemini-3.5-flash@current": {
+      "positioning": "Google 官方目录中的 legacy Gemini 3.5 Flash，服务于旧报告和生命周期追踪。",
+      "capabilities": ["文本", "图像", "快速生成", "工具型工作流"],
+      "best_for": ["legacy benchmark 回放", "3.5→3.6→3.7 代际趋势", "旧 endpoint 迁移审计"],
+      "endpoint_ids": ["gemini-3.5-flash"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "Legacy catalog 条目的 context 数值未在本轮核验。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["legacy 是目录定位，不代表端点已正式 deprecated。", "不同 effort 后缀仍需保留原 source name。"],
+      "fact_source_ids": ["src-google-gemini-models"],
+      "last_checked": "2026-08-28"
+    },
+    "google/gemini-3.5-flash-lite@current": {
+      "positioning": "Gemini 3.5 家族的 efficiency-oriented Flash-Lite endpoint，面向更低成本和延迟。",
+      "capabilities": ["轻量生成", "文本", "图像", "高吞吐"],
+      "best_for": ["Flash-Lite 效率比较", "批处理与分类", "成本敏感多模态请求"],
+      "endpoint_ids": ["gemini-3.5-flash-lite"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "本轮官方 catalog 未确认 context 数值。",
+      "parameter_note": "参数量未公开；Lite 不能换算为参数规模。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["Flash-Lite 与 Flash 是不同 endpoint，不共享分数。", "效率比较仍需记录价格、延迟和 effort protocol。"],
+      "fact_source_ids": ["src-google-gemini-models"],
+      "last_checked": "2026-08-28"
+    },
+    "xai/grok-4.6@2026-08-12": {
+      "positioning": "xAI 当前 Grok 旗舰，用于最新 reasoning、代码和工具型公开报告。",
+      "capabilities": ["推理", "代码", "视觉输入", "工具型工作流"],
+      "best_for": ["当前 Grok frontier 比较", "高 effort 推理报告", "Grok 4.5→4.6 迁移"],
+      "endpoint_ids": ["grok-4.6"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "当前来源未公开可登记的 context 数值。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["xhigh/high/medium/low 后缀是 source protocol，不是独立 release。", "带检索或工具的 system 结果必须保留 harness。"],
+      "fact_source_ids": ["src-xai-grok46"],
+      "last_checked": "2026-08-28"
+    },
+    "xai/grok-4.5@2026-07-16": {
+      "positioning": "Grok 4.6 的 previous-generation 旗舰基线，用于近期代际与 effort 对照。",
+      "capabilities": ["推理", "代码", "视觉输入", "工具型工作流"],
+      "best_for": ["Grok 代际时间线", "2026 年中公开榜单复盘", "reasoning effort 灵敏度比较"],
+      "endpoint_ids": ["grok-4.5"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "当前来源未公开可登记的 context 数值。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": null,
+      "license": null,
+      "caveats": ["previous 不表示已退役。", "Arena、LiveBench、Epoch 与 Agents' Last Exam 的拼写只在各自 source scope 映射。"],
+      "fact_source_ids": ["src-xai-grok45"],
+      "last_checked": "2026-08-28"
+    },
+    "zai/glm-5v-turbo@2026-04-01": {
+      "positioning": "GLM-5V-Turbo 多模态 coding API model，统一处理 text/image/video/file 输入并输出文本。",
+      "capabilities": ["文本输入", "图像理解", "视频理解", "文件理解", "多模态代码生成"],
+      "best_for": ["截图/视频到代码", "多文件视觉分析", "长上下文多模态 coding agent"],
+      "endpoint_ids": ["glm-5v-turbo"],
+      "availability": ["api", "hosted"],
+      "reasoning_modes": [],
+      "architecture": null,
+      "context_note": "200K context；text output 上限 128K tokens。",
+      "parameter_note": "参数量未公开。",
+      "knowledge_cutoff": null,
+      "max_output_tokens": 128000,
+      "license": null,
+      "caveats": ["file 是输入载体而非输出模态；输出为 text。", "多模态 coding 结果依赖文件解析、采样、工具和视觉预处理。"],
+      "fact_source_ids": ["src-glm5v-turbo"],
+      "last_checked": "2026-08-28"
+    }
+  }
+}

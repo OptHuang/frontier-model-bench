@@ -68,6 +68,8 @@
 .model-card-specs strong { display: block; overflow: hidden; color: var(--text); font: 10px var(--mono); font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
 .model-card-tags { display: flex; gap: 5px; flex-wrap: wrap; min-height: 21px; }
 .model-card-tags .muted-badge { color: var(--muted-2); }
+.model-card-provenance { margin: 7px 0 0; color: var(--muted-2); font: 8px/1.45 var(--mono); letter-spacing: .02em; }
+.model-card-provenance::before { content: "· "; color: var(--accent); }
 .model-card-evidence { margin-top: auto; padding-top: 13px; }
 .model-score-preview { display: flex; gap: 6px; min-height: 37px; overflow: hidden; }
 .model-score-chip { min-width: 0; flex: 0 1 33%; display: flex; flex-direction: column; padding: 6px 7px; border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-radius: 7px; background: color-mix(in srgb, var(--accent) 5%, var(--surface-2)); }
@@ -116,6 +118,20 @@
 .model-drawer-summary { margin-bottom: 21px; padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface-2); }
 .model-drawer-summary p { margin: 0 0 11px; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .model-detail-item .model-detail-value { white-space: normal; line-height: 1.45; }
+.model-profile-positioning { margin: 0 0 13px; color: var(--text); font-size: 12px; line-height: 1.7; }
+.model-profile-provenance { margin: -2px 0 11px; padding: 7px 9px; border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); border-radius: 7px; background: color-mix(in srgb, var(--accent) 5%, var(--surface-2)); color: var(--accent); font: 8px/1.55 var(--mono); letter-spacing: .02em; }
+.model-source-scope-note { margin: -3px 0 10px; color: var(--muted-2); font: 9px/1.55 var(--mono); }
+.model-profile-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.model-profile-columns > div, .model-profile-caveats { min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.model-profile-columns label, .model-profile-caveats label { display: block; margin-bottom: 6px; color: var(--muted-2); font: 8px var(--mono); letter-spacing: .06em; }
+.model-profile-list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.model-profile-list li { position: relative; padding-left: 11px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.model-profile-list li::before { position: absolute; top: .55em; left: 0; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); content: ""; }
+.model-profile-caveats { margin-top: 10px; border-color: color-mix(in srgb, var(--yellow) 22%, var(--line)); }
+.model-profile-caveats .model-profile-list li::before { background: var(--yellow); }
+.model-profile-note, .model-profile-checked, .model-profile-empty { margin: 10px 0 0; color: var(--muted-2); font: 9px/1.55 var(--mono); }
+.model-profile-note span { color: var(--accent); text-transform: uppercase; }
+.model-profile-checked { color: var(--muted-2); text-align: right; }
 .model-aliases { margin: 0; color: var(--muted); font: 10px var(--mono); line-height: 2; word-break: break-word; }
 .model-aliases code, .model-endpoint code { color: var(--accent); font: inherit; }
 .model-endpoint { margin: 8px 0 0; color: var(--muted-2); font: 10px var(--mono); }
@@ -125,6 +141,21 @@
 .model-source-list li .source-link { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .model-source-list li small { flex: 0 0 auto; color: var(--muted-2); font: 9px var(--mono); }
 .model-source-empty { color: var(--muted-2); font-size: 11px; }
+.model-alias-section-note { margin: -3px 0 11px; color: var(--muted-2); font-size: 10px; line-height: 1.6; }
+.model-source-alias-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.model-source-alias-columns > div { min-width: 0; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.model-source-alias-columns label { display: block; margin-bottom: 7px; color: var(--muted-2); font: 8px var(--mono); letter-spacing: .06em; }
+.model-source-alias-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.model-source-alias-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; color: var(--muted); font: 9px/1.45 var(--mono); }
+.model-source-alias-list li > div { min-width: 0; }
+.model-source-alias-list code { display: block; overflow: hidden; color: var(--text); font: inherit; text-overflow: ellipsis; white-space: nowrap; }
+.model-source-alias-list small { display: block; overflow: hidden; margin-top: 2px; color: var(--muted-2); font: 8px/1.4 var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+.model-source-alias-list small .source-link { color: var(--muted-2); font-size: 8px; }
+.model-source-alias-list li > span { flex: 0 0 auto; color: var(--muted-2); font-size: 8px; text-align: right; }
+.model-source-alias-list.pending code { color: var(--yellow); }
+.model-source-alias-list.pending li > span { color: color-mix(in srgb, var(--yellow) 70%, var(--muted-2)); }
+.model-alias-pending-note { margin: 10px 0 0; color: var(--muted-2); font-size: 9px; line-height: 1.55; }
+.model-alias-pending-note a { color: var(--accent); }
 .model-score-list, .model-run-list { display: grid; gap: 8px; }
 .model-score-row, .model-run-row { padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface-2); }
 .model-score-row-head, .model-run-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: 8px; }
@@ -168,7 +199,6 @@
   .model-field-legend { max-width: 600px; }
 }
 @media (max-width: 640px) {
-  .models-page .models-nav { display: none; }
   .models-hero { padding: 27px 0 37px; }
   .models-hero-lede { font-size: 13px; }
   .models-stats { grid-template-columns: 1fr 1fr; }
@@ -184,4 +214,6 @@
   .models-method { padding-top: 56px; }
   .model-score-source { align-items: flex-start; flex-direction: column; }
   .model-source-list li { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .model-profile-columns { grid-template-columns: 1fr; }
+  .model-source-alias-columns { grid-template-columns: 1fr; }
 }

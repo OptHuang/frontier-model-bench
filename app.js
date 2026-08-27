@@ -24,8 +24,11 @@
     sort: "coverage",
     availableOnly: false,
     showCatalog: false,
+    runPage: 0,
     selected: null,
   };
+
+  const RUN_PAGE_SIZE = 50;
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -39,7 +42,7 @@
     activeFilters: $("activeFilters"), presetHint: $("presetHint"), coverageNote: $("coverageNote"),
     matrixHead: $("matrixHead"), matrixBody: $("matrixBody"), matrixView: $("matrixView"), cardsView: $("cardsView"),
     emptyState: $("emptyState"), spotlightGrid: $("spotlightGrid"), spotlightSection: $("spotlightSection"),
-    atlasLegend: $("atlasLegend"), publicEvidenceSection: $("publicEvidenceSection"), publicEvidenceCount: $("publicEvidenceCount"), publicEvidenceList: $("publicEvidenceList"),
+    atlasLegend: $("atlasLegend"), publicEvidenceSection: $("publicEvidenceSection"), publicEvidenceCount: $("publicEvidenceCount"), publicEvidenceList: $("publicEvidenceList"), publicAliasLedger: $("publicAliasLedger"),
     runsView: $("runsView"), runTableFrame: $("runTableFrame"),
     runTableHead: $("runTableHead"), runTableBody: $("runTableBody"), runCardsView: $("runCardsView"),
     runEmptyState: $("runEmptyState"), runCountLabel: $("runCountLabel"),
@@ -56,6 +59,29 @@
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
   }[char]));
+  // URLs come from catalog and public snapshots, so treat them as untrusted
+  // data before interpolating them into an anchor.  The static site only
+  // needs external HTTP(S) source links; reject javascript:, data:, file: and
+  // malformed values even if a future hand-edited snapshot contains them.
+  const safeUrl = (value) => {
+    const candidate = String(value ?? "").trim();
+    if (!/^https?:\/\//i.test(candidate)) return "";
+    try {
+      const parsed = new URL(candidate);
+      return parsed.protocol === "http:" || parsed.protocol === "https:" ? candidate : "";
+    } catch (_error) {
+      return "";
+    }
+  };
+  // Try candidates independently: a malformed first field must not hide a
+  // valid page/API URL supplied in a later field of the same snapshot row.
+  const firstSafeUrl = (...values) => {
+    for (const value of values) {
+      const url = safeUrl(value);
+      if (url) return url;
+    }
+    return "";
+  };
   const fmt = (value, digits = 1) => {
     if (value === null || value === undefined || value === "") return "—";
     const numeric = Number(value);
@@ -198,9 +224,15 @@
       id: first(raw.id, raw.evidenceId, raw.evidence_id, raw.candidateId, raw.candidate_id),
       evidenceId: first(raw.evidenceId, raw.evidence_id, raw.id, raw.candidateId, raw.candidate_id),
       modelId,
+      canonicalModelId: first(raw.canonicalModelId, raw.canonical_model_id),
+      modelRef: first(raw.modelRef, raw.model_ref, raw.sourceModel, raw.source_model),
       benchmarkId,
+      benchmarkVersionId: first(raw.benchmarkVersionId, raw.benchmark_version_id, raw.versionId, raw.version_id),
+      metricId: first(raw.metricId, raw.metric_id, raw.metric, raw.metricName, raw.metric_name),
       subjectType: first(raw.subjectType, raw.subject_type, subject.type, subject.subjectType, subject.subject_type, protocol.subjectType, protocol.subject_type),
-      sourceModel: first(raw.sourceModel, raw.source_model, raw.sourceModelName, raw.source_model_name, raw.modelName, raw.model_name),
+      sourceSubjectType: first(raw.sourceSubjectType, raw.source_subject_type, subject.sourceType, subject.source_type,
+        raw.subjectType, raw.subject_type, subject.type, subject.subjectType, subject.subject_type, protocol.subjectType, protocol.subject_type),
+      sourceModel: first(raw.sourceModel, raw.source_model, raw.sourceModelName, raw.source_model_name, raw.modelRef, raw.model_ref, raw.modelName, raw.model_name),
       value,
       unit: (() => {
         const rawUnit = first(raw.unit, raw.displayUnit, raw.display_unit);
@@ -216,6 +248,8 @@
       sourceId,
       sourceUrl,
       sourceLabel,
+      harnessId: first(raw.harnessId, raw.harness_id, protocol.harnessId, protocol.harness_id),
+      harness: first(raw.harness, protocol.harness),
       locator: first(raw.locator, raw.sourceLocator, raw.source_locator, raw.evidenceLocator, raw.evidence_locator),
       fetchedAt: first(raw.fetchedAt, raw.fetched_at, raw.retrievedAt, raw.retrieved_at, raw.retrievedOn, raw.retrieved_on),
       snapshotHash: first(raw.snapshotHash, raw.snapshot_hash, raw.sha256, raw.hash, raw.checksum, raw.payloadSha256, raw.payload_sha256),
@@ -442,6 +476,8 @@
         return rawUnit.toLowerCase() === "percent" || rawUnit.toLowerCase() === "percentage" ? "%" : rawUnit;
       })(),
       direction: text(first(benchmark.direction, "higher")),
+      evaluationMode: text(first(benchmark.evaluationMode, benchmark.evaluation_mode, benchmark.subjectType, benchmark.subject_type), "direct").toLowerCase(),
+      subjectType: first(benchmark.subjectType, benchmark.subject_type),
       version: first(benchmark.version, benchmark.benchmarkVersion, benchmark.benchmark_version),
       description: text(first(benchmark.description, benchmark.note), ""),
     };
@@ -454,6 +490,7 @@
       ...harness,
       id,
       name: text(first(harness.name, harness.displayName, harness.display_name, id), id),
+      kind: text(first(harness.kind, harness.type), "unknown").toLowerCase(),
       version: first(harness.version, harness.commit, harness.revision),
       description: text(first(harness.description, harness.note), ""),
     };
@@ -477,6 +514,8 @@
       modelName: text(first(run.modelName, run.model_name, model.name, modelId), modelId),
       endpointId: first(run.endpointId, run.endpoint_id, run.endpoint),
       harnessId: first(run.harnessId, run.harness_id, run.harness?.id),
+      sourceSubjectType: first(run.sourceSubjectType, run.source_subject_type, run.subjectType, run.subject_type),
+      subjectType: first(run.subjectType, run.subject_type),
       benchmarkId,
       benchmarkVersion: first(run.benchmarkVersion, run.benchmark_version, run.version, benchmark.version),
       metric: first(run.metric, run.metricName, run.metric_name, benchmark.metric),
@@ -577,6 +616,11 @@
     const unit = unitRaw.toLowerCase() === "percent" || unitRaw.toLowerCase() === "percentage" ? "%" : unitRaw;
     const scale = unit === "%" ? 100 : (unit.toLowerCase() === "fraction" ? { min: 0, max: 1 } : null);
     const subjectType = text(first(item?.subjectType, item?.subject_type), "model");
+    const aleNote = lower.includes("ale_bench") || lower.includes("ale-bench")
+      ? "该来源切片的命名含 ale_bench；不等同于 SakanaAI ALE-Bench、Agents' Last Exam (ALE-V1) 或 Atari ALE。"
+      : lower.includes("agents-last-exam")
+        ? "这是 Agents' Last Exam (ALE-V1) 系统评测；不等同于 SakanaAI ALE-Bench 或 Atari ALE。"
+        : "";
     return normaliseBenchmark({
       id,
       name: sourceName === id ? id.replace(/^(livebench|helm)-/i, "$1 · ").replace(/-/g, " ") : sourceName,
@@ -592,8 +636,153 @@
       evaluationMode: subjectType.toLowerCase() === "system" ? "system" : "direct",
       publicOnly: true,
       sourceId: item?.sourceId,
-      description: "来自公开榜单或模型卡的切片；本站未独立复现。",
+      description: `来自公开榜单或模型卡的切片；本站未独立复现。${aleNote ? ` ${aleNote}` : ""}`,
     });
+  }
+
+  /*
+   * Public tables often publish several columns for one benchmark (for
+   * example ALE's pass rate and average partial-credit score, or HELM's
+   * accuracy plus token/latency telemetry).  A model × benchmark cell cannot
+   * safely hold all of those values.  Keep the raw evidence intact, but make
+   * each meaningful metric a display slice with a stable id.  Telemetry is
+   * still searchable in the evidence drawer, yet is deliberately excluded
+   * from the score matrix so it cannot be mistaken for task performance.
+   */
+  const PUBLIC_TELEMETRY_METRICS = new Set([
+    "eval", "train", "truncated", "prompt-tokens", "output-tokens", "input-tokens",
+    "total-tokens", "observed-inference-time-s", "inference-time-s", "latency-ms",
+    "runtime-seconds", "cost-usd", "num-samples", "sample-count", "n",
+  ]);
+  const PUBLIC_METRIC_LABELS = {
+    accuracy: "准确率", acc: "准确率", score: "分数", mean_score: "平均分", "mean-score": "平均分",
+    avg_score: "平均分", "avg-score": "平均分", pass_at_1: "Pass@1", "pass-at-1": "Pass@1",
+    "pass@1": "Pass@1", pass_rate: "Pass rate", "pass-rate": "Pass rate", pass: "Pass",
+    pass_k: "Pass^k", "pass-k": "Pass^k", elo: "Elo", arena_rating: "Arena rating",
+    "arena-rating": "Arena rating", ips: "IPS", success: "Success", performance: "Performance",
+    rank: "Rank", em: "Exact match", f1: "F1", "cot-correct": "CoT correct",
+  };
+  function publicMetricKey(value) {
+    return text(value, "score").trim().toLowerCase().replace(/[^a-z0-9@^]+/g, "-").replace(/^-+|-+$/g, "") || "score";
+  }
+  function publicMetricLabel(value) {
+    const raw = text(value, "score").trim();
+    const key = publicMetricKey(raw);
+    return PUBLIC_METRIC_LABELS[key] || raw.replace(/_/g, " ") || "score";
+  }
+  function publicMetricIdentity(item, fallback = "score") {
+    const sourceMetric = text(first(item?.metricId, item?.metric_id, item?.metric), fallback);
+    const sourceId = text(first(item?.sourceId, item?.source_id), "").toLowerCase();
+    const table = item?.protocol && typeof item.protocol === "object" ? text(item.protocol.table, "") : "";
+    const tableKey = publicMetricKey(table);
+    const sourceKey = publicMetricKey(sourceMetric);
+    // Existing HELM snapshots call both Accuracy/Mean score and
+    // Efficiency/Mean score simply `score`. Preserve that source metric, but
+    // give the non-Accuracy display slice a stable table-qualified identity.
+    if (sourceId.startsWith("helm-") && sourceKey === "score" && tableKey && tableKey !== "accuracy") {
+      return { sourceMetric, metricId: `${tableKey}-score`, label: `${table} · ${publicMetricLabel(sourceMetric)}` };
+    }
+    if (sourceId.startsWith("helm-") && sourceKey.endsWith("-score") && tableKey && sourceKey.startsWith(`${tableKey}-`)) {
+      return { sourceMetric, metricId: sourceKey, label: `${table} · score` };
+    }
+    return { sourceMetric, metricId: sourceMetric, label: publicMetricLabel(sourceMetric) };
+  }
+  function publicTelemetryMetric(value) {
+    const key = publicMetricKey(value);
+    return PUBLIC_TELEMETRY_METRICS.has(key)
+      || key.startsWith("prompt-tokens") || key.startsWith("output-tokens")
+      || key.startsWith("observed-inference-time") || key === "eval" || key === "train";
+  }
+  function publicMetricScale(item, base) {
+    const unit = text(item?.unit, base?.unit || "").toLowerCase();
+    if (["%", "percent", "percentage"].includes(unit)) return 100;
+    if (unit === "fraction") return { min: 0, max: 1 };
+    if (base?.scale && unit === text(base?.unit, "").toLowerCase()) return base.scale;
+    return null;
+  }
+  function publicMetricDirection(metric, base, item = null) {
+    const reported = item?.protocol && typeof item.protocol === "object" ? item.protocol.direction : null;
+    if (["higher", "lower"].includes(String(reported || "").toLowerCase())) return String(reported).toLowerCase();
+    const key = publicMetricKey(metric);
+    if (key === "rank" || key.endsWith("-rank") || key.includes("latency") || key.includes("time")) return "lower";
+    return text(base?.direction, "higher");
+  }
+  function addPublicMetricSlices(benchmarks, publicEvidence) {
+    const byId = new Map(benchmarks.map((benchmark) => [String(benchmark.id), benchmark]));
+    const slices = [];
+    const meaningfulBaseIds = new Set();
+    publicEvidence.forEach((item) => {
+      const baseId = text(first(item?.benchmarkId, item?.benchmark_id), "public-benchmark");
+      let base = byId.get(baseId);
+      if (!base) {
+        if (publicTelemetryMetric(item?.metricId || item?.metric)) {
+          item.matrixExcluded = true;
+          item.matrixExcludedReason = "telemetry_metric";
+          return;
+        }
+        base = publicBenchmarkFromEvidence(item);
+        byId.set(baseId, base);
+        slices.push(base);
+      }
+      const metricIdentity = publicMetricIdentity(item, base.metric || "score");
+      const rawMetric = metricIdentity.metricId;
+      item.sourceMetricId = first(item.sourceMetricId, item.source_metric_id, metricIdentity.sourceMetric);
+      item.displayMetricId = rawMetric;
+      if (publicTelemetryMetric(rawMetric)) {
+        item.matrixExcluded = true;
+        item.matrixExcludedReason = "telemetry_metric";
+        return;
+      }
+      meaningfulBaseIds.add(baseId);
+      base.publicReported = true;
+      const metricKey = publicMetricKey(rawMetric);
+      // A catalog benchmark may define several metrics (ALE's pass rate and
+      // partial-credit average are the important example).  Only its declared
+      // default metric occupies the base column; every other meaningful metric
+      // gets an explicit display slice so values are never overwritten or
+      // silently compared under the wrong label.
+      const defaultMetric = first(base.defaultMetricId, base.default_metric_id, base.metric,
+        base.metrics?.[0]?.id, base.metrics?.[0]?.metric, base.metrics?.[0]?.name, "score");
+      const isPrimary = metricKey === publicMetricKey(defaultMetric);
+      let displayId = base.id;
+      if (!isPrimary) {
+        displayId = `${base.id}--${slug(metricKey)}`;
+        let slice = byId.get(displayId);
+        if (!slice) {
+          const label = metricIdentity.label;
+          slice = normaliseBenchmark({
+            ...base,
+            id: displayId,
+            canonicalId: displayId,
+            short: `${base.short || base.name} · ${label}`,
+            name: `${base.name || base.id} · ${rawMetric}`,
+            metric: rawMetric,
+            metricLabel: label,
+            unit: first(item?.unit, base.unit, "unknown"),
+            scale: publicMetricScale(item, base),
+            direction: publicMetricDirection(rawMetric, base, item),
+            publicOnly: true,
+            publicMetricSlice: true,
+            baseBenchmarkId: base.id,
+            description: `公开 ${rawMetric} 指标切片；本站未独立复现。`,
+          });
+          byId.set(displayId, slice);
+          slices.push(slice);
+        }
+        item.metricSliceLabel = metricIdentity.label;
+        item.metricSlice = true;
+      } else if (base.publicOnly) {
+        base.metric = rawMetric;
+        base.metricLabel = metricIdentity.label;
+      }
+      item.displayBenchmarkId = displayId;
+      item.baseBenchmarkId = base.id;
+      item.matrixExcluded = false;
+    });
+    // `meaningfulBaseIds` is intentionally computed even when a source only
+    // contains telemetry; retain canonical empty columns but remove a
+    // dynamically-created telemetry-only definition.
+    return benchmarks.filter((benchmark) => !benchmark.publicOnly || meaningfulBaseIds.has(String(benchmark.id))).concat(slices.filter((benchmark) => !benchmarks.includes(benchmark)));
   }
 
   function normalise(raw) {
@@ -623,6 +812,11 @@
         knownBenchmarkIds.add(run.benchmarkId);
       }
     });
+    runs.forEach((run) => applySubjectSemantics(
+      run,
+      benchmarks.find((benchmark) => benchmark.id === run.benchmarkId),
+      harnesses.find((harness) => harness.id === run.harnessId),
+    ));
     /*
      * Public leaderboard rows are useful context even when they have not
      * passed our own review.  Map only exact canonical ids/names/aliases;
@@ -637,6 +831,11 @@
     const publicEvidence = flattenedPublicEvidence
       .map((item) => ({ ...normaliseEvidence(item), public: true, evidenceOrigin: "public" }))
       .filter((item) => item.value !== null || item.sourceUrl || item.sourceId || item.locator || item.status);
+    publicEvidence.forEach((item) => applySubjectSemantics(
+      item,
+      benchmarks.find((benchmark) => benchmark.id === item.benchmarkId),
+      harnesses.find((harness) => harness.id === first(item.harnessId, item.harness)),
+    ));
     // Public adapters may expose a benchmark slice before it has a canonical
     // registry row (for example each LiveBench or HELM sub-suite). Add a
     // display-only definition rather than dropping those cells or implying
@@ -644,12 +843,22 @@
     const benchmarkIds = new Set(benchmarks.map((benchmark) => benchmark.id));
     publicEvidence.forEach((item) => {
       const id = first(item.benchmarkId, item.benchmark_id);
-      if (id && !benchmarkIds.has(String(id))) {
+      if (id && !benchmarkIds.has(String(id)) && !publicTelemetryMetric(item.metricId || item.metric)) {
         const benchmark = publicBenchmarkFromEvidence(item);
         benchmarks.push(benchmark);
         benchmarkIds.add(benchmark.id);
       }
     });
+    // Keep distinct public metrics as explicit matrix columns and hide
+    // non-performance telemetry from the matrix while retaining it below in
+    // the full public evidence list.
+    const publicBenchmarks = addPublicMetricSlices(benchmarks, publicEvidence);
+    benchmarks.splice(0, benchmarks.length, ...publicBenchmarks);
+    publicEvidence.forEach((item) => applySubjectSemantics(
+      item,
+      benchmarks.find((benchmark) => benchmark.id === first(item.displayBenchmarkId, item.benchmarkId)),
+      harnesses.find((harness) => harness.id === first(item.harnessId, item.harness)),
+    ));
     const modelLookup = new Map();
     const benchmarkLookup = new Map();
     const addLookup = (map, value, object) => {
@@ -664,28 +873,40 @@
     });
     const unmappedEvidence = [];
     publicEvidence.forEach((evidence) => {
+      // Telemetry (tokens, latency, cost, eval/train counters) remains in the
+      // public evidence list for inspection, but must never populate a score
+      // cell.  `addPublicMetricSlices` marks these rows before this mapping
+      // pass; skipping here prevents a telemetry value from overwriting the
+      // benchmark's actual performance metric.
+      if (evidence.matrixExcluded) return;
       const modelKey = first(evidence.canonicalModelId, evidence.canonical_model_id, evidence.modelId, evidence.model_id, evidence.modelRef, evidence.model_ref);
-      const benchmarkKey = first(evidence.benchmarkId, evidence.benchmark_id);
+      const benchmarkKey = first(evidence.displayBenchmarkId, evidence.benchmarkId, evidence.benchmark_id);
       const model = modelLookup.get(String(modelKey || "").trim().toLowerCase());
       const benchmark = benchmarkLookup.get(String(benchmarkKey || "").trim().toLowerCase());
       if (!model || !benchmark) {
         unmappedEvidence.push(evidence);
         return;
       }
-      const mapped = { ...evidence, modelId: model.id, benchmarkId: benchmark.id, public: true, evidenceOrigin: "public" };
+      const mapped = { ...evidence, modelId: model.id, benchmarkId: benchmark.id, displayBenchmarkId: benchmark.id, public: true, evidenceOrigin: "public" };
       model.scores[benchmark.id] = mergeScoreEntries(model.scores[benchmark.id], normaliseScore(mapped));
       evidence.mappedModelId = model.id;
       evidence.mappedBenchmarkId = benchmark.id;
-      evidence.mappingStatus = "mapped";
+      // Preserve the public builder's exact/curated/heuristic alias class so
+      // the UI can distinguish identity confidence from reproduction status.
+      // Only rows without a builder classification receive the generic label.
+      evidence.mappingStatus = first(evidence.mappingStatus, evidence.mapping_status, "mapped");
+      evidence.mappingResolved = true;
     });
     // Keep agent/tool/environment measurements in System Runs as well. The
-    // atlas cell remains useful for coverage, but its explicit system badge
-    // prevents it being mistaken for a bare-model score.
+    // atlas may use a system value only when no model-only value exists; the
+    // explicit system badge prevents that coverage fallback being mistaken
+    // for a bare-model score.
     const publicRuns = [];
     publicEvidence.forEach((evidence, index) => {
       if (evidence.value === null || evidence.value === undefined) return;
-      const mappedModel = merged.find((item) => item.id === first(evidence.canonicalModelId, evidence.modelId, evidence.modelRef));
-      const benchmark = benchmarks.find((item) => item.id === evidence.benchmarkId);
+      const mappedModel = merged.find((item) => item.id === first(evidence.mappedModelId, evidence.canonicalModelId, evidence.modelId, evidence.modelRef));
+      if (evidence.matrixExcluded) return;
+      const benchmark = benchmarks.find((item) => item.id === first(evidence.mappedBenchmarkId, evidence.displayBenchmarkId, evidence.benchmarkId));
       const subject = String(first(evidence.subjectType, evidence.subject_type, benchmark?.evaluationMode, "model")).toLowerCase();
       if (!mappedModel || subject !== "system") return;
       publicRuns.push(normaliseRun({
@@ -727,7 +948,7 @@
         id: "public-coverage",
         label: "公开覆盖 / 全量切片",
         description: "展示目录与公开榜单已报告的全部 benchmark 切片；每个披露值均标记为本站未复现。",
-        model_filter: { status: ["active", "preview", "restricted"] },
+        model_filter: { status: ["active", "preview", "restricted", "previous"] },
         mode: "atlas",
       }));
     }
@@ -750,21 +971,80 @@
     if (!idOrSource) return null;
     if (typeof idOrSource === "object") return idOrSource;
     const match = (state.data?.sources || []).find((source) => source.id === idOrSource || source.url === idOrSource);
-    return match || (String(idOrSource).startsWith("http") ? { id: idOrSource, url: idOrSource, label: idOrSource } : null);
+    const external = safeUrl(idOrSource);
+    return match || (external ? { id: external, url: external, label: external } : null);
   };
-  const sourceContextUrl = (source) => first(source?.web_url, source?.page_url, source?.homepage, source?.website, source?.url);
+  const sourceContextUrl = (source) => firstSafeUrl(source?.web_url, source?.page_url, source?.homepage, source?.website, source?.url);
   const benchmarkFor = (id) => (state.data?.benchmarks || []).find((benchmark) => benchmark.id === id);
   const harnessFor = (id) => (state.data?.harnesses || []).find((harness) => harness.id === id);
   const modelById = (id) => (state.data?.models || []).find((model) => model.id === id);
   const runById = (id) => (state.data?.runs || []).find((run) => run.id === id);
 
+  function isSystemSubject(value) {
+    return ["system", "agent", "harness", "agent-system", "agentic"].includes(String(value || "").trim().toLowerCase());
+  }
+  function isSystemHarness(harness, harnessId = null) {
+    const kind = String(first(harness?.kind, harness?.type, "") || "").toLowerCase();
+    if (["model", "static-eval", "provider", "preference-eval", "unknown"].includes(kind)) return false;
+    if (["agent", "terminal", "computer-use", "tool-use"].some((token) => kind.includes(token))) return true;
+    const id = String(first(harnessId, harness?.id, "") || "").toLowerCase();
+    if (["", "model-only", "lm-eval", "helm", "vendor-default", "unspecified-reported"].includes(id)) return false;
+    return ["agent", "codex", "claude-code", "terminus"].some((token) => id.includes(token));
+  }
+  function resolvedSubjectType(sourceSubject, benchmark, harness, harnessId = null) {
+    const benchmarkMode = first(benchmark?.evaluationMode, benchmark?.evaluation_mode, benchmark?.subjectType, benchmark?.subject_type);
+    if (isSystemSubject(sourceSubject) || isSystemSubject(benchmarkMode) || isSystemHarness(harness, harnessId)) return "system";
+    return String(sourceSubject || "model").trim().toLowerCase() || "model";
+  }
+  function applySubjectSemantics(record, benchmark, harness) {
+    if (!record) return record;
+    const sourceSubject = first(record.sourceSubjectType, record.source_subject_type, record.subjectType, record.subject_type);
+    if (!record.sourceSubjectType && sourceSubject) record.sourceSubjectType = String(sourceSubject).toLowerCase();
+    record.subjectType = resolvedSubjectType(sourceSubject, benchmark, harness, first(record.harnessId, record.harness_id, record.harness));
+    return record;
+  }
+  function runIsSystem(run) {
+    if (!run) return false;
+    return resolvedSubjectType(
+      first(run.sourceSubjectType, run.source_subject_type, run.subjectType, run.subject_type),
+      benchmarkFor(run.benchmarkId),
+      harnessFor(run.harnessId),
+      first(run.harnessId, run.harness_id, run.harness),
+    ) === "system";
+  }
+
+  /*
+   * A public source can report both a model-only score and a harness/system
+   * score for the same model × benchmark pair. Keep all evidence in the
+   * cell, but prefer a model-only observation for Model Atlas; only fall back
+   * to a system observation when no model-only value exists. The fallback
+   * remains visibly marked `system` and is also available in System Runs.
+   */
+  function atlasScoreEntry(rawDirect) {
+    const direct = normaliseScore(rawDirect);
+    const items = evidenceItems(direct);
+    if (!items.length) return direct;
+    const parentSystem = isSystemSubject(first(direct.subjectType, direct.subject_type));
+    const modelItems = parentSystem ? [] : items.filter((item) => !isSystemSubject(first(item.subjectType, item.subject_type)));
+    const pool = modelItems.length ? modelItems : items;
+    const selected = chooseEvidence(pool);
+    if (!selected) return direct;
+    const entry = normaliseScore({ ...direct, ...selected, evidenceItems: items, publicEvidence: items });
+    entry.evidenceItems = items;
+    entry.publicEvidence = items;
+    if (isSystemSubject(first(selected.subjectType, selected.subject_type)) || (parentSystem && !modelItems.length)) {
+      entry.subjectType = "system";
+    }
+    return entry;
+  }
+
   function scoreEntry(model, benchmarkId) {
     const candidates = (state.data?.runs || []).filter((run) => run.modelId === model?.id && run.benchmarkId === benchmarkId && run.value !== null && run.value !== undefined);
-    const isModelRun = (run) => run.harnessId === "model-only" || run.subjectType === "model" || !run.harnessId;
+    const isModelRun = (run) => !runIsSystem(run);
     const systemRuns = candidates.filter((run) => !isModelRun(run));
     const direct = model?.scores?.[benchmarkId];
     if (direct) {
-      const entry = normaliseScore(direct);
+      const entry = atlasScoreEntry(direct);
       entry.systemRunCount = systemRuns.length;
       return entry;
     }
@@ -867,7 +1147,11 @@
       // Keep current catalog entries visible even before they have a score;
       // this makes the atlas a useful coverage map for newly released models.
       // Older/deprecated catalog-only entries stay behind the explicit toggle.
-      const hiddenCatalog = !state.showCatalog && model.catalogOnly && !currentStatus;
+      // The public-coverage atlas is explicitly a coverage map: keep every
+      // current/previous catalog release visible even when it has no canonical
+      // score yet.  Narrow presets retain the quieter catalog-only behavior.
+      const publicCoveragePreset = state.preset === "public-coverage";
+      const hiddenCatalog = !state.showCatalog && !publicCoveragePreset && model.catalogOnly && !currentStatus;
       // Retired releases stay in the registry and in explicit historical
       // presets, but should not crowd the default “current” atlas.  The
       // full-catalog toggle is the deliberate way to inspect them.
@@ -884,6 +1168,7 @@
   function filteredRuns() {
     const query = state.search.trim().toLowerCase();
     const runs = (state.data?.runs || []).filter((run) => {
+      if (!runIsSystem(run)) return false;
       const model = modelById(run.modelId);
       const benchmark = benchmarkFor(run.benchmarkId);
       const harness = harnessFor(run.harnessId);
@@ -958,6 +1243,16 @@
     const selected = chooseEvidence(evidenceItems(entry));
     return Boolean(entry?.public || entry?.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public");
   }
+  function mappingStatusLabel(status) {
+    const value = String(status || "").trim().toLowerCase();
+    return ({
+      exact_alias: "exact alias",
+      curated_alias: "curated alias",
+      heuristic_alias: "heuristic alias",
+      mapped: "mapped",
+      unmatched: "unmapped",
+    })[value] || (value || "mapping 未注明");
+  }
   function evidenceBadge(entry, compact = false) {
     if (!entry || entry.value === null || entry.value === undefined || entry.value === "") return "";
     const items = evidenceItems(entry);
@@ -966,12 +1261,14 @@
     const status = evidenceStatus(entry, selected?.status || "reported");
     const publicEvidence = isPublicEvidence(entry);
     const system = String(first(entry?.subjectType, entry?.subject_type, selected?.subjectType, "")).toLowerCase() === "system";
+    const mapping = first(entry?.mappingStatus, entry?.mapping_status, selected?.mappingStatus, selected?.mapping_status);
     const label = publicEvidence
       ? (status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")
       : (status === "approved" ? "approved" : (status === "candidate" ? "candidate · 未复现" : "官方披露 · 未复现"));
     const count = items.length > 1 ? ` +${items.length - 1}` : "";
     const systemMark = system ? " · system" : "";
-    return `<span class="score-evidence evidence-${slug(status)}${publicEvidence ? " evidence-public" : ""}${system ? " evidence-system" : ""}" title="${esc(status === "approved" ? `${items.length || 1} 条已核验证据` : "来源披露数字，本项目尚未独立复现")}">${esc(label)}${compact ? "" : count}${esc(systemMark)}</span>`;
+    const mappingHint = mapping ? `；身份映射：${mappingStatusLabel(mapping)}` : "";
+    return `<span class="score-evidence evidence-${slug(status)}${publicEvidence ? " evidence-public" : ""}${system ? " evidence-system" : ""}" title="${esc((status === "approved" ? `${items.length || 1} 条已核验证据` : "来源披露数字，本项目尚未独立复现") + mappingHint)}">${esc(label)}${compact ? "" : count}${esc(systemMark)}</span>`;
   }
   function evidenceWeight(entry) {
     const tier = String(first(entry?.evidenceLevel, entry?.evidence_level, chooseEvidence(evidenceItems(entry))?.level, "")).toUpperCase();
@@ -1010,13 +1307,16 @@
       els.presetSelect.value = state.preset;
     }
     if (els.harnessFilter) {
-      const harnesses = state.data?.harnesses || [];
+      const systemHarnessIds = new Set((state.data?.runs || []).filter(runIsSystem).map((run) => run.harnessId).filter(Boolean));
+      const harnesses = (state.data?.harnesses || []).filter((harness) => systemHarnessIds.has(harness.id));
       els.harnessFilter.innerHTML = '<option value="all">所有 harness</option>' + harnesses.map((harness) => `<option value="${esc(harness.id)}">${esc(harness.name)}${harness.version ? ` · ${esc(harness.version)}` : ""}</option>`).join("");
-      els.harnessFilter.value = state.harness;
+      els.harnessFilter.value = state.harness === "all" || systemHarnessIds.has(state.harness) ? state.harness : "all";
     }
     if (els.runBenchmarkFilter) {
-      els.runBenchmarkFilter.innerHTML = '<option value="all">所有 benchmark</option>' + (state.data?.benchmarks || []).map((benchmark) => `<option value="${esc(benchmark.id)}">${esc(benchmark.short || benchmark.name)}</option>`).join("");
-      els.runBenchmarkFilter.value = state.runBenchmark;
+      const systemBenchmarkIds = new Set((state.data?.runs || []).filter(runIsSystem).map((run) => run.benchmarkId));
+      const runBenchmarks = (state.data?.benchmarks || []).filter((benchmark) => systemBenchmarkIds.has(benchmark.id));
+      els.runBenchmarkFilter.innerHTML = '<option value="all">所有 benchmark</option>' + runBenchmarks.map((benchmark) => `<option value="${esc(benchmark.id)}">${esc(benchmark.short || benchmark.name)}</option>`).join("");
+      els.runBenchmarkFilter.value = state.runBenchmark === "all" || systemBenchmarkIds.has(state.runBenchmark) ? state.runBenchmark : "all";
     }
     if (els.sortSelect) {
       const atlasOptions = [["recent", "按发布日期"], ["coverage", "按覆盖率"], ["name", "按模型名称"]];
@@ -1054,7 +1354,7 @@
     const cards = [...document.querySelectorAll(".stat-card")];
     if (cards.length < 4) return;
     const labels = mode === "runs" ? ["SYSTEM MODELS", "RUN BENCHMARKS", "SYSTEM RUNS", "VALUE COVERAGE"] : ["TRACKED MODELS", "BENCHMARKS", "OBSERVATIONS", "COVERAGE"];
-    const notes = mode === "runs" ? ["参与当前筛选的模型", "当前运行记录覆盖的 benchmark", "有 protocol 的系统记录", "运行记录非缺失率"] : ["当前目录中的 model release", "跨能力面的 benchmark", "canonical + 公开披露值", "矩阵非缺失率"];
+    const notes = mode === "runs" ? ["参与当前筛选的模型", "当前运行记录覆盖的 benchmark", "有 protocol 的系统记录", "运行记录非缺失率"] : ["当前目录中的 model / config entry", "跨能力面的 benchmark", "canonical + 公开披露值", "矩阵非缺失率"];
     cards.forEach((card, index) => {
       const kicker = card.querySelector(".stat-kicker");
       const note = card.querySelector(".stat-note");
@@ -1104,13 +1404,29 @@
       if (els.qualityBar) els.qualityBar.style.width = `${qualityPct}%`;
       setStatCopy("atlas");
     }
-    if (els.asOfLabel) els.asOfLabel.textContent = state.data?.publicMeta?.generatedAt?.slice?.(0, 10) || state.data?.meta?.asOf || state.data?.meta?.lastUpdated?.slice?.(0, 10) || "—";
+    if (els.asOfLabel) {
+      const snapshotDates = [state.data?.publicMeta?.generatedAt, state.data?.meta?.asOf, state.data?.meta?.lastUpdated]
+        .filter(Boolean).map((value) => String(value).slice(0, 10)).sort();
+      els.asOfLabel.textContent = snapshotDates.at(-1) || "—";
+    }
     if (els.cadenceLabel) els.cadenceLabel.textContent = state.data?.meta?.updateCadence || state.data?.meta?.update_cadence || "—";
     if (els.coverageNote) {
       const stats = state.data?.stats || {};
       const publicStats = state.data?.publicStats || {};
+      const unmappedGroups = (state.data?.publicUnmappedModels || []).length;
+      const mappedCells = publicStats.mappedCells || 0;
+      const publicMetricCells = publicStats.mappedMetricCells || 0;
+      const publicRows = Array.isArray(state.data?.publicEvidence) ? state.data.publicEvidence : [];
+      const telemetryCells = new Set(publicRows
+        .filter((item) => item.matrixExcluded)
+        .map((item) => [item.canonicalModelId || item.modelRef || "", item.displayBenchmarkId || item.benchmarkId || "", item.metricId || ""].join("|"))
+        .filter((key) => key !== "||"));
+      const performanceMetricCells = Math.max(0, publicMetricCells - telemetryCells.size);
+      const metricNote = telemetryCells.size
+        ? `${fmt(publicMetricCells, 0)} 个含 metric 单元（其中 ${fmt(telemetryCells.size, 0)} 个 telemetry 仅证据；实际 performance ${fmt(performanceMetricCells, 0)}）`
+        : `${fmt(publicMetricCells, 0)} 个含 metric 单元`;
       const publicHint = publicStats.rows
-        ? `；公开层已载入 ${fmt(publicStats.rows, 0)} 条精选披露（原始去重 ${fmt(publicStats.deduplicatedRows || 0, 0)} 条，${fmt(publicStats.unmappedRows || 0, 0)} 条待映射/替代行另存）`
+        ? `；公开层已载入 ${fmt(publicStats.rows, 0)} 条已映射披露（${fmt(mappedCells, 0)} 个 model × benchmark 单元、${metricNote}；原始去重 ${fmt(publicStats.deduplicatedRows || 0, 0)} 条；${fmt(publicStats.unmappedRows || 0, 0)} 条未安全归一化，${fmt(unmappedGroups, 0)} 个来源原名见 aliases）`
         : "；公开榜单候选由日常维护任务另行审阅";
       const canonicalHint = stats.observedCells !== undefined ? `；canonical 已整理 ${fmt(stats.observedCells, 0)} 个单元格` : "";
       els.coverageNote.innerHTML = `矩阵数值包含公开来源报告值；“披露 · 未复现”不代表本站复现，空白也不代表没人测试${canonicalHint}${publicHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
@@ -1124,7 +1440,7 @@
   function renderMatrix() {
     const benchmarks = filteredBenchmarks();
     const models = filteredModels();
-    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}${benchmark.publicOnly ? " · public" : ""}</small></span></th>`).join("")}</tr>`;
+    if (els.matrixHead) els.matrixHead.innerHTML = `<tr><th scope="col">MODEL / RELEASE</th>${benchmarks.map((benchmark) => `<th scope="col"><span class="bench-head"><strong>${esc(benchmark.short || benchmark.name)}</strong><small>${esc(benchmark.metricLabel || benchmark.metric || "score")}${benchmark.evaluationMode === "system" ? " · system" : ""}${benchmark.publicOnly || benchmark.publicReported ? " · public" : ""}</small></span></th>`).join("")}</tr>`;
     if (els.matrixBody) els.matrixBody.innerHTML = models.map((model) => {
       const cells = benchmarks.map((benchmark) => {
         const entry = scoreEntry(model, benchmark.id);
@@ -1135,7 +1451,9 @@
         const runHint = missing && entry.systemRunCount ? `<span class="score-run-hint">↗ ${entry.systemRunCount} run${entry.systemRunCount === 1 ? "" : "s"}</span>` : "";
         const evidenceMarkup = evidenceBadge(entry);
         const ariaEvidence = !missing && evidenceMarkup ? `；${statusLabel(entry)}` : "";
-        return `<td class="score-cell ${scoreClass(entry, benchmark)}" data-model="${esc(model.id)}" data-benchmark="${esc(benchmark.id)}" tabindex="0" role="button" aria-label="${esc(model.name)} ${esc(benchmark.name)} ${missing ? (entry.systemRunCount ? `${entry.systemRunCount} system runs；切换 System Runs` : "未报告") : fmt(entry.value) + (benchmark.unit || "") + ariaEvidence}"><span class="score-value">${missing ? "—" : fmt(entry.value)}${!missing && benchmark.unit ? `<small>${esc(benchmark.unit)}</small>` : ""}${sourceMark}</span>${evidenceMarkup}${runHint}<span class="score-setting">${esc(display(entry.setting, "未说明"))}</span></td>`;
+        const mapping = first(entry.mappingStatus, entry.mapping_status, selectedEvidence?.mappingStatus, selectedEvidence?.mapping_status);
+        const mappingHint = mapping ? `；身份映射：${mappingStatusLabel(mapping)}` : "";
+        return `<td class="score-cell ${scoreClass(entry, benchmark)}" data-model="${esc(model.id)}" data-benchmark="${esc(benchmark.id)}"${mapping ? ` data-mapping-status="${esc(mapping)}"` : ""} title="${esc(mappingHint ? mappingHint.slice(1) : "点击查看版本、协议与来源")}" tabindex="0" role="button" aria-label="${esc(model.name)} ${esc(benchmark.name)} ${missing ? (entry.systemRunCount ? `${entry.systemRunCount} system runs；切换 System Runs` : "未报告") : fmt(entry.value) + (benchmark.unit || "") + ariaEvidence + mappingHint}"><span class="score-value">${missing ? "—" : fmt(entry.value)}${!missing && benchmark.unit ? `<small>${esc(benchmark.unit)}</small>` : ""}${sourceMark}</span>${evidenceMarkup}${runHint}<span class="score-setting">${esc(display(entry.setting, "未说明"))}</span></td>`;
       }).join("");
       return `<tr><td class="model-cell" data-model="${esc(model.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)}">${modelMarkup(model)}</td>${cells}</tr>`;
     }).join("");
@@ -1161,7 +1479,9 @@
       const stats = state.data?.publicStats || {};
       const total = stats.deduplicatedRows || records.length;
       const unmapped = stats.unmappedRows || 0;
-      els.publicEvidenceCount.textContent = `${visible.length}${filtered.length > visible.length ? ` / ${filtered.length}` : ""} 条精选披露 · 原始 ${fmt(total, 0)} 条 · 未映射 ${fmt(unmapped, 0)}`;
+      const excluded = records.filter((item) => item.matrixExcluded).length;
+      const mappedCells = stats.mappedCells || 0;
+      els.publicEvidenceCount.textContent = `${visible.length}${filtered.length > visible.length ? ` / ${filtered.length}` : ""} 条已映射披露 · ${fmt(mappedCells, 0)} 个矩阵单元 · 原始 ${fmt(total, 0)} 条 · 待归一化 ${fmt(unmapped, 0)}${excluded ? ` · telemetry ${fmt(excluded, 0)}` : ""}`;
     }
     els.publicEvidenceList.innerHTML = visible.map((item) => {
       const source = sourceFor(first(item.sourceId, item.sourceUrl));
@@ -1170,11 +1490,75 @@
       const benchmarkName = first(item.sourceBenchmark, item.benchmarkName, item.benchmarkId, "unmapped benchmark");
       const score = item.value === null || item.value === undefined ? "—" : fmt(item.value);
       const protocol = display(item.protocol, "protocol 未注明");
-      const sourceLink = item.evidenceUrl || item.sourceUrl || source?.url;
+      const sourceLink = firstSafeUrl(item.evidenceUrl, item.sourceUrl, source?.url);
       const mapped = item.mappedModelId || item.canonicalModelId;
+      const mappingStatus = first(item.mappingStatus, item.mapping_status, mapped ? "mapped" : "unmatched");
+      const mappingClass = slug(mappingStatus);
       const subject = String(first(item.subjectType, "model")).toLowerCase() === "system" ? "system" : "model";
-      return `<article class="public-evidence-row" data-public-evidence="${esc(item.id || "")}" tabindex="0" role="button" aria-label="查看 ${esc(sourceName)} 的公开 ${esc(benchmarkName)} 证据"><div class="public-evidence-main"><div class="public-evidence-title"><strong>${esc(sourceName)}</strong><span>×</span><strong>${esc(benchmarkName)}</strong></div><div class="public-evidence-meta"><span class="score-evidence evidence-${slug(status)} evidence-public${subject === "system" ? " evidence-system" : ""}">${esc(status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")}</span>${mapped ? "" : '<span class="model-badge">未映射</span>'}<span class="model-badge">${esc(subject)}</span><strong class="public-evidence-score">${esc(score)}${item.unit && score !== "—" ? esc(item.unit) : ""}</strong><span>${esc(item.rawValue && item.rawValue !== item.value ? item.rawValue : "")}</span><span>${esc(protocol)}</span></div></div><div class="public-evidence-source">${sourceLink ? `<a href="${esc(sourceLink)}" target="_blank" rel="noreferrer">↗ ${esc(item.sourceLabel || source?.label || sourceLink)}</a>` : "<span>来源未注明</span>"}<small>${esc(item.locator || item.sourceLocator || "locator 未注明")}</small><small>${esc(item.fetchedAt || item.retrievedAt || item.observedAt || "retrieved 未注明")}${item.snapshotHash || item.payloadSha256 ? ` · hash ${esc(String(item.snapshotHash || item.payloadSha256).slice(0, 12))}…` : ""}</small></div></article>`;
+      const metric = item.metricSliceLabel || item.metricId || "score";
+      const matrixNote = item.matrixExcluded ? "telemetry · 仅证据" : (item.metricSlice ? `matrix · ${metric}` : "matrix");
+      return `<article class="public-evidence-row" data-public-evidence="${esc(item.id || "")}" tabindex="0" role="button" aria-label="查看 ${esc(sourceName)} 的公开 ${esc(benchmarkName)} 证据"><div class="public-evidence-main"><div class="public-evidence-title"><strong>${esc(sourceName)}</strong><span>×</span><strong>${esc(benchmarkName)}</strong></div><div class="public-evidence-meta"><span class="score-evidence evidence-${slug(status)} evidence-public${subject === "system" ? " evidence-system" : ""}">${esc(status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")}</span><span class="model-badge mapping-badge mapping-${mappingClass}">${esc(mappingStatusLabel(mappingStatus))}</span><span class="model-badge">${esc(subject)}</span><span class="model-badge public-metric-badge">${esc(matrixNote)}</span><strong class="public-evidence-score">${esc(score)}${item.unit && score !== "—" ? esc(item.unit) : ""}</strong><span>${esc(item.rawValue && item.rawValue !== item.value ? item.rawValue : "")}</span><span>${esc(protocol)}</span></div></div><div class="public-evidence-source">${sourceLink ? `<a href="${esc(sourceLink)}" target="_blank" rel="noreferrer">↗ ${esc(item.sourceLabel || source?.label || sourceLink)}</a>` : "<span>来源未注明</span>"}<small>${esc(item.locator || item.sourceLocator || "locator 未注明")}</small><small>${esc(item.fetchedAt || item.retrievedAt || item.observedAt || "retrieved 未注明")}${item.snapshotHash || item.payloadSha256 ? ` · hash ${esc(String(item.snapshotHash || item.payloadSha256).slice(0, 12))}…` : ""}</small></div></article>`;
     }).join("");
+    renderPublicAliasLedger();
+  }
+
+  /*
+   * Keep unresolved source spellings visible without manufacturing matrix
+   * rows.  The full summary is linked as a machine-readable audit artifact;
+   * this compact ledger makes the distinction understandable at a glance.
+   */
+  function renderPublicAliasLedger() {
+    const target = els.publicAliasLedger;
+    if (!target) return;
+    const rawGroups = Array.isArray(state.data?.publicUnmappedModels)
+      ? state.data.publicUnmappedModels : [];
+    const groups = rawGroups.map((raw) => {
+      const item = raw && typeof raw === "object" ? raw : { modelRef: raw };
+      const examples = Array.isArray(item.examples)
+        ? item.examples.filter((example) => example && typeof example === "object") : [];
+      const sourceIds = Array.isArray(item.sourceIds) ? item.sourceIds : (item.sourceId ? [item.sourceId] : []);
+      const sourceLabels = Array.isArray(item.sourceLabels) ? item.sourceLabels : [];
+      const sourceUrls = Array.isArray(item.sourceUrls) ? item.sourceUrls : [];
+      const example = examples[0] || {};
+      const firstSourceId = first(sourceIds[0], example.sourceId);
+      const source = sourceFor(firstSourceId);
+      const sourceLabel = first(sourceLabels[0], example.sourceLabel, source?.label, firstSourceId, "来源未注明");
+      const sourceUrl = firstSafeUrl(sourceUrls[0], example.sourceUrl, example.evidenceUrl, source?.url);
+      const benchmarks = Array.isArray(item.benchmarkIds) ? item.benchmarkIds : [];
+      return {
+        modelRef: text(item.modelRef, "unknown source model"),
+        rowCount: Number(item.rowCount) || 0,
+        numericRowCount: Number(item.numericRowCount) || 0,
+        benchmarkCount: Number(item.benchmarkCount) || benchmarks.length,
+        benchmarks,
+        sourceLabel,
+        sourceUrl,
+        sourceLocator: first(example.sourceLocator, example.locator),
+        latest: first(item.observedAtMax, item.latestRetrievedAt, example.observedAt, example.retrievedAt),
+        status: Object.keys(item.mappingStatusCounts || {})[0] || "unmatched",
+      };
+    }).filter((item) => item.modelRef && (item.rowCount || item.numericRowCount));
+    // Put recently observed source spellings first so the compact ledger is
+    // useful for current frontier releases; the linked summary remains the
+    // complete, deterministic list.
+    const aliasSort = (a, b) => String(b.latest || "").localeCompare(String(a.latest || "")) || b.rowCount - a.rowCount || a.modelRef.localeCompare(b.modelRef);
+    groups.sort(aliasSort);
+    const query = String(state.search || "").trim().toLowerCase();
+    const filtered = query
+      ? groups.filter((item) => [item.modelRef, item.sourceLabel, item.sourceLocator, ...item.benchmarks].join(" ").toLowerCase().includes(query))
+      : groups;
+    target.hidden = state.mode !== "atlas" || groups.length === 0;
+    if (!groups.length) { target.innerHTML = ""; return; }
+    const visible = filtered.slice(0, 12);
+    const totalRows = Number(state.data?.publicStats?.unmappedRows) || groups.reduce((sum, item) => sum + item.rowCount, 0);
+    const cards = visible.map((item) => {
+      const benchmarkText = item.benchmarks.slice(0, 3).map((value) => benchmarkFor(value)?.short || String(value).replace(/^epoch-/, "").replace(/_external$/, "").replace(/[-_]+/g, " ")).join(" · ");
+      const sourceMarkup = item.sourceUrl
+        ? `<a href="${esc(item.sourceUrl)}" target="_blank" rel="noreferrer">↗ ${esc(item.sourceLabel)}</a>`
+        : `<span>${esc(item.sourceLabel)}</span>`;
+      return `<article class="public-alias-card"><div class="public-alias-card-top"><code>${esc(item.modelRef)}</code><span>${fmt(item.rowCount, 0)} 条</span></div><div class="public-alias-card-meta"><span class="model-badge">source-native</span><span class="model-badge">${esc(item.status)}</span><span>${item.numericRowCount ? `${fmt(item.numericRowCount, 0)} 条有数值` : "无数值"}</span></div><p>${sourceMarkup}</p><small>${esc(benchmarkText || `${fmt(item.benchmarkCount, 0)} benchmarks`)}${item.latest ? ` · ${esc(String(item.latest).slice(0, 10))}` : ""}</small>${item.sourceLocator ? `<small class="public-alias-locator">${esc(item.sourceLocator)}</small>` : ""}</article>`;
+    }).join("");
+    target.innerHTML = `<div class="public-alias-heading"><div><h4>未安全归一化的来源原名</h4><p>这些公开记录确实存在，但当前没有足够身份信息映射到某个 release；保留原名和来源，不把它们猜进矩阵。</p></div><span class="section-note">${fmt(totalRows, 0)} 条 · ${fmt(groups.length, 0)} 个原名组</span></div><div class="public-alias-grid">${cards || '<p class="public-alias-empty">当前筛选没有匹配的来源原名。</p>'}</div><p class="public-alias-footnote">显示 ${fmt(visible.length, 0)} 个代表性分组；完整列表见 <a href="data/public/unmapped-summary.json" target="_blank" rel="noreferrer">unmapped summary ↗</a>，完整行见维护 artifact。空白单元格仍不代表没人测试。</p>`;
   }
 
   function renderCards() {
@@ -1237,18 +1621,38 @@
     const badges = `${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}${evidenceBadge(entry)}`;
     return `<tr class="run-row" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 的 ${esc(benchmark.name)} system run"><td class="run-model-cell">${modelMarkup(model)}</td><td><span class="run-benchmark-name">${esc(benchmark.short || benchmark.name)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></td><td class="run-score-cell ${scoreClass(entry, benchmark)}"><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${run.value !== null && run.value !== undefined ? esc(run.unit || benchmark.unit || "") : ""}</strong><small>${esc(run.metric || benchmark.metric || "score")}</small></td><td><div class="run-badges">${badges}</div></td><td><span class="status-badge ${statusClass(entry)}">${esc(evidence)}</span><small class="run-date">${esc(run.observedAt || "未注明")}</small></td><td class="run-source-cell">${source ? '<span class="source-chip">S</span>' : "—"}</td></tr>`;
   }
+  function runPage(runs) {
+    const pageCount = Math.max(1, Math.ceil(runs.length / RUN_PAGE_SIZE));
+    state.runPage = Math.min(Math.max(0, state.runPage), pageCount - 1);
+    const start = state.runPage * RUN_PAGE_SIZE;
+    return { items: runs.slice(start, start + RUN_PAGE_SIZE), start, pageCount };
+  }
+  function runPagerMarkup(start, visible, total, pageCount) {
+    if (pageCount <= 1) return "";
+    const from = total ? start + 1 : 0;
+    const to = start + visible;
+    return `<nav class="run-pagination" aria-label="System Runs pages"><button class="outline-button" type="button" data-run-page="-1"${state.runPage === 0 ? " disabled" : ""}>上一页</button><span>${fmt(from, 0)}–${fmt(to, 0)} / ${fmt(total, 0)}</span><button class="outline-button" type="button" data-run-page="1"${state.runPage >= pageCount - 1 ? " disabled" : ""}>下一页</button></nav>`;
+  }
   function renderRuns() {
     const runs = filteredRuns();
-    if (els.runTableHead) els.runTableHead.innerHTML = "<tr><th>MODEL / RELEASE</th><th>BENCHMARK</th><th>SCORE</th><th>HARNESS / PROTOCOL</th><th>EVIDENCE / DATE</th><th>SOURCE</th></tr>";
-    if (els.runTableBody) els.runTableBody.innerHTML = runs.map(runRow).join("");
+    const page = runPage(runs);
+    const pager = runPagerMarkup(page.start, page.items.length, runs.length, page.pageCount);
+    if (state.runView === "table") {
+      if (els.runCardsView) els.runCardsView.innerHTML = "";
+      if (els.runTableHead) els.runTableHead.innerHTML = "<tr><th>MODEL / RELEASE</th><th>BENCHMARK</th><th>SCORE</th><th>HARNESS / PROTOCOL</th><th>EVIDENCE / DATE</th><th>SOURCE</th></tr>";
+      if (els.runTableBody) els.runTableBody.innerHTML = page.items.map(runRow).join("") + (pager ? `<tr class="run-pagination-row"><td colspan="6">${pager}</td></tr>` : "");
+    } else {
+      if (els.runTableHead) els.runTableHead.innerHTML = "";
+      if (els.runTableBody) els.runTableBody.innerHTML = "";
+    }
     if (els.runEmptyState) els.runEmptyState.hidden = runs.length !== 0;
-    if (els.runCountLabel) els.runCountLabel.textContent = runs.length;
-    if (els.runCardsView) els.runCardsView.innerHTML = runs.map((run) => {
+    if (els.runCountLabel) els.runCountLabel.textContent = runs.length > RUN_PAGE_SIZE ? `${page.start + 1}–${page.start + page.items.length} / ${runs.length}` : String(runs.length);
+    if (state.runView === "cards" && els.runCardsView) els.runCardsView.innerHTML = page.items.map((run) => {
       const model = modelById(run.modelId) || normaliseModel({ id: run.modelId, name: run.modelName, provider: run.provider });
       const benchmark = benchmarkFor(run.benchmarkId) || { name: run.benchmarkId, short: run.benchmarkId, scale: 100 };
       const entry = runScoreEntry(run);
       return `<article class="run-card" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} system run"><div class="run-card-top"><div>${modelMarkup(model)}</div><strong class="run-card-score ${scoreClass(entry, benchmark)}">${run.value === null || run.value === undefined ? "—" : fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small></strong></div><div class="run-card-benchmark"><span>${esc(benchmark.name || benchmark.short)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></div><div class="run-badges">${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}${evidenceBadge(entry)}<span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span></div><p class="run-card-note">${esc(run.notes || `observed ${run.observedAt || "未注明"}`)}</p></article>`;
-    }).join("");
+    }).join("") + pager;
   }
 
   function renderSpotlights() {
@@ -1290,11 +1694,30 @@
     renderFilters();
     renderActiveFilters();
     renderStats();
-    renderMatrix();
-    renderPublicEvidence();
-    renderCards();
-    renderRuns();
-    renderSpotlights();
+    if (state.mode === "runs") {
+      if (els.matrixHead) els.matrixHead.innerHTML = "";
+      if (els.matrixBody) els.matrixBody.innerHTML = "";
+      if (els.cardsView) els.cardsView.innerHTML = "";
+      if (els.publicEvidenceList) els.publicEvidenceList.innerHTML = "";
+      if (els.publicAliasLedger) els.publicAliasLedger.innerHTML = "";
+      if (els.publicEvidenceSection) els.publicEvidenceSection.hidden = true;
+      if (els.spotlightGrid) els.spotlightGrid.innerHTML = "";
+      renderRuns();
+    } else {
+      if (els.runTableHead) els.runTableHead.innerHTML = "";
+      if (els.runTableBody) els.runTableBody.innerHTML = "";
+      if (els.runCardsView) els.runCardsView.innerHTML = "";
+      if (state.atlasView === "matrix") {
+        if (els.cardsView) els.cardsView.innerHTML = "";
+        renderMatrix();
+      } else {
+        if (els.matrixHead) els.matrixHead.innerHTML = "";
+        if (els.matrixBody) els.matrixBody.innerHTML = "";
+        renderCards();
+      }
+      renderPublicEvidence();
+      renderSpotlights();
+    }
     updateModeCopy();
   }
 
@@ -1315,7 +1738,7 @@
         ? (status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")
         : (status === "approved" ? "approved" : (status === "reported" ? "官方披露 · 未复现" : `${status || "reported"} · 未复现`));
       const source = sourceFor(first(item.sourceId, item.sourceUrl));
-      const sourceUrl = item.evidenceUrl || item.evidence_url || item.sourceUrl || source?.url;
+      const sourceUrl = firstSafeUrl(item.evidenceUrl, item.evidence_url, item.sourceUrl, source?.url);
       const sourceText = item.sourceLabel || source?.label || source?.title || sourceUrl || item.sourceId || "来源未注明";
       const hash = item.snapshotHash || item.sha256 || item.hash;
       const rawModel = first(item.sourceModel, item.source_model, item.modelName, item.model_name, item.modelId);
@@ -1339,12 +1762,18 @@
     state.selected = { type: "public-evidence", evidenceId: id };
     const source = sourceFor(first(item.sourceId, item.sourceUrl));
     const subject = first(item.subjectType, item.subject_type, "model");
-    const link = item.evidenceUrl || item.sourceUrl || source?.url;
-    const benchmark = benchmarkFor(item.benchmarkId);
+    const link = firstSafeUrl(item.evidenceUrl, item.sourceUrl, source?.url);
+    const displayBenchmarkId = first(item.displayBenchmarkId, item.display_benchmark_id, item.benchmarkId);
+    const baseBenchmarkId = first(item.baseBenchmarkId, item.base_benchmark_id, item.benchmarkId);
+    const benchmark = benchmarkFor(displayBenchmarkId) || benchmarkFor(baseBenchmarkId);
     const protocol = item.protocol && typeof item.protocol === "object" ? JSON.stringify(item.protocol) : item.protocol;
-    const sourcePage = first(item.sourcePageUrl, sourceContextUrl(source));
+    const sourcePage = firstSafeUrl(item.sourcePageUrl, sourceContextUrl(source));
     const benchmarkVersion = first(item.benchmarkVersionId, item.benchmarkVersion, item.benchmarkVersionHint, "version 未注明");
-    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">E</span><div><h3>${esc(item.modelName || item.modelRef || "公开模型行")}</h3><p>${esc(item.benchmarkName || item.benchmarkId || "公开 benchmark")} · ${esc(item.sourceLabel || source?.label || item.sourceId || "source 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge conditional">披露 · 未复现</span><div class="big-score">${item.value === null || item.value === undefined ? "—" : `${fmt(item.value)}<small>${esc(item.unit || "")}</small>`}</div><p>${esc(item.metricId || "score")} · ${esc(benchmarkVersion)}</p></div><section class="detail-section"><h4>Mapping</h4>${detailGrid([["Source model", item.modelRef || item.sourceModel], ["Canonical release", item.canonicalModelId || item.mappedModelId || "未安全映射"], ["Benchmark", item.benchmarkId], ["Mapping status", item.mappingStatus || "unmatched"], ["Subject", subject], ["Harness", item.harnessId || item.harness]])}</section>${benchmark?.description ? `<section class="detail-section"><h4>What this measures</h4><p class="detail-note">${esc(benchmark.description)}</p></section>` : ""}${evidenceDetails(item, "Public evidence")}${link ? `<section class="detail-section"><h4>Snapshot / API</h4><a class="source-link" href="${esc(link)}" target="_blank" rel="noreferrer">↗ ${esc(link)}</a>${sourcePage && sourcePage !== link ? `<p class="detail-note"><a href="${esc(sourcePage)}" target="_blank" rel="noreferrer">打开来源说明页 ↗</a></p>` : ""}</section>` : (sourcePage ? `<section class="detail-section"><h4>Source page</h4><a class="source-link" href="${esc(sourcePage)}" target="_blank" rel="noreferrer">↗ ${esc(sourcePage)}</a></section>` : "")}${protocol ? `<section class="detail-section"><h4>Protocol</h4><p class="detail-note">${esc(protocol)}</p></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制公开证据 JSON</button>`;
+    const matrixStatus = item.matrixExcluded
+      ? `仅证据（${item.matrixExcludedReason || "telemetry metric"}，未进入矩阵）`
+      : `已进入矩阵${item.metricSlice ? ` · ${item.metricSliceLabel || item.metricId || "metric slice"}` : ""}`;
+    const rawBenchmark = first(item.sourceBenchmark, item.source_benchmark, item.benchmarkName, item.benchmarkId, "公开 benchmark");
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">E</span><div><h3 id="drawerTitle">${esc(first(item.sourceModel, item.modelName, item.modelRef, "公开模型行"))}</h3><p>${esc(rawBenchmark)} · ${esc(item.sourceLabel || source?.label || item.sourceId || "source 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge conditional">披露 · 未复现</span><div class="big-score">${item.value === null || item.value === undefined ? "—" : `${fmt(item.value)}<small>${esc(item.unit || "")}</small>`}</div><p>${esc(item.metricId || "score")} · ${esc(benchmarkVersion)}</p></div><section class="detail-section"><h4>Mapping</h4>${detailGrid([["Source model", item.modelRef || item.sourceModel || item.modelName], ["Canonical release", item.canonicalModelId || item.mappedModelId || "未安全映射"], ["Source benchmark", rawBenchmark], ["Display column", displayBenchmarkId], ["Base benchmark", baseBenchmarkId], ["Mapping status", item.mappingStatus || "unmatched"], ["Matrix status", matrixStatus], ["Subject", subject], ["Harness", item.harnessId || item.harness]])}</section>${benchmark?.description ? `<section class="detail-section"><h4>What this measures</h4><p class="detail-note">${esc(benchmark.description)}</p></section>` : ""}${evidenceDetails(item, "Public evidence")}${link ? `<section class="detail-section"><h4>Snapshot / API</h4><a class="source-link" href="${esc(link)}" target="_blank" rel="noreferrer">↗ ${esc(link)}</a>${sourcePage && sourcePage !== link ? `<p class="detail-note"><a href="${esc(sourcePage)}" target="_blank" rel="noreferrer">打开来源说明页 ↗</a></p>` : ""}</section>` : (sourcePage ? `<section class="detail-section"><h4>Source page</h4><a class="source-link" href="${esc(sourcePage)}" target="_blank" rel="noreferrer">↗ ${esc(sourcePage)}</a></section>` : "")}${protocol ? `<section class="detail-section"><h4>Protocol</h4><p class="detail-note">${esc(protocol)}</p></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制公开证据 JSON</button>`;
     showDrawer();
     const copyButton = $("copyObservation");
     if (copyButton) copyButton.addEventListener("click", () => copyJson(item, "已复制公开证据 JSON"));
@@ -1363,7 +1792,8 @@
     const relatedRuns = (state.data?.runs || []).filter((run) => run.modelId === model.id).slice(0, 8);
     const runLinks = relatedRuns.map((run) => `<button class="drawer-run-link" type="button" data-run="${esc(run.id)}"><span>${esc(benchmarkFor(run.benchmarkId)?.short || run.benchmarkId)}</span><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${esc(run.unit || "%")}</strong></button>`).join("");
     const modelSourcePage = sourceContextUrl(source);
-    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · release ${esc(model.release || "未注明")} · ${esc(model.status || model.access || "access 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge ${statusClass(mainScore)}">${esc(statusLabel(mainScore))}</span><div class="big-score">${mainScore.value !== null && mainScore.value !== undefined ? `${fmt(mainScore.value)}<small>${esc(mainBenchmark?.unit || "")}</small>` : "—"}</div><p>${mainBenchmark ? `${esc(mainBenchmark.name)} · ${esc(display(mainScore.setting, "设置未说明"))}` : "选择一个单元格查看具体 observation。"}</p></div><section class="detail-section"><h4>Model note</h4><p class="detail-note">${esc(model.summary)}</p></section><section class="detail-section"><h4>Model registry</h4>${detailGrid([["Status", model.status], ["Access", model.access], ["Params total", model.paramsTotal], ["Params active", model.paramsActive], ["Context", model.context], ["Endpoint", model.endpoint]])}</section><section class="detail-section"><h4>Protocol & provenance</h4>${detailGrid([["Benchmark version", mainScore.benchmarkVersion || mainScore.version || mainBenchmark?.version], ["Observed", mainScore.observedAt || mainScore.observed_at || state.data?.meta?.asOf], ["Comparability", mainScore.comparability || "conditional"], ["Evidence", mainScore.evidenceLevel || mainScore.evidence_level || mainScore.verified], ["Source URL", mainScore.sourceUrl], ["Locator", mainScore.locator], ["Retrieved", mainScore.fetchedAt], ["Snapshot hash", mainScore.snapshotHash]])}${mainScore.note || mainScore.notes ? `<p class="detail-note">${esc(mainScore.note || mainScore.notes)}</p>` : ""}</section>${evidenceDetails(mainScore)}${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(modelSourcePage || source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || modelSourcePage || source.url)}</a>${source.url && modelSourcePage && source.url !== modelSourcePage ? `<p class="detail-note"><a href="${esc(source.url)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}<section class="detail-section"><h4>Recorded signals</h4><div class="timeline">${recorded.map(({ benchmark: itemBenchmark, entry: itemEntry }) => `<div class="timeline-row"><span>${esc(itemBenchmark.short || itemBenchmark.name)}</span><span class="timeline-track"><i style="width:${Math.min(100, Math.max(0, scoreRatio(itemEntry.value, itemBenchmark) * 100))}%"></i></span><strong>${fmt(itemEntry.value)}${esc(itemBenchmark.unit || "")}</strong></div>`).join("") || '<p class="detail-note">暂无可显示的成绩。</p>'}</div></section>${runLinks ? `<section class="detail-section"><h4>System runs</h4><div class="drawer-run-list">${runLinks}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 JSON</button>`;
+    const modelSourceUrl = safeUrl(source?.url);
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3 id="drawerTitle">${esc(model.name)}</h3><p>${esc(model.provider)} · release ${esc(model.release || "未注明")} · ${esc(model.status || model.access || "access 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge ${statusClass(mainScore)}">${esc(statusLabel(mainScore))}</span><div class="big-score">${mainScore.value !== null && mainScore.value !== undefined ? `${fmt(mainScore.value)}<small>${esc(mainBenchmark?.unit || "")}</small>` : "—"}</div><p>${mainBenchmark ? `${esc(mainBenchmark.name)} · ${esc(display(mainScore.setting, "设置未说明"))}` : "选择一个单元格查看具体 observation。"}</p></div><section class="detail-section"><h4>Model note</h4><p class="detail-note">${esc(model.summary)}</p></section><section class="detail-section"><h4>Model registry</h4>${detailGrid([["Status", model.status], ["Access", model.access], ["Params total", model.paramsTotal], ["Params active", model.paramsActive], ["Context", model.context], ["Endpoint", model.endpoint]])}</section><section class="detail-section"><h4>Protocol & provenance</h4>${detailGrid([["Benchmark version", mainScore.benchmarkVersion || mainScore.version || mainBenchmark?.version], ["Observed", mainScore.observedAt || mainScore.observed_at || state.data?.meta?.asOf], ["Comparability", mainScore.comparability || "conditional"], ["Evidence", mainScore.evidenceLevel || mainScore.evidence_level || mainScore.verified], ["Source URL", mainScore.sourceUrl], ["Locator", mainScore.locator], ["Retrieved", mainScore.fetchedAt], ["Snapshot hash", mainScore.snapshotHash]])}${mainScore.note || mainScore.notes ? `<p class="detail-note">${esc(mainScore.note || mainScore.notes)}</p>` : ""}</section>${evidenceDetails(mainScore)}${source && (modelSourcePage || modelSourceUrl) ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(modelSourcePage || modelSourceUrl)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || modelSourcePage || modelSourceUrl)}</a>${modelSourceUrl && modelSourcePage && modelSourceUrl !== modelSourcePage ? `<p class="detail-note"><a href="${esc(modelSourceUrl)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}<section class="detail-section"><h4>Recorded signals</h4><div class="timeline">${recorded.map(({ benchmark: itemBenchmark, entry: itemEntry }) => `<div class="timeline-row"><span>${esc(itemBenchmark.short || itemBenchmark.name)}</span><span class="timeline-track"><i style="width:${Math.min(100, Math.max(0, scoreRatio(itemEntry.value, itemBenchmark) * 100))}%"></i></span><strong>${fmt(itemEntry.value)}${esc(itemBenchmark.unit || "")}</strong></div>`).join("") || '<p class="detail-note">暂无可显示的成绩。</p>'}</div></section>${runLinks ? `<section class="detail-section"><h4>System runs</h4><div class="drawer-run-list">${runLinks}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 JSON</button>`;
     showDrawer();
     const copyButton = $("copyObservation");
     if (copyButton) copyButton.addEventListener("click", () => copyJson(benchmark ? { model_id: model.id, benchmark_id: benchmark.id, ...mainScore } : model, "已复制 JSON"));
@@ -1380,7 +1810,8 @@
     const entry = runScoreEntry(run);
     const related = (state.data?.runs || []).filter((item) => item.modelId === run.modelId && item.benchmarkId === run.benchmarkId && item.id !== run.id).slice(0, 6);
     const runSourcePage = sourceContextUrl(source);
-    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3>${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(run.endpointId || model.endpoint || "endpoint 未注明")}</p></div></div><div class="drawer-score run-drawer-score"><span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span><div class="big-score">${run.value === null || run.value === undefined ? "—" : `${fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small>`}</div><p>${esc(benchmark.name)} · ${esc(run.benchmarkVersion || benchmark.version || "version 未注明")}</p></div><section class="detail-section"><h4>Harness & protocol</h4>${detailGrid([["Harness", harness ? `${harness.name}${harness.version ? ` · ${harness.version}` : ""}` : "model-only"], ["Endpoint", run.endpointId], ["Protocol", protocolLabel(run)], ["Effort", run.effort], ["Steps", run.steps], ["Tools", run.tools || run.toolPolicy || run.tool_policy]])}</section><section class="detail-section"><h4>Run provenance</h4>${detailGrid([["Benchmark", benchmark.name], ["Metric", run.metric || benchmark.metric], ["Observed", run.observedAt], ["Published", run.publishedAt], ["Retrieved", run.fetchedAt], ["Comparability", run.comparability], ["Evidence", run.evidenceLevel || run.evidence], ["Source URL", run.sourceUrl], ["Locator", run.locator], ["Snapshot hash", run.snapshotHash], ["Cost", run.cost], ["Latency", run.latency]])}${run.notes ? `<p class="detail-note">${esc(run.notes)}</p>` : ""}</section>${evidenceDetails(run, "Evidence trail")}${source ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(runSourcePage || source.url)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || runSourcePage || source.url)}</a>${source.url && runSourcePage && source.url !== runSourcePage ? `<p class="detail-note"><a href="${esc(source.url)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}${related.length ? `<section class="detail-section"><h4>Same model / benchmark</h4><div class="drawer-run-list">${related.map((item) => `<button class="drawer-run-link" type="button" data-run="${esc(item.id)}"><span>${esc(harnessFor(item.harnessId)?.name || "model-only")}</span><strong>${item.value === null || item.value === undefined ? "—" : fmt(item.value)}${esc(item.unit || benchmark.unit || "")}</strong></button>`).join("")}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 run JSON</button>`;
+    const runSourceUrl = safeUrl(source?.url);
+    els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3 id="drawerTitle">${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(run.endpointId || model.endpoint || "endpoint 未注明")}</p></div></div><div class="drawer-score run-drawer-score"><span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span><div class="big-score">${run.value === null || run.value === undefined ? "—" : `${fmt(run.value)}<small>${esc(run.unit || benchmark.unit || "")}</small>`}</div><p>${esc(benchmark.name)} · ${esc(run.benchmarkVersion || benchmark.version || "version 未注明")}</p></div><section class="detail-section"><h4>Harness & protocol</h4>${detailGrid([["Harness", harness ? `${harness.name}${harness.version ? ` · ${harness.version}` : ""}` : "model-only"], ["Endpoint", run.endpointId], ["Protocol", protocolLabel(run)], ["Effort", run.effort], ["Steps", run.steps], ["Tools", run.tools || run.toolPolicy || run.tool_policy]])}</section><section class="detail-section"><h4>Run provenance</h4>${detailGrid([["Benchmark", benchmark.name], ["Metric", run.metric || benchmark.metric], ["Observed", run.observedAt], ["Published", run.publishedAt], ["Retrieved", run.fetchedAt], ["Comparability", run.comparability], ["Evidence", run.evidenceLevel || run.evidence], ["Source URL", run.sourceUrl], ["Locator", run.locator], ["Snapshot hash", run.snapshotHash], ["Cost", run.cost], ["Latency", run.latency]])}${run.notes ? `<p class="detail-note">${esc(run.notes)}</p>` : ""}</section>${evidenceDetails(run, "Evidence trail")}${source && (runSourcePage || runSourceUrl) ? `<section class="detail-section"><h4>Source</h4><a class="source-link" href="${esc(runSourcePage || runSourceUrl)}" target="_blank" rel="noreferrer">↗ ${esc(source.label || source.title || runSourcePage || runSourceUrl)}</a>${runSourceUrl && runSourcePage && runSourceUrl !== runSourcePage ? `<p class="detail-note"><a href="${esc(runSourceUrl)}" target="_blank" rel="noreferrer">打开 API / 快照 ↗</a></p>` : ""}${source.locator ? `<p class="detail-note">定位：${esc(source.locator)}</p>` : ""}</section>` : ""}${related.length ? `<section class="detail-section"><h4>Same model / benchmark</h4><div class="drawer-run-list">${related.map((item) => `<button class="drawer-run-link" type="button" data-run="${esc(item.id)}"><span>${esc(harnessFor(item.harnessId)?.name || "model-only")}</span><strong>${item.value === null || item.value === undefined ? "—" : fmt(item.value)}${esc(item.unit || benchmark.unit || "")}</strong></button>`).join("")}</div></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制 run JSON</button>`;
     showDrawer();
     const copyButton = $("copyObservation");
     if (copyButton) copyButton.addEventListener("click", () => copyJson(run, "已复制 run JSON"));
@@ -1408,7 +1839,7 @@
   }
 
   function resetFilters() {
-    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = state.data?.presets?.some((preset) => preset.id === "public-coverage") ? "public-coverage" : "all"; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.availableOnly = false; state.showCatalog = false;
+    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = state.data?.presets?.some((preset) => preset.id === "public-coverage") ? "public-coverage" : "all"; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.availableOnly = false; state.showCatalog = false; state.runPage = 0;
     if (els.searchInput) els.searchInput.value = "";
     if (els.availableOnly) els.availableOnly.checked = false;
     if (els.showCatalog) els.showCatalog.checked = false;
@@ -1416,9 +1847,9 @@
   }
 
   function bind() {
-    els.searchInput?.addEventListener("input", (event) => { state.search = event.target.value; render(); });
-    els.providerFilter?.addEventListener("change", (event) => { state.provider = event.target.value; render(); });
-    els.familyFilter?.addEventListener("change", (event) => { state.family = event.target.value; render(); });
+    els.searchInput?.addEventListener("input", (event) => { state.search = event.target.value; state.runPage = 0; render(); });
+    els.providerFilter?.addEventListener("change", (event) => { state.provider = event.target.value; state.runPage = 0; render(); });
+    els.familyFilter?.addEventListener("change", (event) => { state.family = event.target.value; state.runPage = 0; render(); });
     els.presetSelect?.addEventListener("change", (event) => {
       state.preset = event.target.value;
       const preset = activePreset();
@@ -1427,19 +1858,26 @@
       // otherwise the controls keep showing a stale System Runs view.
       state.mode = preset?.mode === "runs" ? "runs" : "atlas";
       state.sort = state.mode === "runs" ? "run-recent" : "coverage";
+      state.runPage = 0;
       render();
     });
-    els.harnessFilter?.addEventListener("change", (event) => { state.harness = event.target.value; render(); });
-    els.runBenchmarkFilter?.addEventListener("change", (event) => { state.runBenchmark = event.target.value; render(); });
-    els.sortSelect?.addEventListener("change", (event) => { state.sort = event.target.value; render(); });
-    els.availableOnly?.addEventListener("change", (event) => { state.availableOnly = event.target.checked; render(); });
-    els.showCatalog?.addEventListener("change", (event) => { state.showCatalog = event.target.checked; render(); });
+    els.harnessFilter?.addEventListener("change", (event) => { state.harness = event.target.value; state.runPage = 0; render(); });
+    els.runBenchmarkFilter?.addEventListener("change", (event) => { state.runBenchmark = event.target.value; state.runPage = 0; render(); });
+    els.sortSelect?.addEventListener("change", (event) => { state.sort = event.target.value; state.runPage = 0; render(); });
+    els.availableOnly?.addEventListener("change", (event) => { state.availableOnly = event.target.checked; state.runPage = 0; render(); });
+    els.showCatalog?.addEventListener("change", (event) => { state.showCatalog = event.target.checked; state.runPage = 0; render(); });
     $("resetFilters")?.addEventListener("click", resetFilters); $("emptyReset")?.addEventListener("click", resetFilters); $("runEmptyReset")?.addEventListener("click", resetFilters);
-    document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => { state.mode = tab.dataset.mode; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; render(); }));
+    document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => { state.mode = tab.dataset.mode; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.runPage = 0; render(); }));
     document.querySelectorAll(".view-tab[data-view]").forEach((tab) => tab.addEventListener("click", () => { state.atlasView = tab.dataset.view; render(); }));
-    document.querySelectorAll(".view-tab[data-run-view]").forEach((tab) => tab.addEventListener("click", () => { state.runView = tab.dataset.runView; render(); }));
+    document.querySelectorAll(".view-tab[data-run-view]").forEach((tab) => tab.addEventListener("click", () => { state.runView = tab.dataset.runView; state.runPage = 0; render(); }));
     document.addEventListener("click", (event) => {
       if (event.target.closest("a")) return;
+      const pageTarget = event.target.closest("[data-run-page]");
+      if (pageTarget) {
+        state.runPage += Number(pageTarget.dataset.runPage || 0);
+        render();
+        return;
+      }
       const runTarget = event.target.closest("[data-run]");
       if (runTarget) return openRunDrawer(runTarget.dataset.run);
       const cell = event.target.closest("[data-model][data-benchmark]");
@@ -1468,7 +1906,7 @@
     let lastError = new Error("没有可读取的数据文件");
     for (const path of paths) {
       try {
-        const response = await fetch(path, { cache: "no-store" });
+        const response = await fetch(path);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const raw = await response.json();
         return { raw, path };

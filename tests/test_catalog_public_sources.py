@@ -24,6 +24,12 @@ class PublicBenchmarkCatalogTests(unittest.TestCase):
         self.assertEqual(by_id["src-aider-polyglot"].get("adapter_id"), "src-aider-polyglot")
         self.assertTrue(by_id["src-mle-bench"].get("enabled"))
         self.assertEqual(by_id["src-mle-bench"].get("adapter_id"), "src-mle-bench")
+        self.assertTrue(by_id["swebench-official"].get("enabled"))
+        self.assertEqual(by_id["swebench-official"].get("adapter_id"), "swebench-official")
+        self.assertEqual(
+            by_id["swebench-official"].get("url"),
+            "https://raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json",
+        )
 
     def test_system_benchmarks_keep_environment_protocol_visible(self):
         benchmarks = json.loads((ROOT / "data/catalog/benchmarks.json").read_text())

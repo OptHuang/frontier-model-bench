@@ -1,7 +1,7 @@
 {
   "meta": {
-    "version": "0.3.0-catalog",
-    "as_of": "2026-08-27",
+    "version": "0.4.0-catalog",
+    "as_of": "2026-08-28",
     "description": "当前旗舰、上一代和重要效率/开放权重变体的 canonical registry；没有分数的条目由 build_derived.py 标为 catalog-only。"
   },
   "models": [
@@ -14,16 +14,34 @@
       "release_date": "2026-07-09",
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.6-sol", "gpt-5.6"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.6-sol",
+        "gpt-5.6"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "tier": "sol", "preview": false},
-      "tags": ["旗舰", "推理", "多模态", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "tier": "sol",
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "推理",
+        "多模态",
+        "Agent"
+      ],
       "summary": "OpenAI GPT-5.6 reasoning tier；API alias gpt-5.6 路由到该 release。",
-      "source_ids": ["src-openai-models", "src-openai-gpt56"]
+      "source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ]
     },
     {
       "id": "openai/gpt-5.6-terra@2026-07-09",
@@ -34,16 +52,32 @@
       "release_date": "2026-07-09",
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.6-terra"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.6-terra"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "tier": "terra", "preview": false},
-      "tags": ["通用", "推理", "多模态"],
+      "variant": {
+        "reasoning": true,
+        "tier": "terra",
+        "preview": false
+      },
+      "tags": [
+        "通用",
+        "推理",
+        "多模态"
+      ],
       "summary": "GPT-5.6 balanced/production tier。",
-      "source_ids": ["src-openai-models", "src-openai-gpt56"]
+      "source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ]
     },
     {
       "id": "openai/gpt-5.6-luna@2026-07-09",
@@ -54,16 +88,32 @@
       "release_date": "2026-07-09",
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.6-luna"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.6-luna"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1050000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "tier": "luna", "preview": false},
-      "tags": ["快速", "效率", "多模态"],
+      "variant": {
+        "reasoning": true,
+        "tier": "luna",
+        "preview": false
+      },
+      "tags": [
+        "快速",
+        "效率",
+        "多模态"
+      ],
       "summary": "GPT-5.6 lower-latency tier。",
-      "source_ids": ["src-openai-models", "src-openai-gpt56"]
+      "source_ids": [
+        "src-openai-models",
+        "src-openai-gpt56"
+      ]
     },
     {
       "id": "openai/gpt-5.5@current",
@@ -74,16 +124,31 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.5", "gpt-5-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.5",
+        "gpt-5-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["推理", "代码", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "代码",
+        "Agent"
+      ],
       "summary": "上一代 OpenAI frontier baseline。",
-      "source_ids": ["src-openai-gpt55"]
+      "source_ids": [
+        "src-openai-gpt55"
+      ]
     },
     {
       "id": "openai/gpt-5.5-pro@current",
@@ -94,16 +159,30 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.5-pro"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.5-pro"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "tier": "pro", "preview": false},
-      "tags": ["推理", "代码"],
+      "variant": {
+        "reasoning": true,
+        "tier": "pro",
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "代码"
+      ],
       "summary": "GPT-5.5 higher-compute product tier；作为独立 endpoint 记录。",
-      "source_ids": ["src-openai-gpt55"]
+      "source_ids": [
+        "src-openai-gpt55"
+      ]
     },
     {
       "id": "openai/gpt-5.4@current",
@@ -114,15 +193,29 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.4", "gpt-5-4"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.4",
+        "gpt-5-4"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["通用", "推理"],
-      "source_ids": ["src-openai-models"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "通用",
+        "推理"
+      ],
+      "source_ids": [
+        "src-openai-models"
+      ]
     },
     {
       "id": "openai/gpt-5.4-mini@current",
@@ -133,15 +226,29 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["gpt-5.4-mini"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5.4-mini"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "tier": "mini", "preview": false},
-      "tags": ["小模型", "效率"],
-      "source_ids": ["src-openai-models"]
+      "variant": {
+        "reasoning": true,
+        "tier": "mini",
+        "preview": false
+      },
+      "tags": [
+        "小模型",
+        "效率"
+      ],
+      "source_ids": [
+        "src-openai-models"
+      ]
     },
     {
       "id": "openai/gpt-5@2025-08-07",
@@ -152,16 +259,30 @@
       "release_date": "2025-08-07",
       "status": "previous",
       "access": "api",
-      "aliases": ["gpt-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "gpt-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "推理", "工具"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "工具"
+      ],
       "summary": "Legacy MVP baseline; GPT-5 pro values remain identified in observation notes.",
-      "source_ids": ["openai-gpt5"]
+      "source_ids": [
+        "openai-gpt5"
+      ]
     },
     {
       "id": "anthropic/claude-opus-5@2026-07-24",
@@ -172,16 +293,32 @@
       "release_date": "2026-07-24",
       "status": "active",
       "access": "api",
-      "aliases": ["claude-opus-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-opus-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["旗舰", "推理", "代码", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "推理",
+        "代码",
+        "Agent"
+      ],
       "summary": "Anthropic current Opus flagship。",
-      "source_ids": ["src-anthropic-opus5", "src-anthropic-system-cards"]
+      "source_ids": [
+        "src-anthropic-opus5",
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-opus@4",
@@ -192,16 +329,31 @@
       "release_date": "2025-05-22",
       "status": "previous",
       "access": "api",
-      "aliases": ["claude-opus-4"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-opus-4"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "代码", "推理", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "代码",
+        "推理",
+        "Agent"
+      ],
       "summary": "Legacy MVP baseline; extended thinking and Claude Code scaffold are recorded per observation.",
-      "source_ids": ["anthropic-claude4"]
+      "source_ids": [
+        "anthropic-claude4"
+      ]
     },
     {
       "id": "anthropic/claude-fable-5@2026-06-09",
@@ -212,16 +364,34 @@
       "release_date": "2026-06-09",
       "status": "restricted",
       "access": "restricted",
-      "aliases": ["claude-fable-5", "anthropic-claude-fable-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-fable-5",
+        "anthropic-claude-fable-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "fallback_policy": "may fallback to Opus 4.8"},
-      "tags": ["前沿", "推理", "代码", "restricted"],
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "fallback_policy": "may fallback to Opus 4.8"
+      },
+      "tags": [
+        "前沿",
+        "推理",
+        "代码",
+        "restricted"
+      ],
       "summary": "Trusted/restricted Fable endpoint；报告时保留 fallback policy。",
-      "source_ids": ["src-anthropic-fable5", "src-anthropic-system-cards"]
+      "source_ids": [
+        "src-anthropic-fable5",
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-mythos-5@2026-06-09",
@@ -232,16 +402,32 @@
       "release_date": "2026-06-09",
       "status": "restricted",
       "access": "restricted",
-      "aliases": ["claude-mythos-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-mythos-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "safeguards": "trusted access only"},
-      "tags": ["前沿", "推理", "restricted"],
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "safeguards": "trusted access only"
+      },
+      "tags": [
+        "前沿",
+        "推理",
+        "restricted"
+      ],
       "summary": "与 Fable 5 同 base model 的受限研究访问变体。",
-      "source_ids": ["src-anthropic-fable5", "src-anthropic-system-cards"]
+      "source_ids": [
+        "src-anthropic-fable5",
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-sonnet-5@2026-06-30",
@@ -252,16 +438,33 @@
       "release_date": "2026-06-30",
       "status": "active",
       "access": "api",
-      "aliases": ["claude-sonnet-5"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-sonnet-5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "adaptive_thinking": true, "preview": false},
-      "tags": ["通用", "推理", "代码", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "adaptive_thinking": true,
+        "preview": false
+      },
+      "tags": [
+        "通用",
+        "推理",
+        "代码",
+        "Agent"
+      ],
       "summary": "Sonnet 5 current production model with adaptive thinking。",
-      "source_ids": ["src-anthropic-sonnet5", "src-anthropic-system-cards"]
+      "source_ids": [
+        "src-anthropic-sonnet5",
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-opus-4.8@current",
@@ -272,15 +475,29 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["claude-opus-4-8"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-opus-4-8"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "代码", "推理"],
-      "source_ids": ["src-anthropic-system-cards"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "代码",
+        "推理"
+      ],
+      "source_ids": [
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-opus-4.7@current",
@@ -291,15 +508,28 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["claude-opus-4-7"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-opus-4-7"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["历史", "代码"],
-      "source_ids": ["src-anthropic-system-cards"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "历史",
+        "代码"
+      ],
+      "source_ids": [
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "anthropic/claude-sonnet-4.6@current",
@@ -310,15 +540,29 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["claude-sonnet-4-6"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "claude-sonnet-4-6"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "效率", "代码"],
-      "source_ids": ["src-anthropic-system-cards"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "效率",
+        "代码"
+      ],
+      "source_ids": [
+        "src-anthropic-system-cards"
+      ]
     },
     {
       "id": "qwen/qwen3.8-max@2026-08-02",
@@ -329,16 +573,33 @@
       "release_date": "2026-08-02",
       "status": "active",
       "access": "api",
-      "aliases": ["qwen3.8-max", "qwen-3-8-max"],
-      "modalities": ["text", "image"],
-      "context_window": 1000000,
-      "params_total": 2400000000000,
+      "aliases": [
+        "qwen3.8-max",
+        "qwen-3-8-max"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
       "params_active": null,
-      "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["旗舰", "开放权重", "推理", "代码"],
-      "summary": "Qwen3.8 Max-class release；参数规模仅在官方资料明确时使用。",
-      "source_ids": ["src-qwen38-repo", "src-qwen38-flash"]
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "托管服务",
+        "推理",
+        "代码"
+      ],
+      "summary": "Qwen3.8 Max 托管旗舰 endpoint；参数规模与 context 尚未由该 endpoint 的一手 model card 单独核验。",
+      "source_ids": [
+        "src-qwen38-repo",
+        "src-qwen38-flash"
+      ]
     },
     {
       "id": "qwen/qwen3.8-flash-next@2026-08-26",
@@ -349,16 +610,33 @@
       "release_date": "2026-08-26",
       "status": "active",
       "access": "open_weights",
-      "aliases": ["Qwen3.8-Flash-Next", "qwen3.8-flash"],
-      "modalities": ["text"],
+      "aliases": [
+        "Qwen3.8-Flash-Next",
+        "qwen3.8-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": 262144,
       "params_total": 125000000000,
       "params_active": 6000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false, "long_context_max": 1000000},
-      "tags": ["Flash", "效率", "开放权重", "代码"],
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "long_context_max": 1000000
+      },
+      "tags": [
+        "Flash",
+        "效率",
+        "开放权重",
+        "代码"
+      ],
       "summary": "125B main / 6B active；另有 deterministic n-gram memory，不能当作 active parameters。",
-      "source_ids": ["src-qwen38-flash", "src-qwen38-repo"]
+      "source_ids": [
+        "src-qwen38-flash",
+        "src-qwen38-repo"
+      ]
     },
     {
       "id": "qwen/qwen3.8-27b@2026-08-26",
@@ -369,15 +647,31 @@
       "release_date": "2026-08-26",
       "status": "active",
       "access": "open_weights",
-      "aliases": ["Qwen3.8-27B", "qwen-3-8-27b"],
-      "modalities": ["text"],
+      "aliases": [
+        "Qwen3.8-27B",
+        "qwen-3-8-27b"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": 262144,
       "params_total": 27000000000,
       "params_active": 27000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["小模型", "开放权重", "推理", "代码"],
-      "source_ids": ["src-qwen38-27b", "src-qwen38-repo"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "小模型",
+        "开放权重",
+        "推理",
+        "代码"
+      ],
+      "source_ids": [
+        "src-qwen38-27b",
+        "src-qwen38-repo"
+      ]
     },
     {
       "id": "qwen/qwen3.7-plus@current",
@@ -388,15 +682,30 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["qwen3.7-plus"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "qwen3.7-plus"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
-      "params_total": 397000000000,
-      "params_active": 17000000000,
-      "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "开放权重", "MoE"],
-      "source_ids": ["src-qwen38-repo"]
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "托管服务",
+        "推理"
+      ],
+      "summary": "Qwen3.7 Plus 托管 endpoint；参数规模、架构与 context 尚未从该 endpoint 的一手资料单独核验。",
+      "source_ids": [
+        "src-qwen38-repo"
+      ]
     },
     {
       "id": "qwen/qwen3.6-max@preview",
@@ -407,15 +716,29 @@
       "release_date": "2026-04-18",
       "status": "preview",
       "access": "api",
-      "aliases": ["qwen3.6-max-preview"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "qwen3.6-max-preview"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": true},
-      "tags": ["上一代", "preview", "推理"],
-      "source_ids": ["src-qwen36"]
+      "variant": {
+        "reasoning": true,
+        "preview": true
+      },
+      "tags": [
+        "上一代",
+        "preview",
+        "推理"
+      ],
+      "source_ids": [
+        "src-qwen36"
+      ]
     },
     {
       "id": "qwen/qwen3-max@thinking",
@@ -426,35 +749,66 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["qwen3-max-thinking", "qwen3-max-2026-01-23"],
-      "modalities": ["text"],
+      "aliases": [
+        "qwen3-max-thinking",
+        "qwen3-max-2026-01-23"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "推理", "代码", "多语言"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码",
+        "多语言"
+      ],
       "summary": "Legacy seed model；保留用于纵向比较。",
-      "source_ids": ["qwen3-max"]
+      "source_ids": [
+        "qwen3-max"
+      ]
     },
     {
       "id": "qwen/qwen3-coder@current",
       "family_id": "qwen/qwen3-coder",
-      "name": "Qwen3-Coder",
+      "name": "Qwen3-Coder 480B-A35B",
       "provider": "Qwen",
       "mark": "Q",
       "release_date": null,
       "status": "active",
       "access": "open_weights",
-      "aliases": ["qwen3-coder"],
-      "modalities": ["text"],
-      "context_window": null,
-      "params_total": null,
-      "params_active": null,
+      "aliases": [
+        "qwen3-coder",
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": 262144,
+      "params_total": 480000000000,
+      "params_active": 35000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["代码", "开放权重", "专用"],
-      "source_ids": ["src-qwen38-repo"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "long_context_max": 1000000
+      },
+      "tags": [
+        "代码",
+        "开放权重",
+        "专用"
+      ],
+      "summary": "Qwen3-Coder 480B total / 35B active；原生 256K context，可扩展至 1M，扩展配置必须随 run 记录。",
+      "source_ids": [
+        "src-qwen3-coder"
+      ]
     },
     {
       "id": "deepseek/v4-pro@2026-04-24",
@@ -465,15 +819,30 @@
       "release_date": "2026-04-24",
       "status": "active",
       "access": "api",
-      "aliases": ["deepseek-v4-pro"],
-      "modalities": ["text"],
+      "aliases": [
+        "deepseek-v4-pro"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": 1000000,
       "params_total": 1600000000000,
       "params_active": 49000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["旗舰", "开放权重", "推理", "代码"],
-      "source_ids": ["src-deepseek-v4", "src-deepseek-updates"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "推理",
+        "代码"
+      ],
+      "source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ]
     },
     {
       "id": "deepseek/v4-flash@2026-07-31",
@@ -484,16 +853,32 @@
       "release_date": "2026-07-31",
       "status": "active",
       "access": "api",
-      "aliases": ["deepseek-v4-flash", "deepseek-v4-flash-0731"],
-      "modalities": ["text"],
+      "aliases": [
+        "deepseek-v4-flash",
+        "deepseek-v4-flash-0731"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": 1000000,
       "params_total": 284000000000,
       "params_active": 13000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["Flash", "效率", "开放权重", "代码 Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率",
+        "开放权重",
+        "代码 Agent"
+      ],
       "summary": "V4 Flash public beta；0731 是同架构/规模的 repost-trained snapshot。",
-      "source_ids": ["src-deepseek-v4", "src-deepseek-updates"]
+      "source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ]
     },
     {
       "id": "deepseek/v3.2@2025-12-01",
@@ -504,15 +889,29 @@
       "release_date": "2025-12-01",
       "status": "previous",
       "access": "api",
-      "aliases": ["deepseek-v3.2", "deepseek-chat"],
-      "modalities": ["text"],
+      "aliases": [
+        "deepseek-v3.2",
+        "deepseek-chat"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "开放权重", "代码"],
-      "source_ids": ["src-deepseek-updates"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "开放权重",
+        "代码"
+      ],
+      "source_ids": [
+        "src-deepseek-updates"
+      ]
     },
     {
       "id": "deepseek/r1@0528",
@@ -523,15 +922,28 @@
       "release_date": "2025-05-28",
       "status": "previous",
       "access": "open_weights",
-      "aliases": ["deepseek-r1-0528"],
-      "modalities": ["text"],
+      "aliases": [
+        "deepseek-r1-0528"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["历史", "推理", "开放权重"],
-      "source_ids": ["deepseek-r1-0528"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "历史",
+        "推理",
+        "开放权重"
+      ],
+      "source_ids": [
+        "deepseek-r1-0528"
+      ]
     },
     {
       "id": "moonshot/kimi-k3@2026-07-16",
@@ -542,16 +954,35 @@
       "release_date": "2026-07-16",
       "status": "active",
       "access": "api",
-      "aliases": ["k3", "kimi-k3"],
-      "modalities": ["text", "image", "video"],
+      "aliases": [
+        "k3",
+        "kimi-k3"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video"
+      ],
       "context_window": 1000000,
       "params_total": 2800000000000,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false, "default_effort": "max"},
-      "tags": ["旗舰", "开放权重", "多模态", "代码 Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "default_effort": "max"
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "多模态",
+        "代码 Agent"
+      ],
       "summary": "Kimi K3 2.8T open 3T-class model；官方 benchmark 需保留 Kimi Code/Claude Code/Codex harness。",
-      "source_ids": ["src-kimi-k3", "src-kimi-code"]
+      "source_ids": [
+        "src-kimi-k3",
+        "src-kimi-code"
+      ]
     },
     {
       "id": "moonshot/kimi-k3-256k@2026-07-16",
@@ -562,16 +993,34 @@
       "release_date": "2026-07-16",
       "status": "active",
       "access": "api",
-      "aliases": ["k3-256k", "kimi-k3-256k"],
-      "modalities": ["text", "image", "video"],
+      "aliases": [
+        "k3-256k",
+        "kimi-k3-256k"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video"
+      ],
       "context_window": 256000,
       "params_total": 2800000000000,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false, "context_variant": true},
-      "tags": ["旗舰", "开放权重", "效率"],
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "context_variant": true
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "效率"
+      ],
       "summary": "与 K3 同一 release 的 256k context/quota endpoint variant。",
-      "source_ids": ["src-kimi-k3", "src-kimi-code"]
+      "source_ids": [
+        "src-kimi-k3",
+        "src-kimi-code"
+      ]
     },
     {
       "id": "moonshot/kimi-k2.7-code@current",
@@ -582,15 +1031,30 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["kimi-for-coding", "kimi-k2.7-code"],
-      "modalities": ["text"],
+      "aliases": [
+        "kimi-for-coding",
+        "kimi-k2.7-code"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "specialization": "coding"},
-      "tags": ["代码", "效率", "专用"],
-      "source_ids": ["src-kimi-code"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "specialization": "coding"
+      },
+      "tags": [
+        "代码",
+        "效率",
+        "专用"
+      ],
+      "source_ids": [
+        "src-kimi-code"
+      ]
     },
     {
       "id": "moonshot/kimi-k2.7-code-highspeed@current",
@@ -601,15 +1065,30 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["kimi-for-coding-highspeed"],
-      "modalities": ["text"],
+      "aliases": [
+        "kimi-for-coding-highspeed"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "specialization": "coding", "speed_variant": true},
-      "tags": ["代码", "高速", "效率"],
-      "source_ids": ["src-kimi-code"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "specialization": "coding",
+        "speed_variant": true
+      },
+      "tags": [
+        "代码",
+        "高速",
+        "效率"
+      ],
+      "source_ids": [
+        "src-kimi-code"
+      ]
     },
     {
       "id": "moonshot/kimi-k2.6@2026-04-20",
@@ -620,15 +1099,30 @@
       "release_date": "2026-04-20",
       "status": "previous",
       "access": "api",
-      "aliases": ["kimi-k2.6", "kimi-k2-6"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "kimi-k2.6",
+        "kimi-k2-6"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "开放权重", "Agent"],
-      "source_ids": ["src-kimi-code"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "开放权重",
+        "Agent"
+      ],
+      "source_ids": [
+        "src-kimi-code"
+      ]
     },
     {
       "id": "zai/glm-5.3@2026-08-14",
@@ -639,16 +1133,30 @@
       "release_date": "2026-08-14",
       "status": "preview",
       "access": "api",
-      "aliases": ["glm-5.3"],
-      "modalities": ["text"],
+      "aliases": [
+        "glm-5.3"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": true, "effort": "max"},
-      "tags": ["旗舰", "代码 Agent", "推理"],
+      "variant": {
+        "reasoning": true,
+        "preview": true,
+        "effort": "max"
+      },
+      "tags": [
+        "旗舰",
+        "代码 Agent",
+        "推理"
+      ],
       "summary": "GLM-5.3 weights release was announced for a later date; keep preview/availability separate from reported scores.",
-      "source_ids": ["src-glm53"]
+      "source_ids": [
+        "src-glm53"
+      ]
     },
     {
       "id": "zai/glm-5.3-flash@2026-08-27",
@@ -659,15 +1167,29 @@
       "release_date": "2026-08-27",
       "status": "active",
       "access": "api",
-      "aliases": ["glm-5.3-flash"],
-      "modalities": ["text"],
+      "aliases": [
+        "glm-5.3-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
-      "tags": ["Flash", "效率", "代码"],
-      "source_ids": ["src-glm53-flash"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "speed_variant": true
+      },
+      "tags": [
+        "Flash",
+        "效率",
+        "代码"
+      ],
+      "source_ids": [
+        "src-glm53-flash"
+      ]
     },
     {
       "id": "zai/glm-5.2@2026-06-16",
@@ -678,15 +1200,29 @@
       "release_date": "2026-06-16",
       "status": "previous",
       "access": "open_weights",
-      "aliases": ["glm-5.2", "glm-5-2"],
-      "modalities": ["text"],
+      "aliases": [
+        "glm-5.2",
+        "glm-5-2"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "开放权重", "代码"],
-      "source_ids": ["src-glm52"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "开放权重",
+        "代码"
+      ],
+      "source_ids": [
+        "src-glm52"
+      ]
     },
     {
       "id": "zai/glm-5.1@2026-04-07",
@@ -697,15 +1233,28 @@
       "release_date": "2026-04-07",
       "status": "previous",
       "access": "api",
-      "aliases": ["glm-5.1", "glm-5-1"],
-      "modalities": ["text"],
+      "aliases": [
+        "glm-5.1",
+        "glm-5-1"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "代码 Agent"],
-      "source_ids": ["src-glm52"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "代码 Agent"
+      ],
+      "source_ids": [
+        "src-glm52"
+      ]
     },
     {
       "id": "zai/glm-5@2026-02-12",
@@ -716,15 +1265,28 @@
       "release_date": "2026-02-12",
       "status": "previous",
       "access": "open_weights",
-      "aliases": ["glm-5"],
-      "modalities": ["text"],
+      "aliases": [
+        "glm-5"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": 744000000000,
       "params_active": 40000000000,
       "open_weights": true,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["历史", "开放权重", "代码"],
-      "source_ids": ["src-glm52"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "历史",
+        "开放权重",
+        "代码"
+      ],
+      "source_ids": [
+        "src-glm52"
+      ]
     },
     {
       "id": "minimax/m3@2026-05-31",
@@ -735,15 +1297,31 @@
       "release_date": "2026-05-31",
       "status": "active",
       "access": "api",
-      "aliases": ["MiniMax-M3", "m3"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "MiniMax-M3",
+        "m3"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["旗舰", "多模态", "Agent"],
-      "source_ids": ["src-minimax-m3", "src-minimax-release"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "多模态",
+        "Agent"
+      ],
+      "source_ids": [
+        "src-minimax-m3",
+        "src-minimax-release"
+      ]
     },
     {
       "id": "minimax/m2.7@2026-03-18",
@@ -754,15 +1332,29 @@
       "release_date": "2026-03-18",
       "status": "previous",
       "access": "api",
-      "aliases": ["MiniMax-M2.7", "m2.7", "minimax-m2-7"],
-      "modalities": ["text"],
+      "aliases": [
+        "MiniMax-M2.7",
+        "m2.7",
+        "minimax-m2-7"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "代码 Agent"],
-      "source_ids": ["src-minimax-release"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "代码 Agent"
+      ],
+      "source_ids": [
+        "src-minimax-release"
+      ]
     },
     {
       "id": "minimax/m2.7-highspeed@2026-03-18",
@@ -773,15 +1365,29 @@
       "release_date": "2026-03-18",
       "status": "previous",
       "access": "api",
-      "aliases": ["MiniMax-M2.7-highspeed"],
-      "modalities": ["text"],
+      "aliases": [
+        "MiniMax-M2.7-highspeed"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
-      "tags": ["上一代", "高速", "效率"],
-      "source_ids": ["src-minimax-release"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "speed_variant": true
+      },
+      "tags": [
+        "上一代",
+        "高速",
+        "效率"
+      ],
+      "source_ids": [
+        "src-minimax-release"
+      ]
     },
     {
       "id": "minimax/m2.5@2026-02",
@@ -793,15 +1399,28 @@
       "release_label": "2026-02",
       "status": "previous",
       "access": "api",
-      "aliases": ["MiniMax-M2.5", "m2.5"],
-      "modalities": ["text"],
+      "aliases": [
+        "MiniMax-M2.5",
+        "m2.5"
+      ],
+      "modalities": [
+        "text"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["历史", "代码 Agent"],
-      "source_ids": ["src-minimax-release"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "历史",
+        "代码 Agent"
+      ],
+      "source_ids": [
+        "src-minimax-release"
+      ]
     },
     {
       "id": "xiaomi/mimo-v2.5-pro@2026-04-23",
@@ -812,15 +1431,32 @@
       "release_date": "2026-04-23",
       "status": "active",
       "access": "api",
-      "aliases": ["MiMo-V2.5-Pro", "mimo-v2.5-pro"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "MiMo-V2.5-Pro",
+        "mimo-v2.5-pro"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": 1000000000000,
       "params_active": 42000000000,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["旗舰", "MoE", "推理", "Agent"],
-      "source_ids": ["src-mimo-models", "src-mimo-updates"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "MoE",
+        "推理",
+        "Agent"
+      ],
+      "source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ]
     },
     {
       "id": "xiaomi/mimo-v2.5@2026-04-23",
@@ -831,15 +1467,35 @@
       "release_date": "2026-04-23",
       "status": "active",
       "access": "api",
-      "aliases": ["MiMo-V2.5", "mimo-v2.5", "mimo-v2-5"],
-      "modalities": ["text", "image", "video", "audio"],
+      "aliases": [
+        "MiMo-V2.5",
+        "mimo-v2.5",
+        "mimo-v2-5"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video",
+        "audio"
+      ],
       "context_window": 1000000,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "omni": true},
-      "tags": ["多模态", "Agent", "效率"],
-      "source_ids": ["src-mimo-models", "src-mimo-updates"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "omni": true
+      },
+      "tags": [
+        "多模态",
+        "Agent",
+        "效率"
+      ],
+      "source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ]
     },
     {
       "id": "xiaomi/mimo-v2.5-pro-ultraspeed@current",
@@ -850,15 +1506,30 @@
       "release_date": null,
       "status": "active",
       "access": "api",
-      "aliases": ["MiMo-V2.5-Pro UltraSpeed"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "MiMo-V2.5-Pro UltraSpeed"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": 1000000,
       "params_total": 1000000000000,
       "params_active": 42000000000,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
-      "tags": ["高速", "效率", "多模态"],
-      "source_ids": ["src-mimo-models"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "speed_variant": true
+      },
+      "tags": [
+        "高速",
+        "效率",
+        "多模态"
+      ],
+      "source_ids": [
+        "src-mimo-models"
+      ]
     },
     {
       "id": "google/gemini-3.1-pro@2026-02-19",
@@ -869,16 +1540,33 @@
       "release_date": "2026-02-19",
       "status": "active",
       "access": "api",
-      "aliases": ["gemini-3.1-pro", "gemini-3-1-pro-preview"],
-      "modalities": ["text", "image", "video", "audio"],
+      "aliases": [
+        "gemini-3.1-pro",
+        "gemini-3-1-pro-preview"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video",
+        "audio"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["多模态", "推理", "Agent"],
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "多模态",
+        "推理",
+        "Agent"
+      ],
       "summary": "Legacy seed model retained as current comparison baseline. ",
-      "source_ids": ["google-gemini31"]
+      "source_ids": [
+        "google-gemini31"
+      ]
     },
     {
       "id": "google/gemini-2.5-pro@2025-06-05",
@@ -889,15 +1577,31 @@
       "release_date": "2025-06-05",
       "status": "previous",
       "access": "api",
-      "aliases": ["gemini-2.5-pro"],
-      "modalities": ["text", "image", "video", "audio"],
+      "aliases": [
+        "gemini-2.5-pro"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video",
+        "audio"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "多模态", "长上下文"],
-      "source_ids": ["google-gemini25"]
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "多模态",
+        "长上下文"
+      ],
+      "source_ids": [
+        "google-gemini25"
+      ]
     },
     {
       "id": "google/gemini-2.5-flash@current",
@@ -908,15 +1612,33 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["gemini-2.5-flash"],
-      "modalities": ["text", "image", "video", "audio"],
+      "aliases": [
+        "gemini-2.5-flash"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "video",
+        "audio"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
-      "tags": ["Flash", "上一代", "效率", "多模态"],
-      "source_ids": ["google-gemini25"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "speed_variant": true
+      },
+      "tags": [
+        "Flash",
+        "上一代",
+        "效率",
+        "多模态"
+      ],
+      "source_ids": [
+        "google-gemini25"
+      ]
     },
     {
       "id": "xai/grok-4-fast@2025-09-19",
@@ -927,15 +1649,31 @@
       "release_date": "2025-09-19",
       "status": "previous",
       "access": "api",
-      "aliases": ["grok-4-fast"],
-      "modalities": ["text", "image"],
+      "aliases": [
+        "grok-4-fast"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
-      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
-      "tags": ["上一代", "实时", "推理", "效率"],
-      "source_ids": ["xai-grok4fast"]
+      "variant": {
+        "reasoning": true,
+        "preview": false,
+        "speed_variant": true
+      },
+      "tags": [
+        "上一代",
+        "实时",
+        "推理",
+        "效率"
+      ],
+      "source_ids": [
+        "xai-grok4fast"
+      ]
     },
     {
       "id": "xai/grok-4@current",
@@ -946,15 +1684,1560 @@
       "release_date": null,
       "status": "previous",
       "access": "api",
-      "aliases": ["grok-4"],
+      "aliases": [
+        "grok-4"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理"
+      ],
+      "source_ids": [
+        "xai-grok4fast"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.1@2025-11-13",
+      "family_id": "openai/gpt-5.1",
+      "name": "GPT-5.1",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-11-13",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.1",
+        "gpt-5.1-2025-11-13"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.1-codex@2025-11-12",
+      "family_id": "openai/gpt-5.1-codex",
+      "name": "GPT-5.1 Codex",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-11-12",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.1-codex"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "代码",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.1-codex-max@2025-11-19",
+      "family_id": "openai/gpt-5.1-codex",
+      "name": "GPT-5.1 Codex Max",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-11-19",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.1-codex-max"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "代码",
+        "Agent",
+        "高计算"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.1-codex-mini@2025-11-17",
+      "family_id": "openai/gpt-5.1-codex",
+      "name": "GPT-5.1 Codex Mini",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-11-17",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.1-codex-mini"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "代码",
+        "Agent",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.2@2025-12-11",
+      "family_id": "openai/gpt-5.2",
+      "name": "GPT-5.2",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-12-11",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.2",
+        "gpt-5.2-2025-12-11"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "代码",
+        "工具调用"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.2-pro@2025-12-11",
+      "family_id": "openai/gpt-5.2",
+      "name": "GPT-5.2 Pro",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-12-11",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.2-pro",
+        "gpt-5.2-pro-2025-12-11"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "高计算"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.2-codex@2025-12-18",
+      "family_id": "openai/gpt-5.2-codex",
+      "name": "GPT-5.2 Codex",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-12-18",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "gpt-5.2-codex"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "代码",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.3-codex@2026-02-05",
+      "family_id": "openai/gpt-5.3-codex",
+      "name": "GPT-5.3 Codex",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2026-02-05",
+      "status": "active",
+      "access": "api",
+      "aliases": [
+        "gpt-5.3-codex"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "代码",
+        "Agent",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-openai-models",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "anthropic/claude-opus-4.5@2025-11-01",
+      "family_id": "anthropic/claude-opus",
+      "name": "Claude Opus 4.5",
+      "provider": "Anthropic",
+      "mark": "A",
+      "release_date": "2025-11-01",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "claude-opus-4-5-20251101",
+        "claude-opus-4.5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "anthropic/claude-opus-4.6@2026-02-05",
+      "family_id": "anthropic/claude-opus",
+      "name": "Claude Opus 4.6",
+      "provider": "Anthropic",
+      "mark": "A",
+      "release_date": "2026-02-05",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "claude-opus-4-6",
+        "claude-opus-4.6"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "代码",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "family_id": "anthropic/claude-sonnet",
+      "name": "Claude Sonnet 4.5",
+      "provider": "Anthropic",
+      "mark": "A",
+      "release_date": "2025-09-29",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "claude-sonnet-4-5-20250929",
+        "claude-sonnet-4.5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "anthropic/claude-haiku-4.5@2025-10-01",
+      "family_id": "anthropic/claude-haiku",
+      "name": "Claude Haiku 4.5",
+      "provider": "Anthropic",
+      "mark": "A",
+      "release_date": "2025-10-01",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "claude-haiku-4-5-20251001",
+        "claude-haiku-4.5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "效率",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-anthropic-system-cards",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.8-2.4t-a95b@2026-08-26",
+      "family_id": "qwen/qwen3.8",
+      "name": "Qwen3.8 2.4T A95B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-08-26",
+      "status": "active",
+      "access": "open_weights",
+      "aliases": [
+        "Qwen/Qwen3.8-2.4T-A95B",
+        "qwen3.8-2.4t-a95b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen38-repo"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.5-397b-a17b@2026-02-13",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 397B A17B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-13",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "qwen3.5-397b-a17b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "MoE",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.5-122b-a10b@2026-02-13",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 122B A10B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-13",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "qwen3.5-122b-a10b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "MoE",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.5-27b@2026-02-24",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 27B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-24",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "qwen3.5-27b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "小模型",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.5-plus@2026-02-16",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 Plus",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-16",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "qwen3.5-plus"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.5-flash@2026-02-25",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 Flash",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-25",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "qwen3.5-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.6-plus@2026-03-31",
+      "family_id": "qwen/qwen3.6",
+      "name": "Qwen3.6 Plus",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-03-31",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "qwen3.6-plus"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.6-27b@2026-04-22",
+      "family_id": "qwen/qwen3.6",
+      "name": "Qwen3.6 27B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-04-22",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "qwen3.6-27b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "小模型",
+        "开放权重"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.6-35b-a3b@2026-04-14",
+      "family_id": "qwen/qwen3.6",
+      "name": "Qwen3.6 35B A3B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-04-14",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "qwen3.6-35b-a3b"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "MoE",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.6-flash@2026-04-27",
+      "family_id": "qwen/qwen3.6",
+      "name": "Qwen3.6 Flash",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-04-27",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "qwen3.6-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.7-max@2026-05-19",
+      "family_id": "qwen/qwen3.7",
+      "name": "Qwen3.7 Max",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-05-19",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "qwen3.7-max"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "旗舰",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "qwen/qwen3.7-flash@2026-07-27",
+      "family_id": "qwen/qwen3.7",
+      "name": "Qwen3.7 Flash",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-07-27",
+      "status": "active",
+      "access": "api",
+      "aliases": [
+        "qwen3.7-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-qwen36",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "deepseek/v3.1@2025-08-21",
+      "family_id": "deepseek/v3",
+      "name": "DeepSeek V3.1",
+      "provider": "DeepSeek",
+      "mark": "D",
+      "release_date": "2025-08-21",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "deepseek-v3.1"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "deepseek/v3.1-terminus@2025-09-22",
+      "family_id": "deepseek/v3",
+      "name": "DeepSeek V3.1 Terminus",
+      "provider": "DeepSeek",
+      "mark": "D",
+      "release_date": "2025-09-22",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "deepseek-v3.1-terminus"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "deepseek/v3.2-exp@2025-09-29",
+      "family_id": "deepseek/v3",
+      "name": "DeepSeek V3.2 Exp",
+      "provider": "DeepSeek",
+      "mark": "D",
+      "release_date": "2025-09-29",
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": [
+        "deepseek-v3.2-exp"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "开放权重",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-deepseek-updates",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "deepseek/v4-pro@2026-08-13",
+      "family_id": "deepseek/v4",
+      "name": "DeepSeek V4 Pro (0813)",
+      "provider": "DeepSeek",
+      "mark": "D",
+      "release_date": "2026-08-13",
+      "status": "active",
+      "access": "api",
+      "aliases": [
+        "deepseek-v4-pro-0813"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ]
+    },
+    {
+      "id": "deepseek/v4-flash-vision-exp@current",
+      "family_id": "deepseek/v4",
+      "name": "DeepSeek V4 Flash Vision Exp",
+      "provider": "DeepSeek",
+      "mark": "D",
+      "release_date": null,
+      "status": "preview",
+      "access": "api",
+      "aliases": [
+        "deepseek-v4-flash-vision-exp"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": true
+      },
+      "tags": [
+        "Flash",
+        "多模态",
+        "实验"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-deepseek-v4",
+        "src-deepseek-updates"
+      ]
+    },
+    {
+      "id": "moonshot/kimi-k2.5@2026-01-27",
+      "family_id": "moonshot/kimi-k2",
+      "name": "Kimi K2.5",
+      "provider": "Moonshot AI",
+      "mark": "K",
+      "release_date": "2026-01-27",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "kimi-k2.5"
+      ],
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "多模态",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-kimi-code",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "zai/glm-4.7@2025-12-22",
+      "family_id": "zai/glm-4",
+      "name": "GLM-4.7",
+      "provider": "Z.ai",
+      "mark": "Z",
+      "release_date": "2025-12-22",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "glm-4.7"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "推理",
+        "代码"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-glm52",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "zai/glm-4.7-flash@current",
+      "family_id": "zai/glm-4",
+      "name": "GLM-4.7 Flash",
+      "provider": "Z.ai",
+      "mark": "Z",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "glm-4.7-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-glm52"
+      ]
+    },
+    {
+      "id": "minimax/m2.1@2025-12-23",
+      "family_id": "minimax/m2",
+      "name": "MiniMax M2.1",
+      "provider": "MiniMax",
+      "mark": "M",
+      "release_date": "2025-12-23",
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "minimax-m2.1"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "上一代",
+        "代码",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-minimax-release",
+        "src-epoch-benchmark-hub"
+      ]
+    },
+    {
+      "id": "xiaomi/mimo-v2-flash@current",
+      "family_id": "xiaomi/mimo-v2",
+      "name": "MiMo V2 Flash",
+      "provider": "Xiaomi MiMo",
+      "mark": "X",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "mimo-v2-flash"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "Flash",
+        "效率",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ]
+    },
+    {
+      "id": "xiaomi/mimo-v2-pro@current",
+      "family_id": "xiaomi/mimo-v2",
+      "name": "MiMo V2 Pro",
+      "provider": "Xiaomi MiMo",
+      "mark": "X",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "mimo-v2-pro"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "推理",
+        "Agent"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ]
+    },
+    {
+      "id": "xiaomi/mimo-v2-omni@current",
+      "family_id": "xiaomi/mimo-v2",
+      "name": "MiMo V2 Omni",
+      "provider": "Xiaomi MiMo",
+      "mark": "X",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": [
+        "mimo-v2-omni"
+      ],
+      "modalities": [
+        "text",
+        "image",
+        "audio",
+        "video"
+      ],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "全模态",
+        "推理"
+      ],
+      "summary": "来源榜单/模型卡明确出现；公开分数在页面标为披露·未复现。",
+      "source_ids": [
+        "src-mimo-models",
+        "src-mimo-updates"
+      ]
+    },
+    {
+      "id": "openai/gpt-5.4-pro@2026-03-05",
+      "family_id": "openai/gpt-5.4",
+      "name": "GPT-5.4 Pro",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2026-03-05",
+      "status": "active",
+      "access": "api",
+      "aliases": ["gpt-5.4-pro", "gpt-5.4-pro-2026-03-05"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "tier": "pro", "preview": false},
+      "tags": ["推理", "高计算", "专业工作"],
+      "summary": "GPT-5.4 的 Pro 高计算 endpoint；参数量与稳定 context 上限保留为未知。",
+      "source_ids": ["src-openai-models"]
+    },
+    {
+      "id": "openai/gpt-5.4-nano@2026-03-17",
+      "family_id": "openai/gpt-5.4",
+      "name": "GPT-5.4 nano",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2026-03-17",
+      "status": "active",
+      "access": "api",
+      "aliases": ["gpt-5.4-nano", "gpt-5.4-nano-2026-03-17"],
+      "modalities": ["text", "image"],
+      "context_window": 400000,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "tier": "nano", "preview": false},
+      "tags": ["小模型", "效率", "多模态"],
+      "summary": "GPT-5.4 nano dated snapshot；400K context、128K max output，支持 text/image input。",
+      "source_ids": ["src-openai-models"]
+    },
+    {
+      "id": "openai/gpt-5-mini@2025-08-07",
+      "family_id": "openai/gpt-5",
+      "name": "GPT-5 mini",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-08-07",
+      "status": "previous",
+      "access": "api",
+      "aliases": ["gpt-5-mini", "gpt-5-mini-2025-08-07"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "tier": "mini", "preview": false},
+      "tags": ["上一代", "小模型", "效率"],
+      "summary": "GPT-5 的 dated mini release；未核验字段保持未知。",
+      "source_ids": ["src-openai-models"]
+    },
+    {
+      "id": "openai/gpt-5-nano@2025-08-07",
+      "family_id": "openai/gpt-5",
+      "name": "GPT-5 nano",
+      "provider": "OpenAI",
+      "mark": "O",
+      "release_date": "2025-08-07",
+      "status": "previous",
+      "access": "api",
+      "aliases": ["gpt-5-nano", "gpt-5-nano-2025-08-07"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "tier": "nano", "preview": false},
+      "tags": ["上一代", "小模型", "高吞吐"],
+      "summary": "GPT-5 的 dated nano release；未核验字段保持未知。",
+      "source_ids": ["src-openai-models"]
+    },
+    {
+      "id": "qwen/qwen3.5-35b-a3b@current",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 35B-A3B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": null,
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": ["qwen3.5-35b-a3b", "Qwen/Qwen3.5-35B-A3B"],
+      "modalities": ["text", "image"],
+      "context_window": 262144,
+      "params_total": 35000000000,
+      "params_active": 3000000000,
+      "open_weights": true,
+      "variant": {"reasoning": true, "preview": false},
+      "tags": ["MoE", "开放权重", "多模态", "效率"],
+      "summary": "35B total / 3B active，原生 262,144-token context，Apache-2.0 开放权重。",
+      "source_ids": ["src-qwen35"]
+    },
+    {
+      "id": "qwen/qwen3.5-9b@current",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 9B",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": null,
+      "status": "previous",
+      "access": "open_weights",
+      "aliases": ["qwen3.5-9b", "Qwen/Qwen3.5-9B"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": 9000000000,
+      "params_active": 9000000000,
+      "open_weights": true,
+      "variant": {"reasoning": true, "preview": false},
+      "tags": ["Dense", "开放权重", "多模态", "小模型"],
+      "summary": "9B dense 开放权重多模态模型；未确定的 context 等字段保留为未知。",
+      "source_ids": ["src-qwen35"]
+    },
+    {
+      "id": "qwen/qwen3.5-max-preview@2026-03-18",
+      "family_id": "qwen/qwen3.5",
+      "name": "Qwen3.5 Max Preview",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-03-18",
+      "status": "preview",
+      "access": "api",
+      "aliases": ["qwen3.5-max-preview"],
+      "modalities": ["text"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": true},
+      "tags": ["preview", "托管服务", "旗舰"],
+      "summary": "Qwen3.5 hosted preview endpoint；参数规模未知，不与开放权重 checkpoint 自动合并。",
+      "source_ids": ["src-qwen35-max-preview"]
+    },
+    {
+      "id": "qwen/qwen3-coder-next@2026-02-03",
+      "family_id": "qwen/qwen3-coder",
+      "name": "Qwen3-Coder-Next",
+      "provider": "Qwen",
+      "mark": "Q",
+      "release_date": "2026-02-03",
+      "status": "active",
+      "access": "open_weights",
+      "aliases": ["qwen3-coder-next", "Qwen/Qwen3-Coder-Next"],
+      "modalities": ["text"],
+      "context_window": 262144,
+      "params_total": 80000000000,
+      "params_active": 3000000000,
+      "open_weights": true,
+      "variant": {"reasoning": false, "preview": false},
+      "tags": ["代码", "MoE", "开放权重", "non-thinking"],
+      "summary": "80B total / 3B active、原生 262,144-token context 的 non-thinking coding model，Apache-2.0。",
+      "source_ids": ["src-qwen3-coder-next"]
+    },
+    {
+      "id": "google/gemini-3.7-flash@current",
+      "family_id": "google/gemini-3.7",
+      "name": "Gemini 3.7 Flash",
+      "provider": "Google",
+      "mark": "G",
+      "release_date": null,
+      "status": "active",
+      "access": "api",
+      "aliases": ["gemini-3.7-flash"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
+      "tags": ["Flash", "最新", "多模态", "效率"],
+      "summary": "Google 官方目录中的当前 latest Flash endpoint；context 与参数规模未知。",
+      "source_ids": ["src-google-gemini-models"]
+    },
+    {
+      "id": "google/gemini-3.6-flash@current",
+      "family_id": "google/gemini-3.6",
+      "name": "Gemini 3.6 Flash",
+      "provider": "Google",
+      "mark": "G",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": ["gemini-3.6-flash"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
+      "tags": ["Flash", "上一代", "多模态"],
+      "summary": "Google 官方目录中的 previous-generation Flash endpoint；context 与参数规模未知。",
+      "source_ids": ["src-google-gemini-models"]
+    },
+    {
+      "id": "google/gemini-3.5-flash@current",
+      "family_id": "google/gemini-3.5",
+      "name": "Gemini 3.5 Flash",
+      "provider": "Google",
+      "mark": "G",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": ["gemini-3.5-flash"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
+      "tags": ["Flash", "legacy", "多模态"],
+      "summary": "Google 官方目录中的 legacy Flash endpoint；保留作历史比较。",
+      "source_ids": ["src-google-gemini-models"]
+    },
+    {
+      "id": "google/gemini-3.5-flash-lite@current",
+      "family_id": "google/gemini-3.5",
+      "name": "Gemini 3.5 Flash-Lite",
+      "provider": "Google",
+      "mark": "G",
+      "release_date": null,
+      "status": "previous",
+      "access": "api",
+      "aliases": ["gemini-3.5-flash-lite"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false, "speed_variant": true},
+      "tags": ["Flash-Lite", "效率", "legacy"],
+      "summary": "Gemini 3.5 系列的 efficiency-oriented Flash-Lite endpoint。",
+      "source_ids": ["src-google-gemini-models"]
+    },
+    {
+      "id": "xai/grok-4.6@2026-08-12",
+      "family_id": "xai/grok-4",
+      "name": "Grok 4.6",
+      "provider": "xAI",
+      "mark": "X",
+      "release_date": "2026-08-12",
+      "status": "active",
+      "access": "api",
+      "aliases": ["grok-4.6"],
       "modalities": ["text", "image"],
       "context_window": null,
       "params_total": null,
       "params_active": null,
       "open_weights": false,
       "variant": {"reasoning": true, "preview": false},
-      "tags": ["上一代", "推理"],
-      "source_ids": ["xai-grok4fast"]
+      "tags": ["旗舰", "推理", "多模态"],
+      "summary": "xAI 当前 Grok 旗舰；参数规模与 context 保留为未知。",
+      "source_ids": ["src-xai-grok46"]
+    },
+    {
+      "id": "xai/grok-4.5@2026-07-16",
+      "family_id": "xai/grok-4",
+      "name": "Grok 4.5",
+      "provider": "xAI",
+      "mark": "X",
+      "release_date": "2026-07-16",
+      "status": "previous",
+      "access": "api",
+      "aliases": ["grok-4.5"],
+      "modalities": ["text", "image"],
+      "context_window": null,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false},
+      "tags": ["上一代", "推理", "多模态"],
+      "summary": "Grok 4.6 的 previous-generation baseline；参数规模未知。",
+      "source_ids": ["src-xai-grok45"]
+    },
+    {
+      "id": "zai/glm-5v-turbo@2026-04-01",
+      "family_id": "zai/glm-5v",
+      "name": "GLM-5V-Turbo",
+      "provider": "Z.ai",
+      "mark": "Z",
+      "release_date": "2026-04-01",
+      "status": "active",
+      "access": "api",
+      "aliases": ["glm-5v-turbo"],
+      "modalities": ["text", "image", "video", "file"],
+      "context_window": 200000,
+      "params_total": null,
+      "params_active": null,
+      "open_weights": false,
+      "variant": {"reasoning": true, "preview": false},
+      "tags": ["多模态", "代码", "视觉", "Agent"],
+      "summary": "面向多模态 coding 的 API model；text/image/video/file input、text output、200K context、128K max output。",
+      "source_ids": ["src-glm5v-turbo"]
     }
   ]
 }

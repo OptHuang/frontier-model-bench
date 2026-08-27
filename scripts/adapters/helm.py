@@ -160,7 +160,7 @@ class HELMAdapter(Adapter):
                             run,
                             model_ref=model_ref,
                             benchmark_ref=f"helm-{slugify(benchmark_label)}",
-                            metric=slugify(metric_label),
+                            metric=_metric_id(title, metric_label),
                             value=score,
                             unit=unit,
                             raw_value=score,
@@ -215,6 +215,22 @@ def _split_header(header: str) -> tuple[str, str]:
 def _infer_direction(metric: str) -> str:
     lowered = metric.lower()
     return "lower" if any(token in lowered for token in ("time", "cost", "#", "tokens", "length", "error")) else "higher"
+
+
+def _metric_id(table: str, metric: str) -> str:
+    """Keep legacy Accuracy IDs while disambiguating table-wide summaries.
+
+    HELM currently publishes ``Mean score`` in both Accuracy and Efficiency.
+    A header without ``" - "`` becomes the fallback metric ``score``; without
+    the table qualifier those two semantically different values occupy the
+    same model/benchmark/metric cell downstream.
+    """
+
+    metric_id = slugify(metric)
+    table_id = slugify(table)
+    if metric_id == "score" and table_id not in {"", "accuracy"}:
+        return f"{table_id}-score"
+    return metric_id
 
 
 def _infer_unit(score: Any, metric: str) -> str:

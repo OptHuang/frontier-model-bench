@@ -26,7 +26,7 @@ build_derived.py → validate_data.py --strict → Pages
 
 1. 检查 canonical catalog 和 observation contract。
 2. 计算当前模型 × active benchmark 的覆盖率。
-3. 为没有 approved observation 的单元生成缺失候选；为超过 freshness 阈值的旧事实生成 refresh 候选。
+3. 为没有 approved observation 的单元生成候选，并区分“已有 mapped public/reported evidence、等待 canonical 审阅”与“完全没有 mapped public evidence”；为超过 freshness 阈值的旧事实生成 refresh 候选。这个分类不改变 canonical coverage 口径。
 4. 对 registry 中的来源 landing page 做有上限的 HEAD/GET 健康探测，不解析或保存题目、整张榜单等 payload。
 5. 生成并上传 30 天保留的 artifact：
    - `summary.md`：可直接贴到 Actions Summary 的中文摘要；
@@ -50,7 +50,10 @@ python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \
   --output-dir /tmp/fmb-review --limit 50
 # 将数值完整的候选生成公开披露预览；仍不修改 approved 数据
 python3 scripts/build_public_evidence.py --root . --input-dir /tmp/fmb-fetch \
-  --output /tmp/fmb-public.json --jsonl-output /tmp/fmb-public.jsonl --max-per-key 3
+  --output /tmp/fmb-public.json --jsonl-output /tmp/fmb-public.jsonl \
+  --unmapped-output /tmp/fmb-public-unmapped.jsonl \
+  --unmapped-summary-output /tmp/fmb-public-unmapped-summary.json \
+  --alternatives-output /tmp/fmb-public-alternatives.jsonl --max-per-key 0
 # Arena 人工分批扩展（定时任务仍使用 core/100 的安全默认）
 python3 scripts/fetch.py check --sources lmarena-hf-dataset \
   --arena-configs text,text_style_control --arena-max-rows 500 \
@@ -59,7 +62,11 @@ python3 scripts/build_derived.py
 python3 scripts/validate_data.py --strict
 ```
 
-`maintenance_report.py` 是只读报告器；它的 exit code 只在输入损坏或报告无法生成时非零。候选很多并不代表发布失败，应该按优先级分批处理。
+`--max-per-key 0` 是本地默认值，会把所有已映射公开行保留在披露层；在 Actions 或移动端
+预览需要控制体积时，可以显式传入正数 cap（被省略的已映射行会进入
+`alternatives.jsonl`，不会丢失）。
+
+`maintenance_report.py` 是只读报告器；它的 exit code 只在输入损坏或报告无法生成时非零。摘要会把 canonical gaps 分成 `Public reported / awaiting canonical review` 和 `No mapped public evidence` 两类；前者在 `summary.md` 中默认折叠，完整明细仍保留在 `candidates.json`。候选很多并不代表发布失败，应该按优先级分批处理。
 
 本地 Codex 维护 heartbeat 另在每天北京时间 09:00 检查同一仓库：读取本计划、运行报告/适配器和校验，并只在出现候选、来源变化、失败或需要决策时提醒。它与 GitHub Actions 是“主动审阅提醒 + 可下载 artifact”两层，不会自动合并或发布数据。
 
@@ -124,7 +131,7 @@ Arena 的 Elo、聚合榜的 intelligence index 与 benchmark accuracy 是不同
 - 有明确 provider、family、release/endpoint id、发布日期和至少一个可打开的来源。
 - alias、reasoning/速度 tier、preview、量化和 API endpoint 的差异写入 `variant`/`endpoint_id`；不要把不同条件塞进同一个 id。
 - 可变字段（价格、context window、availability、参数规模）带 `as_of` 和 evidence；不能把网页当前值当作永久事实。
-- 没有分数也可以先进入 catalog，标记 `catalog-only`，不进入模型成绩矩阵的统计分子。
+- 没有分数也可以先进入 catalog，标记 `catalog-only`；默认公开覆盖视图显示其无分数行，但不进入模型成绩矩阵的统计分子。
 
 ### 更新与冲突
 
@@ -167,7 +174,7 @@ Pages workflow 只发布通过校验的 derived index。若新数据有问题，
 - `amber`：有缺失、过期或网络探测失败；需要维护者处理，但不会替换线上数据。
 - `red`：catalog/JSONL 损坏，报告无法可靠生成；先修复 schema，再讨论补数。
 
-覆盖率只用于定位工作量，不用于给模型排名。尤其是当前目录故意比成绩表更宽，`catalog-only` 是待补数据队列，不是低分模型。
+覆盖率只用于定位工作量，不用于给模型排名。`covered_cells` / `missing_cells` 始终只按 canonical approved observation 计算；public/reported evidence 只细分缺口的审阅状态，不进入覆盖率分子。尤其是当前目录故意比成绩表更宽，`catalog-only` 是待补数据队列，不是低分模型；公开覆盖视图中的空白也不等于没人测试。
 
 ## 8. 后续演进
 

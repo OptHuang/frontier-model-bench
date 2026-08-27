@@ -1,6 +1,6 @@
 # Benchmark 覆盖审计
 
-> 快照日期：2026-08-27。本文解释“矩阵空白”的证据状态；它不是一张新的成绩表，也不把候选数据当作已发布结果。
+> 快照日期：2026-08-28。本文解释“矩阵空白”的证据状态；它不是一张新的成绩表，也不把候选数据当作已发布结果。
 
 ## 结论
 
@@ -13,24 +13,25 @@
 
 | 状态 | 含义 | 页面/维护动作 |
 | --- | --- | --- |
-| `catalog-only` | 已确认模型或 benchmark 存在，但尚无可发布的 observation | 保留目录，默认不参与排名 |
+| `catalog-only` | 已确认模型或 benchmark 存在，但尚无可发布的 observation | 默认公开覆盖视图保留无分数行；不参与成绩计算或排名 |
 | `reported / unreviewed` | 公开来源已经给出数字，本站尚未复现或逐条核对 | 进入矩阵，显示 `披露 · 未复现`；点击查看 URL、locator、时间、hash 和 protocol |
 | `candidate` | 已从公开来源发现结果，但缺值或仍需身份、版本、协议、指标审核 | 进入公开索引/Actions review packet，显示候选标记 |
 | `approved` | 已核对并追加到 canonical observation 长表 | 进入对应 Model Atlas 或 System Runs |
 | `no-public-result` | 截至检索日没有找到可核验的公开结果，或官方明确限制公开 | 记录检索日期和原因，不能推断为未测试 |
 
-公开来源的 model alias 无法安全映射时，原始名称仍保留在公开披露索引和维护 artifact，
-但不会被猜测成另一个 canonical release。
+公开来源的 model alias 无法安全映射时，原始名称仍保留在 `data/public/unmapped.jsonl`
+及其 `unmapped-summary.json` 审计索引和维护 artifact，但不会被猜测成另一个
+canonical release。
 
 ## 当前精确快照
 
 统计对象不同，数字会不同，不能把它们混为“已经收录的成绩数”：
 
-- 目录有 **49 个模型 release、42 个 benchmark 定义、74 个来源、15 个 harness**（另有 19 个比较预设）。
+- 目录有 **100 个模型 / 配置条目、53 个 canonical benchmark 定义、88 个来源、15 个 harness**（另有 19 个比较预设）；Benchmarks 页面还从公开证据生成 **73 个 public-only slices**，合计可浏览 **126 项**。
 - canonical 文件当前有 **15 行**；构建后的站点索引包含 **47 个 runs/observations**（其中 **32 行**是兼容旧 schema 的 legacy 记录）。
-- 有数值的已观察模型为 **9 个**，仅目录模型为 **40 个**；已观察的模型×benchmark 单元为 **29 个**，按全目录口径覆盖率为 **1.4%**。维护报告按 active 集合和 freshness 口径计算时可能显示不同百分比，这是分母不同，不是数据丢失。
-- 公开层本次合并 **17,137 条去重报告行**（17 个来源、123 个 benchmark 切片、1,389 个来源模型名）；其中 **17,071 条**带数值，**3,111 条**能以 exact/heuristic alias 映射到目录。页面加载 **1,888 条精选行**（每个 model × benchmark × metric × source 默认最多 3 个协议/版本），其余已映射替代行与未映射行分别保存在 JSONL/Actions artifact；这不是删除，而是首屏体积控制。
-- 公开层映射行会进入可见矩阵和 System Runs，并始终带 `reported/unreviewed/verified:false/not_reproduced`；它们不改变上面的 canonical 统计。因而页面看到的覆盖率会明显高于 **1.4%**，但应理解为“公开报告覆盖率”，不是本站复现率。
+- 有数值的 canonical 已观察模型为 **9 个**，仅目录模型为 **91 个**；已观察的模型×benchmark 单元为 **29 个**，按全目录口径覆盖率为 **0.5%**。维护报告按 active 集合和 freshness 口径计算时可能显示不同百分比，这是分母不同，不是数据丢失。
+- 公开层本次 union 合并 **21,227 条去重报告行**（18 个来源、128 个 raw benchmark 切片；其中 99 个切片出现在 mapped rows、724 个 source×原始模型名键）；其中 **21,129 条**带数值，**6,461 条**能以 exact/heuristic/curated alias 映射到目录（alias registry 当前 **129 条**显式 source-scoped 规则，产生 **2,830 条**curated rows）。这些 mapped rows 以本地默认 `--max-per-key 0` **全部载入** `public.json`/`evidence.jsonl`，覆盖 **2,750 个** mapped model×benchmark 单元（细分为 **3,064 个** model×benchmark×metric slices；270 条 telemetry 原始行对应 **240 个**仅证据 metric 单元，实际 performance slices 为 **2,824**）；**14,766 条**未安全映射行完整保存在 gitignored `data/public/unmapped.jsonl`，并由 `data/public/unmapped-summary.json` 按来源原名聚合索引（**1,591 个**原名组）。因默认不设上限，`alternatives.jsonl` 当前为空；需要轻量预览时可显式传入正数 cap。这不是删除，而是把无法安全归属的记录与可展示记录分层。
+- 公开层的 performance 行进入可见矩阵；只有 system-scoped 行进入 System Runs，token、latency、eval/train count 等 telemetry 保留在证据索引但明确不进成绩。所有公开行始终带 `reported/unreviewed/verified:false/not_reproduced`，且不改变上面的 canonical 统计。因而页面看到的覆盖会明显高于 **0.5%**，但应理解为“公开报告覆盖”，不是本站复现率。
 - Agents’ Last Exam 官方接口返回 **713 行** `model × harness × variant/effort × split`（两个核心 metric 共 **1,426 条**），现已进入公开层；同一模型的不同 harness、split 和 effort 会保留为不同 run，不取最高值冒充裸模型。Epoch AI 的可下载快照另带来 **5,697 条**跨 benchmark 报告行；不同表的单位（百分比、fraction、Elo、rank、raw score）在页面上分开显示，不强行归一化。
 
 这解释了为什么“公开层覆盖率”和“canonical 覆盖率”必须分开：前者回答“外部已经报告
@@ -48,6 +49,8 @@
 - [Berkeley Function Calling Leaderboard (BFCL-V4)](https://gorilla.cs.berkeley.edu/leaderboard)：官方页面公开 `data_overall.csv`（本次抓取 109 行：67 native FC、35 Prompt、7 未注明），适配器保留固定 evaluator commit、成本/延迟和分类子指标；由于 calling mode 与工具协议是测量对象，候选进入 System Runs/待审核层。
 - Agents’ Last Exam（ALE-V1）的 [官方说明](https://agents-last-exam.org/docs/ale/index.html)、[leaderboard](https://agents-last-exam.org/leaderboard) 与公开 JSON endpoint（[接口](https://agents-last-exam.org/api/demo/leaderboard)）。页面公开层会显示其报告值，详情中保留 split、harness、variant、locator 与抓取 hash。
 - [Aider Polyglot](https://aider.chat/docs/leaderboards/) 的官方仓库 YAML、[OpenAI MLE-bench](https://github.com/openai/mle-bench/) README leaderboard，以及 [Epoch AI Benchmarking Hub](https://epoch.ai/benchmarks/use-this-data) 的 CC-BY 下载快照。三者都作为 `reported · 未复现` 展示；Epoch 的外部表保留原始许可和原始链接。
+- [SWE-bench 官方 leaderboard 页面](https://www.swebench.com/) 的 [机器可读 JSON](https://raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json)（`swebench-official`）保留 bash-only、Verified、Multilingual 等 variant 以及 agent/scaffold、checked、cost 和 instance-call 字段；本次快照 370 行，其中 35 行安全映射、其余 alias 留在 unmapped 审计队列，全部标记 `reported · 未复现`。
+- 目录 profile 还为 MathVista、Video-MME、RULER、LongBench v2 和 CyberGym 注册了各自的官方项目/论文链接；它们不再借用相邻 benchmark 的 homepage，详情抽屉会同时显示任务、数据切分、协议和 source locator。
 
 ## ALE 的正确建模
 

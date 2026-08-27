@@ -2,7 +2,7 @@
 
 一个面向个人主页的静态模型评测信息站：把模型卡、论文和 benchmark 榜单里的分数收进可追溯的数据层，并用两种视图呈现模型能力与完整系统运行。
 
-> 当前仓库是 **curated snapshot / static MVP**。目录可以比成绩覆盖更多模型；没有逐条证据的模型会显示为 `catalog-only`，不会被当作有成绩的模型。页面不会把不同 benchmark、harness 或协议偷偷合成一个总分。
+> 当前仓库是 **curated snapshot / static MVP**。目录可以比成绩覆盖更多模型；`catalog-only` 条目会在默认公开覆盖视图中保留为无分数行，不会被当作有成绩的模型。页面不会把不同 benchmark、harness 或协议偷偷合成一个总分。
 
 ## 本地运行
 
@@ -18,14 +18,15 @@ python3 -m http.server 8765
 ```text
 index.html                 # Evaluations / Matrix + System Runs
 benchmarks.html            # benchmark 目录与逐项 profile
-models.html                # model release 目录与逐项 profile
+models.html                # model / config entry 目录与逐项 profile
 styles.css / app.js        # 无构建依赖的静态前端
-data/catalog/               # models / benchmarks / sources / harnesses / presets 注册表
+data/catalog/               # models / model_profiles / benchmarks / sources / harnesses / presets 注册表
 data/observations/results.jsonl # 追加式 canonical observation 长表
 data/derived/site.json      # 由脚本生成，供静态前端读取
-data/derived/public.json    # 公开榜单披露层的精选索引（当前约 1.9k 行）
-data/public/evidence.jsonl  # 精选公开证据长表（未复现，含来源定位）
-data/public/alternatives.jsonl # 已映射但未进入首屏的其它协议/版本
+data/derived/public.json    # 公开榜单披露层索引（当前 union 快照 6,461 条已映射行）
+data/public/evidence.jsonl  # 全量已映射公开证据长表（未复现，含来源定位）
+data/public/unmapped.jsonl  # 14,766 条未安全映射行（本地维护 artifact，gitignored）
+data/public/alternatives.jsonl # 超过页面限额的已映射行（本地默认 max=0 全量，故为空）
 data/models.json            # 旧 seed 兼容回退（逐步迁移中）
 docs/data-contract.md       # 长表 observation 与证据契约
 docs/model-catalog.md       # 模型身份、版本、endpoint 与淘汰规则
@@ -53,7 +54,7 @@ source snapshots → canonical observations → derived indexes → static UI
 
 ## 两种比较主体
 
-- **Model Atlas**：每行一个 model release/config。适合 GPQA、MMLU-Pro、AIME、MMMU、LiveCodeBench 等直接评测；单元格仍显示 shots、effort、tools、evidence 与可比性。
+- **Model Atlas**：每行一个 model release/config。适合 GPQA、MMLU-Pro、AIME、MMMU、LiveCodeBench 等直接评测；单元格仍显示 shots、effort、tools、evidence 与可比性。为尽量呈现公开覆盖，若某列只有 system 结果，矩阵会保留带 `system` 徽标的 fallback；严谨的 harness 间比较仍以 System Runs 为准。
 - **System Runs**：每行一个精确的 `model × endpoint × harness × protocol × benchmark version`。SWE-bench、Terminal-Bench、BFCL、τ-bench、OSWorld 等必须在这个视图中比较；不跨 harness 取最高值或平均值。
 
 页面默认还会叠加一个 **Public reported** 层：公开 leaderboard、模型卡和 provider
@@ -62,7 +63,7 @@ canonical 排名；点击单元格或公开披露索引，可以查看来源 URL
 快照 hash、harness/protocol 和原始 JSON。未安全映射的来源原名不猜测成 canonical
 release，而保留在维护 artifact/`unmapped.jsonl` 中供后验处理。
 
-预设由 `data/catalog/presets.json` 驱动，可切换 Frontier、Flash/Fast、小模型、数学、代码 Agent、工具、多模态、长上下文、中文/多语、开放权重、可靠性和参数规模等比较维度。`catalog-only` 模型只有打开“显示全量目录”才出现，缺失始终表示 `—`，不是 0。
+预设由 `data/catalog/presets.json` 驱动，可切换 Frontier、Flash/Fast、小模型、数学、代码 Agent、工具、多模态、长上下文、中文/多语、开放权重、可靠性和参数规模等比较维度。默认 `public-coverage` 预设会把目录与公开报告的覆盖地图一起展示；窄预设仍可隐藏 `catalog-only`，缺失始终表示 `—`，不是 0。
 
 ## 更新数据
 
@@ -91,7 +92,10 @@ python3 scripts/fetch.py check --dry-run --root . --output-dir /tmp/fmb-fetch
 # 可选：从候选 artifact 重建公开披露层（仍不修改 approved observations）
 python3 scripts/build_public_evidence.py --root . --input-dir /tmp/fmb-fetch \
   --output data/derived/public.json --jsonl-output data/public/evidence.jsonl \
-  --max-per-key 3
+  --unmapped-output data/public/unmapped.jsonl \
+  --unmapped-summary-output data/public/unmapped-summary.json \
+  --alternatives-output data/public/alternatives.jsonl \
+  --max-per-key 0
 python3 scripts/build_derived.py
 # 可选：整理候选为去重/分级审阅包，不修改 approved 数据
 python3 scripts/review_candidates.py --root . --input-dir /tmp/fmb-fetch \

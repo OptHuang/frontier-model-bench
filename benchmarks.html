@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="benchmarks.css" />
+    <link rel="stylesheet" href="styles.css?v=20260828-ui1" />
+    <link rel="stylesheet" href="benchmarks.css?v=20260828-ui1" />
   </head>
   <body class="benchmark-catalog-page">
     <div class="app-shell bench-app-shell">
@@ -56,9 +56,9 @@
         </section>
 
         <section class="bench-stat-grid" aria-label="benchmark 目录摘要">
-          <article class="bench-stat-card bench-stat-primary"><span class="stat-kicker">TRACKED BENCHMARKS</span><strong id="catalogCount">—</strong><span>已登记的评测</span></article>
+          <article class="bench-stat-card bench-stat-primary"><span class="stat-kicker">TRACKED / PUBLIC SLICES</span><strong id="catalogCount">—</strong><span id="catalogNote">canonical 与公开来源切片</span></article>
           <article class="bench-stat-card"><span class="stat-kicker">CAPABILITY AREAS</span><strong id="familyCount">—</strong><span>能力面 / 家族</span></article>
-          <article class="bench-stat-card"><span class="stat-kicker">PUBLIC SOURCES</span><strong id="sourceCount">—</strong><span>可追溯来源</span></article>
+          <article class="bench-stat-card"><span class="stat-kicker">REGISTERED SOURCES</span><strong id="sourceCount">—</strong><span>目录登记的可追溯来源</span></article>
           <article class="bench-stat-card"><span class="stat-kicker">ACTIVE VERSIONS</span><strong id="activeVersionCount">—</strong><span>当前版本</span></article>
         </section>
 
@@ -67,7 +67,7 @@
             <div>
               <p class="section-index">01 / CATALOG</p>
               <h2 id="catalogTitle">Benchmark directory</h2>
-              <p class="section-subtitle">按能力面、评估模式或指标筛选；卡片中的数字只是目录信息，不是跨 benchmark 的总排名。</p>
+              <p class="section-subtitle">按能力面、评估模式或指标筛选；包含 canonical benchmark 与公开来源切片。卡片中的数字只是目录信息，不是跨 benchmark 的总排名。</p>
             </div>
             <div class="catalog-count-wrap"><strong id="visibleCount">—</strong><span> / <span id="totalCount">—</span> benchmarks</span></div>
           </div>
@@ -79,6 +79,7 @@
             <label class="select-wrap"><span class="sr-only">主指标</span><select id="metricFilter"><option value="all">所有指标</option></select></label>
             <label class="select-wrap"><span class="sr-only">排序</span><select id="sortFilter"><option value="featured">先看重点</option><option value="name">按名称</option><option value="family">按能力面</option><option value="evidence">按公开记录</option><option value="sources">按来源数量</option></select></label>
             <label class="bench-toggle"><input id="featuredOnly" type="checkbox" /><span class="toggle-ui"></span><span>重点评测</span></label>
+            <label class="bench-toggle"><input id="includePublic" type="checkbox" checked /><span class="toggle-ui"></span><span>含公开切片</span></label>
             <button id="resetFilters" class="text-button" type="button">重置</button>
           </div>
 
@@ -131,6 +132,6 @@
       <div id="drawerContent" class="bench-drawer-content"></div>
     </aside>
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="benchmarks.js?v=20260827" defer></script>
+    <script src="benchmarks.js?v=20260828-public6" defer></script>
   </body>
 </html>

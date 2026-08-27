@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import unittest
 from pathlib import Path
 
@@ -88,6 +89,45 @@ class AdapterFixtureTests(unittest.TestCase):
         self.assertEqual(rows[0]["benchmark_ref"], "helm-mean-win-rate")
         self.assertEqual(rows[0]["value"], 0.75)
         self.assertEqual(rows[0]["unit"], "fraction")
+
+    def test_helm_qualifies_same_named_summary_scores_by_table(self):
+        adapter = HELMAdapter("capabilities")
+        payload = json.dumps(
+            [
+                {
+                    "title": "Accuracy",
+                    "header": [{"value": "Model"}, {"value": "Mean score"}],
+                    "rows": [[{"value": "Model-1"}, {"value": 0.8}]],
+                },
+                {
+                    "title": "Efficiency",
+                    "header": [{"value": "Model"}, {"value": "Mean score"}],
+                    "rows": [[{"value": "Model-1"}, {"value": 42.0}]],
+                },
+            ]
+        ).encode("utf-8")
+        run = AdapterRun(
+            source_id=adapter.spec.id,
+            requested_url="file://fixture",
+            resolved_url="file://fixture",
+            retrieved_at="2026-08-27T00:00:00Z",
+            http_status=200,
+            payload=payload,
+            metadata={"project": "capabilities", "release": "fixture"},
+        )
+
+        rows = adapter.parse_payload(payload, run)
+
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]["benchmark_ref"], "helm-mean-score")
+        self.assertEqual(rows[0]["metric"], "score")
+        self.assertEqual(rows[1]["benchmark_ref"], "helm-mean-score")
+        self.assertEqual(rows[1]["metric"], "efficiency-score")
+        self.assertNotEqual(
+            (rows[0]["benchmark_ref"], rows[0]["metric"]),
+            (rows[1]["benchmark_ref"], rows[1]["metric"]),
+        )
+        self.assertNotEqual(rows[0]["candidate_id"], rows[1]["candidate_id"])
 
     def test_arena_is_metadata_only(self):
         class FailingClient:

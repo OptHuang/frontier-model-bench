@@ -1,0 +1,1544 @@
+{
+  "meta": {
+    "schemaVersion": "public-model-aliases@0.1",
+    "description": "Source-specific aliases that are presentation or endpoint variants of an existing catalog release.",
+    "policy": "Only high-confidence same-release spellings are listed. Dates, adjacent releases, quantized checkpoints, and named derivatives stay unmapped until reviewed.",
+    "status": "curated-unreviewed",
+    "verified": false,
+    "lastExpandedAt": "2026-08-28"
+  },
+  "aliases": [
+    {
+      "canonicalModelId": "openai/gpt-5.5@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.5_unknown",
+        "gpt-5.5_none"
+      ],
+      "note": "Epoch records append an unknown/none setting to the GPT-5.5 base name; the setting remains in protocol metadata."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.5@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.5 (codex-harness)",
+        "gpt-5.5-high (codex-harness)",
+        "gpt-5.5-xhigh (codex-harness)",
+        "gpt-5.5-search"
+      ],
+      "note": "Arena exposes the same GPT-5.5 release through a harness or search presentation; those settings are retained as protocol metadata."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5@2025-08-07",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5-2025-08-07_unknown",
+        "gpt-5-2025-08-07_minimal"
+      ],
+      "note": "Epoch setting suffix only; the dated GPT-5 release is explicit in the alias."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5@2025-08-07",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5-search"
+      ],
+      "note": "Arena search endpoint presentation of GPT-5; search/tool context remains in the source protocol."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.6-sol@2026-07-09",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.6-sol_unknown",
+        "gpt-5.6-sol_none",
+        "gpt-5.6-sol-xhigh (codex-harness)"
+      ],
+      "note": "Same GPT-5.6 Sol release with explicit effort/harness presentation."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.6-terra@2026-07-09",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.6-terra_unknown",
+        "gpt-5.6-terra_none",
+        "gpt-5.6-terra-xhigh (codex-harness)"
+      ],
+      "note": "Same GPT-5.6 Terra release with explicit effort/harness presentation."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.6-luna@2026-07-09",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.6-luna_unknown",
+        "gpt-5.6-luna_none",
+        "gpt-5.6-luna-xhigh (codex-harness)"
+      ],
+      "note": "Same GPT-5.6 Luna release with explicit effort/harness presentation."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.8@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-opus-4-8_unknown",
+        "claude-opus-4-8_none",
+        "claude-opus-4-8_24K"
+      ],
+      "note": "Epoch capacity/setting suffixes on the Claude Opus 4.8 release."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.7@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-opus-4-7_unknown"
+      ],
+      "note": "Epoch setting suffix only on Claude Opus 4.7."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-5@2026-07-24",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-opus-5_unknown"
+      ],
+      "note": "Epoch setting suffix only on Claude Opus 5."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-fable-5@2026-06-09",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-fable-5_unknown"
+      ],
+      "note": "Epoch setting suffix only; Fable remains a distinct restricted catalog release."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-5@2026-06-30",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "claude-sonnet-5_unknown",
+        "claude-sonnet-5_16K",
+        "claude-sonnet-5-search"
+      ],
+      "note": "Same Sonnet 5 release with effort/context/search presentation."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.6@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "claude-sonnet-4-6_unknown",
+        "claude-sonnet-4-6_16K",
+        "claude-sonnet-4-6-search"
+      ],
+      "note": "Same Sonnet 4.6 release with effort/context/search presentation."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-pro@2026-04-24",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "deepseek-v4-pro_unknown",
+        "deepseek-v4-pro_none"
+      ],
+      "note": "Epoch setting suffix only on DeepSeek V4 Pro. Date-bearing 0813 aliases are intentionally not collapsed."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-flash@2026-07-31",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "deepseek-v4-flash_unknown",
+        "deepseek-v4-flash_none",
+        "deepseek-v4-flash-0731_unknown",
+        "deepseek-v4-flash-0731_none"
+      ],
+      "note": "Epoch setting suffixes on the dated DeepSeek V4 Flash release."
+    },
+    {
+      "canonicalModelId": "moonshot/kimi-k3@2026-07-16",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "kimi-k3_unknown"
+      ],
+      "note": "Epoch setting suffix only on Kimi K3."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.8-max@2026-08-02",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.8-max_unknown"
+      ],
+      "note": "Epoch setting suffix only on Qwen3.8 Max."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.7-plus@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.7-plus_none"
+      ],
+      "note": "Epoch setting suffix only on Qwen3.7 Plus."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.6-max@preview",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.6-max-preview_none"
+      ],
+      "note": "Epoch setting suffix only on the explicitly preview Qwen3.6 Max release."
+    },
+    {
+      "canonicalModelId": "zai/glm-5.3@2026-08-14",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "glm-5.3_unknown"
+      ],
+      "note": "Epoch setting suffix only on GLM-5.3."
+    },
+    {
+      "canonicalModelId": "zai/glm-5.2@2026-06-16",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "glm-5.2_unknown",
+        "glm-5.2_none"
+      ],
+      "note": "Epoch setting suffix only on GLM-5.2."
+    },
+    {
+      "canonicalModelId": "zai/glm-5.1@2026-04-07",
+      "sourceIds": [
+        "hf-gpqa"
+      ],
+      "values": [
+        "zai-org/GLM-5.1-FP8"
+      ],
+      "note": "Hugging Face FP8 packaging of the GLM-5.1 release; quantization is retained in the source model reference."
+    },
+    {
+      "canonicalModelId": "zai/glm-5@2026-02-12",
+      "sourceIds": [
+        "hf-gpqa"
+      ],
+      "values": [
+        "zai-org/GLM-5-FP8"
+      ],
+      "note": "Hugging Face FP8 packaging of the GLM-5 release; quantization is retained in the source model reference."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "claude-opus-4-search"
+      ],
+      "note": "Arena search endpoint presentation of the catalogued Claude Opus 4 release."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.4-search"
+      ],
+      "note": "Arena search endpoint presentation of GPT-5.4."
+    },
+    {
+      "canonicalModelId": "xai/grok-4@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "grok-4-search"
+      ],
+      "note": "Arena search endpoint presentation of Grok 4."
+    },
+    {
+      "canonicalModelId": "xai/grok-4-fast@2025-09-19",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "grok-4-fast-search"
+      ],
+      "note": "Arena search endpoint presentation of Grok 4 Fast."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1@2025-11-13",
+      "sourceIds": [
+        "helm-capabilities"
+      ],
+      "values": [
+        "GPT-5.1 (2025-11-13)"
+      ],
+      "confidence": "high",
+      "note": "HELM release label for GPT-5.1."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1@2025-11-13",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.1-2025-11-13_high",
+        "gpt-5.1-2025-11-13_medium",
+        "gpt-5.1-2025-11-13_low",
+        "gpt-5.1-2025-11-13_none",
+        "gpt-5.1-2025-11-13_unknown"
+      ],
+      "confidence": "high",
+      "note": "Effort/settings suffixes on the dated GPT-5.1 release."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1@2025-11-13",
+      "sourceIds": [
+        "lmarena-hf-dataset",
+        "swebench-official"
+      ],
+      "values": [
+        "gpt-5.1-high",
+        "gpt-5.1-medium",
+        "gpt-5.1-search",
+        "GPT 5.1"
+      ],
+      "confidence": "high",
+      "note": "Arena/SWE-bench presentation of GPT-5.1; setting remains in protocol."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1-codex@2025-11-12",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "swebench-official"
+      ],
+      "values": [
+        "gpt-5.1-codex",
+        "gpt-5.1-codex (codex-harness)",
+        "GPT 5.1 Codex"
+      ],
+      "confidence": "high",
+      "note": "Codex endpoint/harness presentation of GPT-5.1 Codex."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1-codex-max@2025-11-19",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.1-codex-max"
+      ],
+      "confidence": "high",
+      "note": "Explicit Codex Max release label."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.1-codex-mini@2025-11-17",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.1-codex-mini"
+      ],
+      "confidence": "high",
+      "note": "Explicit Codex Mini release label."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.2@2025-12-11",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "livebench-official",
+        "lmarena-hf-dataset",
+        "src-bfcl",
+        "swebench-official"
+      ],
+      "values": [
+        "gpt-5.2-2025-12-11-high",
+        "gpt-5.2-2025-12-11_high",
+        "gpt-5.2-2025-12-11_xhigh",
+        "gpt-5.2-2025-12-11_medium",
+        "gpt-5.2-2025-12-11_low",
+        "gpt-5.2-2025-12-11_none",
+        "gpt-5.2-2025-12-11_unknown",
+        "gpt-5.2-high",
+        "GPT 5.2",
+        "GPT-5.2-2025-12-11"
+      ],
+      "confidence": "high",
+      "note": "Dated GPT-5.2 effort/endpoint presentations; protocol is retained."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.2-pro@2025-12-11",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.2-pro-2025-12-11",
+        "gpt-5.2-pro-2025-12-11_xhigh",
+        "gpt-5.2-pro-2025-12-11_high",
+        "gpt-5.2-pro-2025-12-11_medium",
+        "gpt-5.2-pro-2025-12-11-webapp"
+      ],
+      "confidence": "high",
+      "note": "Explicit GPT-5.2 Pro serving tier."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.2-codex@2025-12-18",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "swebench-official"
+      ],
+      "values": [
+        "gpt-5.2-codex",
+        "GPT 5.2 Codex"
+      ],
+      "confidence": "high",
+      "note": "Explicit GPT-5.2 Codex endpoint."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.3-codex@2026-02-05",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.3-codex",
+        "gpt-5.3-codex_xhigh",
+        "gpt-5.3-codex_high",
+        "gpt-5.3-codex (codex-harness)"
+      ],
+      "confidence": "high",
+      "note": "Explicit GPT-5.3 Codex endpoint; effort/harness stays protocol."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.5@2025-11-01",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "livebench-official",
+        "lmarena-hf-dataset",
+        "src-bfcl"
+      ],
+      "values": [
+        "claude-opus-4-5-20251101",
+        "claude-opus-4-5-20251101_unknown",
+        "claude-opus-4-5-20251101_16K",
+        "claude-opus-4-5-20251101_32K",
+        "claude-opus-4-5-20251101_64K",
+        "claude-opus-4-5-20251101_8K",
+        "claude-opus-4-5-20251101_128K",
+        "claude-opus-4-5-20251101_high",
+        "claude-opus-4-5-20251101_low",
+        "claude-opus-4-5-20251101-thinking-64k-high-effort",
+        "claude-opus-4-5-20251101-high-32k",
+        "claude-opus-4-5-search",
+        "Claude-Opus-4-5-20251101"
+      ],
+      "confidence": "high",
+      "note": "Same dated release; effort/context/search presentation is retained as protocol metadata."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.6@2026-02-05",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "livebench-official",
+        "lmarena-hf-dataset",
+        "src-mle-bench"
+      ],
+      "values": [
+        "claude-opus-4-6",
+        "claude-opus-4-6_unknown",
+        "claude-opus-4-6_max",
+        "claude-opus-4-6_120K",
+        "claude-opus-4-6_32K",
+        "claude-opus-4-6_64K",
+        "claude-opus-4-6_high",
+        "claude-opus-4-6_low",
+        "claude-opus-4-6_medium",
+        "claude-opus-4-6-thinking-auto-high-effort",
+        "claude-opus-4-6-high",
+        "Claude-Opus-4.6",
+        "Claude Opus 4.6",
+        "claude-opus-4-6-search",
+        "claude-opus-4-6-thinking"
+      ],
+      "confidence": "high",
+      "note": "Same dated release; effort/context/search presentation is retained as protocol metadata."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "src-bfcl"
+      ],
+      "values": [
+        "claude-sonnet-4-5-20250929",
+        "claude-sonnet-4-5-20250929_unknown",
+        "claude-sonnet-4-5-20250929_32K",
+        "claude-sonnet-4-5-20250929_16K",
+        "claude-sonnet-4-5-20250929_59K",
+        "claude-sonnet-4-5-20250929_1K",
+        "claude-sonnet-4-5-20250929_8K",
+        "claude-sonnet-4-5-20250929_12K",
+        "claude-sonnet-4-5-20250929_2K",
+        "claude-sonnet-4-5-20250929_48K",
+        "claude-sonnet-4-5-20250929_low",
+        "claude-sonnet-4-5-20250929-high-32k",
+        "claude-sonnet-4-5-search",
+        "Claude-Sonnet-4-5-20250929"
+      ],
+      "confidence": "high",
+      "note": "Same dated release; effort/context/search presentation is retained as protocol metadata."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-haiku-4.5@2025-10-01",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "src-bfcl"
+      ],
+      "values": [
+        "claude-haiku-4-5-20251001",
+        "claude-haiku-4-5-20251001_unknown",
+        "claude-haiku-4-5-20251001_32K",
+        "claude-haiku-4-5-20251001_16K",
+        "claude-haiku-4-5-20251001_1K",
+        "claude-haiku-4-5-20251001_8K",
+        "claude-haiku-4-5-20251001_low",
+        "Claude-Haiku-4-5-20251001"
+      ],
+      "confidence": "high",
+      "note": "Same dated release; effort/context/search presentation is retained as protocol metadata."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.8-2.4t-a95b@2026-08-26",
+      "sourceIds": [
+        "hf-gpqa",
+        "hf-hle",
+        "hf-swebench-pro"
+      ],
+      "values": [
+        "Qwen/Qwen3.8-2.4T-A95B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-397b-a17b@2026-02-13",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "hf-aime-2026",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-hmmt-2026",
+        "hf-mmlu-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "qwen3.5-397b-a17b",
+        "qwen3.5-397b-a17b_none",
+        "Qwen/Qwen3.5-397B-A17B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-122b-a10b@2026-02-13",
+      "sourceIds": [
+        "lmarena-hf-dataset",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-mmlu-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "qwen3.5-122b-a10b",
+        "Qwen/Qwen3.5-122B-A10B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-27b@2026-02-24",
+      "sourceIds": [
+        "lmarena-hf-dataset",
+        "src-epoch-benchmark-hub",
+        "hf-aime-2026",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-hmmt-2026",
+        "hf-mmlu-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "qwen3.5-27b",
+        "qwen3.5-27B",
+        "Qwen/Qwen3.5-27B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-plus@2026-02-16",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.5-plus",
+        "qwen3.5-plus_none"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-flash@2026-02-25",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3.5-flash",
+        "qwen3.5-flash_none"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.6-plus@2026-03-31",
+      "sourceIds": [
+        "agents-last-exam",
+        "livebench-official",
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3-6-plus",
+        "qwen3.6-plus",
+        "qwen3.6-plus_none"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.6-27b@2026-04-22",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub",
+        "hf-aime-2026",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-hmmt-2026",
+        "hf-mmlu-pro",
+        "hf-swebench-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "qwen3.6-27b",
+        "qwen3.6-27b_none",
+        "Qwen/Qwen3.6-27B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.6-35b-a3b@2026-04-14",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "hf-aime-2026",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-hmmt-2026",
+        "hf-mmlu-pro",
+        "hf-swebench-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "qwen3.6-35b-a3b",
+        "qwen3.6-35b-a3b_none",
+        "Qwen/Qwen3.6-35B-A3B"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.6-flash@2026-04-27",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.6-flash",
+        "qwen3.6-flash_none"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.7-max@2026-05-19",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3.7-max",
+        "qwen3.7-max-20260517",
+        "qwen3.7-max-preview",
+        "Qwen3.7 Max"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.7-flash@2026-07-27",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.7-flash",
+        "qwen3.7-flash_none"
+      ],
+      "confidence": "high",
+      "note": "Explicit Qwen release/repository name; size and variant remain in the raw source spelling."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.1@2025-08-21",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "DeepSeek-V3.1",
+        "deepseek-v3.1",
+        "deepseek-v3.1-thinking",
+        "DeepSeek-V3.1_thinking"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.1-terminus@2025-09-22",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "DeepSeek-V3.1-Terminus",
+        "deepseek-v3.1-terminus",
+        "deepseek-v3.1-terminus-thinking"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.2-exp@2025-09-29",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "src-bfcl",
+        "src-aider-polyglot"
+      ],
+      "values": [
+        "DeepSeek-V3.2-Exp",
+        "deepseek-v3.2-exp",
+        "DeepSeek-V3.2-Exp_thinking",
+        "deepseek-v3.2-exp-thinking",
+        "DeepSeek-V3.2-Exp_unknown",
+        "DeepSeek-V3.2-Exp_high",
+        "DeepSeek-V3.2-Exp (Chat)",
+        "DeepSeek-V3.2-Exp (Reasoner)"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-pro@2026-08-13",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "deepseek-v4-pro-0813",
+        "deepseek-v4-pro-0813_max",
+        "deepseek-v4-pro-0813_high",
+        "deepseek-v4-pro-0813_low",
+        "deepseek-v4-pro-0813_none",
+        "deepseek-v4-pro-0813_unknown",
+        "deepseek-v4-pro-high-20260813"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-flash-vision-exp@current",
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "deepseek-v4-flash-vision-exp"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "moonshot/kimi-k2.5@2026-01-27",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "hf-aime-2026",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-hmmt-2026",
+        "hf-mmlu-pro",
+        "hf-swebench-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench",
+        "swebench-official"
+      ],
+      "values": [
+        "kimi-k2.5",
+        "kimi-k2.5-thinking",
+        "kimi-k2.5-instant",
+        "kimi-k2.5_none",
+        "moonshotai/Kimi-K2.5",
+        "Kimi K2.5"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "zai/glm-4.7@2025-12-22",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "glm-4.7",
+        "zai-org/glm-4.7",
+        "zai-org/GLM-4.7",
+        "zai-org/GLM-4.7-FP8"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "zai/glm-4.7-flash@current",
+      "sourceIds": [
+        "lmarena-hf-dataset",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-swebench-verified"
+      ],
+      "values": [
+        "glm-4.7-flash",
+        "zai-org/GLM-4.7-Flash"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "minimax/m2.1@2025-12-23",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "hf-gpqa",
+        "hf-hle",
+        "hf-mmlu-pro",
+        "hf-swebench-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "minimax-m2.1-preview",
+        "MiniMax-M2.1",
+        "MiniMaxAI/MiniMax-M2.1"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "xiaomi/mimo-v2-flash@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset",
+        "hf-gpqa",
+        "hf-hle"
+      ],
+      "values": [
+        "mimo-v2-flash",
+        "mimo-v2-flash (non-thinking)",
+        "mimo-v2-flash (thinking)",
+        "XiaomiMiMo/MiMo-V2-Flash"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "xiaomi/mimo-v2-pro@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub",
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "mimo-v2-pro"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "xiaomi/mimo-v2-omni@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "mimo-v2-omni"
+      ],
+      "confidence": "high",
+      "note": "Explicit source model name; effort, harness and deployment mode remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.4-2026-03-05_high",
+        "gpt-5.4-2026-03-05_low",
+        "gpt-5.4-2026-03-05_medium",
+        "gpt-5.4-2026-03-05_none",
+        "gpt-5.4-2026-03-05_unknown",
+        "gpt-5.4-2026-03-05_xhigh"
+      ],
+      "confidence": "high",
+      "note": "Epoch records the explicit 2026-03-05 GPT-5.4 release with an effort suffix; effort remains in protocol metadata."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.4-high (codex-harness)",
+        "gpt-5.4-medium (codex-harness)"
+      ],
+      "confidence": "high",
+      "note": "Arena harness presentations of GPT-5.4; harness and effort remain visible on each public row."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4-mini@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.4-mini-2026-03-17_high",
+        "gpt-5.4-mini-2026-03-17_low",
+        "gpt-5.4-mini-2026-03-17_medium",
+        "gpt-5.4-mini-2026-03-17_none",
+        "gpt-5.4-mini-2026-03-17_unknown",
+        "gpt-5.4-mini-2026-03-17_xhigh"
+      ],
+      "confidence": "high",
+      "note": "Epoch records the explicit 2026-03-17 GPT-5.4 mini release with an effort suffix."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.5-pro@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.5-pro_unknown"
+      ],
+      "confidence": "high",
+      "note": "Epoch setting suffix on the distinct GPT-5.5 Pro endpoint."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.6-sol@2026-07-09",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.6-sol_promax",
+        "gpt-5.6-sol_prounknown",
+        "gpt-5.6-sol_proxhigh"
+      ],
+      "confidence": "high",
+      "note": "Epoch Pro-compute presentations of GPT-5.6 Sol; the compute setting remains in protocol metadata."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.7-max@2026-05-19",
+      "sourceIds": [
+        "agents-last-exam"
+      ],
+      "values": [
+        "qwen-qwen3-7-max"
+      ],
+      "confidence": "high",
+      "note": "Agents' Last Exam spelling of the explicit Qwen3.7 Max release; harness remains attached to the system row."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.2@2025-12-01",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "fireworks/deepseek-v3p2"
+      ],
+      "confidence": "high",
+      "note": "Epoch provider-qualified spelling of DeepSeek V3.2."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.2@2025-12-01",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "DeepSeek V3.2 Reasoner"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of the DeepSeek V3.2 reasoning endpoint; the harness stays on the source row."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-pro@2026-08-13",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "DeepSeek V4 Pro (High) (0813)"
+      ],
+      "confidence": "high",
+      "note": "Arena names the dated 0813 release and its High effort explicitly."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-flash@2026-07-31",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "Deepseek V4 Flash (High) (20260731)"
+      ],
+      "confidence": "high",
+      "note": "Arena names the 2026-07-31 Flash release and High effort explicitly."
+    },
+    {
+      "canonicalModelId": "moonshot/kimi-k2.5@2026-01-27",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "fireworks/kimi-k2p5"
+      ],
+      "confidence": "high",
+      "note": "Epoch provider-qualified spelling of Kimi K2.5."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "helm-capabilities"
+      ],
+      "values": [
+        "Claude 4 Opus (20250514)",
+        "Claude 4 Opus (20250514, extended thinking)"
+      ],
+      "confidence": "high",
+      "note": "HELM labels for the dated Claude Opus 4 release; extended-thinking configuration remains visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Claude 4 Opus"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of Claude Opus 4."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "claude-opus-4-20250514",
+        "claude-opus-4-20250514-thinking-16k"
+      ],
+      "confidence": "high",
+      "note": "Arena labels for the dated Claude Opus 4 release; thinking and context settings remain visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "src-aider-polyglot"
+      ],
+      "values": [
+        "claude-opus-4-20250514 (32k thinking)",
+        "claude-opus-4-20250514 (no think)"
+      ],
+      "confidence": "high",
+      "note": "Aider Polyglot labels for the dated Claude Opus 4 release; thinking settings remain visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus@4",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-opus-4-20250514",
+        "claude-opus-4-20250514_12K",
+        "claude-opus-4-20250514_16K",
+        "claude-opus-4-20250514_1K",
+        "claude-opus-4-20250514_27K",
+        "claude-opus-4-20250514_2K",
+        "claude-opus-4-20250514_32K",
+        "claude-opus-4-20250514_8K",
+        "claude-opus-4-20250514_unknown"
+      ],
+      "confidence": "high",
+      "note": "Epoch labels for the dated Claude Opus 4 release; context and setting suffixes remain visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.5@2025-11-01",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-opus-4-5-20251101_48K"
+      ],
+      "confidence": "high",
+      "note": "Epoch context-window suffix on the dated Claude Opus 4.5 release."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.5@2025-11-01",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Claude 4.5 Opus"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of Claude Opus 4.5."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.6@2026-02-05",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Claude 4.6 Opus"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of Claude Opus 4.6."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "sourceIds": [
+        "helm-capabilities"
+      ],
+      "values": [
+        "Claude 4.5 Sonnet (20250929)"
+      ],
+      "confidence": "high",
+      "note": "HELM label for the dated Claude Sonnet 4.5 release."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Claude 4.5 Sonnet"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of Claude Sonnet 4.5."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-haiku-4.5@2025-10-01",
+      "sourceIds": [
+        "helm-capabilities"
+      ],
+      "values": [
+        "Claude 4.5 Haiku (20251001)"
+      ],
+      "confidence": "high",
+      "note": "HELM label for the dated Claude Haiku 4.5 release."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-haiku-4.5@2025-10-01",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Claude 4.5 Haiku"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentation of Claude Haiku 4.5."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5@2025-08-07",
+      "sourceIds": [
+        "src-mle-bench"
+      ],
+      "values": [
+        "gpt-5 (low verbosity/effort)[^2]"
+      ],
+      "confidence": "high",
+      "note": "MLE-bench footnoted presentation of GPT-5; verbosity and effort settings remain visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.2@2025-12-11",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.2-search",
+        "gpt-5.2-search-non-reasoning"
+      ],
+      "confidence": "high",
+      "note": "Arena search presentations of GPT-5.2; search and reasoning settings remain visible in the source protocol."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder@current",
+      "sourceIds": [
+        "hf-swebench-pro",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+      ],
+      "confidence": "high",
+      "note": "Hugging Face benchmark labels for the explicit Qwen3-Coder 480B-A35B Instruct checkpoint."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder@current",
+      "sourceIds": [
+        "swebench-official"
+      ],
+      "values": [
+        "Qwen3-Coder 480B/A35B Instruct",
+        "Qwen3-Coder-480B-A35B-Instruct"
+      ],
+      "confidence": "high",
+      "note": "SWE-bench presentations of the Qwen3-Coder 480B-A35B Instruct checkpoint."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder@current",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3-coder-480b-a35b-instruct"
+      ],
+      "confidence": "high",
+      "note": "Arena presentation of the Qwen3-Coder 480B-A35B Instruct checkpoint."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder@current",
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "Qwen3-Coder-480B-A35B-Instruct"
+      ],
+      "confidence": "high",
+      "note": "Epoch presentation of the Qwen3-Coder 480B-A35B Instruct checkpoint."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4-pro@2026-03-05",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gpt-5.4-pro-2026-03-05_none", "gpt-5.4-pro-2026-03-05_unknown", "gpt-5.4-pro-2026-03-05_xhigh", "gpt-5.4-pro-2026-03-05-web-app"],
+      "confidence": "high",
+      "note": "Epoch spellings for the dated GPT-5.4 Pro release; compute and web-app settings remain in protocol metadata."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gpt-5.4-nano-2026-03-17_high", "gpt-5.4-nano-2026-03-17_low", "gpt-5.4-nano-2026-03-17_medium", "gpt-5.4-nano-2026-03-17_none", "gpt-5.4-nano-2026-03-17_unknown", "gpt-5.4-nano-2026-03-17_xhigh"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for the explicit 2026-03-17 GPT-5.4 nano snapshot."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
+      "sourceIds": ["livebench-official"],
+      "values": ["gpt-5.4-nano-xhigh"],
+      "confidence": "high",
+      "note": "LiveBench xhigh presentation of GPT-5.4 nano; effort stays in the source protocol."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gpt-5.4-nano-high"],
+      "confidence": "high",
+      "note": "Arena high-effort presentation of GPT-5.4 nano."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
+      "sourceIds": ["src-bfcl"],
+      "values": ["GPT-5-mini-2025-08-07"],
+      "confidence": "high",
+      "note": "BFCL exact dated model spelling."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gpt-5-mini-2025-08-07_high", "gpt-5-mini-2025-08-07_low", "gpt-5-mini-2025-08-07_medium", "gpt-5-mini-2025-08-07_minimal", "gpt-5-mini-2025-08-07_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for the dated GPT-5 mini release."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gpt-5-mini-high"],
+      "confidence": "high",
+      "note": "Arena high-effort presentation of GPT-5 mini."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
+      "sourceIds": ["src-bfcl"],
+      "values": ["GPT-5-nano-2025-08-07"],
+      "confidence": "high",
+      "note": "BFCL exact dated model spelling."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gpt-5-nano-2025-08-07_high", "gpt-5-nano-2025-08-07_low", "gpt-5-nano-2025-08-07_medium", "gpt-5-nano-2025-08-07_minimal", "gpt-5-nano-2025-08-07_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for the dated GPT-5 nano release."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gpt-5-nano-high"],
+      "confidence": "high",
+      "note": "Arena high-effort presentation of GPT-5 nano."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-35b-a3b@current",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["qwen3.5-35b-a3b"],
+      "confidence": "high",
+      "note": "Arena exact spelling of Qwen3.5 35B-A3B."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-9b@current",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["qwen3.5-9B"],
+      "confidence": "high",
+      "note": "Epoch exact capitalization for Qwen3.5 9B."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3.5-max-preview@2026-03-18",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["qwen3.5-max-preview"],
+      "confidence": "high",
+      "note": "Arena explicit Qwen3.5 Max Preview endpoint spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder-next@2026-02-03",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["qwen3-coder-next"],
+      "confidence": "high",
+      "note": "Epoch exact Qwen3-Coder-Next spelling."
+    },
+    {
+      "canonicalModelId": "qwen/qwen3-coder-next@2026-02-03",
+      "sourceIds": ["hf-swebench-pro", "hf-swebench-verified", "hf-terminal-bench"],
+      "values": ["Qwen/Qwen3-Coder-Next"],
+      "confidence": "high",
+      "note": "Hugging Face benchmark labels for the explicit Qwen3-Coder-Next checkpoint."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.7-flash@current",
+      "sourceIds": ["livebench-official"],
+      "values": ["gemini-3.7-flash-high"],
+      "confidence": "high",
+      "note": "LiveBench high presentation of Gemini 3.7 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.7-flash@current",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gemini-3.7-flash-high", "Gemini 3.7 Flash (High)"],
+      "confidence": "high",
+      "note": "Arena high presentations of Gemini 3.7 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.7-flash@current",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gemini-3.7-flash_high", "gemini-3.7-flash_low", "gemini-3.7-flash_medium", "gemini-3.7-flash_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for Gemini 3.7 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.6-flash@current",
+      "sourceIds": ["livebench-official"],
+      "values": ["gemini-3.6-flash-high"],
+      "confidence": "high",
+      "note": "LiveBench high presentation of Gemini 3.6 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.6-flash@current",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gemini-3.6-flash-high", "Gemini 3.6 Flash (High)"],
+      "confidence": "high",
+      "note": "Arena high presentations of Gemini 3.6 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.6-flash@current",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gemini-3.6-flash_high", "gemini-3.6-flash_low", "gemini-3.6-flash_medium", "gemini-3.6-flash_minimal", "gemini-3.6-flash_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for Gemini 3.6 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash@current",
+      "sourceIds": ["livebench-official"],
+      "values": ["gemini-3.5-flash-high"],
+      "confidence": "high",
+      "note": "LiveBench high presentation of Gemini 3.5 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash@current",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gemini-3.5-flash-high", "gemini-3.5-flash-medium", "Gemini 3.5 Flash (High)", "Gemini 3.5 Flash (Medium)"],
+      "confidence": "high",
+      "note": "Arena high and medium presentations of Gemini 3.5 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash@current",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gemini-3.5-flash_high", "gemini-3.5-flash_low", "gemini-3.5-flash_medium", "gemini-3.5-flash_minimal", "gemini-3.5-flash_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for Gemini 3.5 Flash."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash-lite@current",
+      "sourceIds": ["livebench-official"],
+      "values": ["gemini-3.5-flash-lite-high"],
+      "confidence": "high",
+      "note": "LiveBench high presentation of Gemini 3.5 Flash-Lite."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash-lite@current",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["gemini-3.5-flash-lite", "Gemini 3.5 Flash Lite"],
+      "confidence": "high",
+      "note": "Arena base presentations of Gemini 3.5 Flash-Lite."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.5-flash-lite@current",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["gemini-3.5-flash-lite", "gemini-3.5-flash-lite_high", "gemini-3.5-flash-lite_low", "gemini-3.5-flash-lite_medium", "gemini-3.5-flash-lite_minimal"],
+      "confidence": "high",
+      "note": "Epoch base and effort spellings for Gemini 3.5 Flash-Lite."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.5@2026-07-16",
+      "sourceIds": ["livebench-official"],
+      "values": ["grok-4.5"],
+      "confidence": "high",
+      "note": "LiveBench base spelling of Grok 4.5."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.5@2026-07-16",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["grok-4.5", "Grok 4.5"],
+      "confidence": "high",
+      "note": "Arena base spellings of Grok 4.5."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.5@2026-07-16",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["grok-4.5_high", "grok-4.5_low", "grok-4.5_medium", "grok-4.5_unknown"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for Grok 4.5."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.5@2026-07-16",
+      "sourceIds": ["agents-last-exam"],
+      "values": ["grok-4-5"],
+      "confidence": "high",
+      "note": "Agents' Last Exam spelling of Grok 4.5; harness remains in the system row."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.6@2026-08-12",
+      "sourceIds": ["livebench-official"],
+      "values": ["grok-4.6"],
+      "confidence": "high",
+      "note": "LiveBench base spelling of Grok 4.6."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.6@2026-08-12",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["grok-4.6-high"],
+      "confidence": "high",
+      "note": "Arena high-effort presentation of Grok 4.6."
+    },
+    {
+      "canonicalModelId": "xai/grok-4.6@2026-08-12",
+      "sourceIds": ["src-epoch-benchmark-hub"],
+      "values": ["grok-4.6_high", "grok-4.6_low", "grok-4.6_medium", "grok-4.6_unknown", "grok-4.6_xhigh"],
+      "confidence": "high",
+      "note": "Epoch effort spellings for Grok 4.6."
+    },
+    {
+      "canonicalModelId": "zai/glm-5v-turbo@2026-04-01",
+      "sourceIds": ["lmarena-hf-dataset"],
+      "values": ["glm-5v-turbo"],
+      "confidence": "high",
+      "note": "Arena exact GLM-5V-Turbo endpoint spelling."
+    }
+  ]
+}

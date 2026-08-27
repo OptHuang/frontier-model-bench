@@ -16,8 +16,10 @@ class MaintenanceReportTests(unittest.TestCase):
         self.addCleanup(shutil.rmtree, directory, ignore_errors=True)
         catalog = directory / "data" / "catalog"
         observations = directory / "data" / "observations"
+        public = directory / "data" / "public"
         catalog.mkdir(parents=True)
         observations.mkdir(parents=True)
+        public.mkdir(parents=True)
         (catalog / "models.json").write_text(
             json.dumps(
                 {
@@ -105,6 +107,46 @@ class MaintenanceReportTests(unittest.TestCase):
             + "\n",
             encoding="utf-8",
         )
+        (public / "evidence.jsonl").write_text(
+            "\n".join(
+                [
+                    json.dumps(
+                        {
+                            "id": "pub-preview-reasoning",
+                            "canonicalModelId": "acme/preview@1",
+                            "benchmarkId": "toy-reasoning",
+                            "benchmarkVersionId": "toy-reasoning@v1",
+                            "metricId": "accuracy",
+                            "value": 75,
+                            "status": "reported",
+                            "reviewStatus": "unreviewed",
+                            "verificationStatus": "not_reproduced",
+                            "matrixExcluded": False,
+                            "sourceId": "src-toy",
+                            "evidenceUrl": "https://example.org/toy#preview-reasoning",
+                        }
+                    ),
+                    # Telemetry may be retained as evidence, but it must not
+                    # make a benchmark score cell look publicly covered.
+                    json.dumps(
+                        {
+                            "id": "pub-preview-agent-runtime",
+                            "canonicalModelId": "acme/preview@1",
+                            "benchmarkId": "toy-agent",
+                            "benchmarkVersionId": "toy-agent@v1",
+                            "metricId": "runtime-seconds",
+                            "value": 12,
+                            "status": "reported",
+                            "reviewStatus": "unreviewed",
+                            "matrixExcluded": True,
+                            "sourceId": "src-toy",
+                        }
+                    ),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
         return directory
 
     def test_missing_and_stale_candidates_are_separate(self) -> None:
@@ -116,6 +158,29 @@ class MaintenanceReportTests(unittest.TestCase):
         self.assertEqual(report["health"]["network_checked"], False)
         self.assertEqual(report["health"]["coverage"]["featured_covered"], 1)
 
+    def test_canonical_gaps_distinguish_public_reported_from_no_evidence(self) -> None:
+        root = self.make_fixture()
+        report = build_report(root, date(2026, 8, 27), False, 1, 0)
+        coverage = report["health"]["coverage"]
+        candidates = report["candidates"]
+
+        # Canonical coverage is unchanged: both preview cells are still gaps.
+        self.assertEqual(coverage["covered_cells"], 2)
+        self.assertEqual(coverage["missing_cells"], 2)
+        self.assertEqual(coverage["public_reported_awaiting_review_cells"], 1)
+        self.assertEqual(coverage["no_mapped_public_evidence_cells"], 1)
+
+        public_review = [item for item in candidates if item["kind"] == "public_reported"]
+        no_evidence = [item for item in candidates if item["kind"] == "missing"]
+        self.assertEqual(len(public_review), 1)
+        self.assertEqual(public_review[0]["model_id"], "acme/preview@1")
+        self.assertEqual(public_review[0]["benchmark_id"], "toy-reasoning")
+        self.assertEqual(public_review[0]["public_evidence_ids"], ["pub-preview-reasoning"])
+        self.assertEqual(len(no_evidence), 1)
+        self.assertEqual(no_evidence[0]["benchmark_id"], "toy-agent")
+        self.assertEqual(report["health"]["candidates"]["public_reported"], 1)
+        self.assertEqual(report["health"]["candidates"]["missing"], 1)
+
     def test_write_outputs_is_self_contained(self) -> None:
         root = self.make_fixture()
         report = build_report(root, date(2026, 8, 27), False, 1, 0)
@@ -123,7 +188,10 @@ class MaintenanceReportTests(unittest.TestCase):
         write_outputs(output, report)
         for filename in ("health.json", "candidates.json", "source-status.json", "summary.md"):
             self.assertTrue((output / filename).is_file(), filename)
-        self.assertIn("candidate", (output / "summary.md").read_text(encoding="utf-8"))
+        summary = (output / "summary.md").read_text(encoding="utf-8")
+        self.assertIn("candidate", summary)
+        self.assertIn("Public reported / awaiting canonical review：1", summary)
+        self.assertIn("No mapped public evidence：1", summary)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ import argparse
 import hashlib
 import json
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -112,7 +113,7 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
-def load_public_evidence(root: Path) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
+def load_public_evidence(root: Path) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     """Load the compact public/reported evidence layer if it exists.
 
     Public leaderboard reports are intentionally kept outside canonical
@@ -131,10 +132,20 @@ def load_public_evidence(root: Path) -> tuple[dict[str, Any], dict[str, Any], li
     rows = [dict(row) for row in rows if isinstance(row, Mapping)]
     meta = payload.get("meta")
     stats = payload.get("stats")
+    # The full unmapped JSONL is intentionally ignored by git/Pages.  A
+    # compact, path-safe alias summary is tracked separately so the UI can
+    # make unresolved source spellings discoverable without shipping tens of
+    # megabytes of raw rows.
+    summary = load_json(root / "data" / "public" / "unmapped-summary.json", {})
+    aliases = summary.get("aliases") if isinstance(summary, Mapping) else []
+    if not isinstance(aliases, list):
+        aliases = []
+    aliases = [dict(item) for item in aliases if isinstance(item, Mapping)]
     return (
         dict(meta) if isinstance(meta, Mapping) else {},
         dict(stats) if isinstance(stats, Mapping) else {},
         rows,
+        aliases,
     )
 
 
@@ -150,6 +161,219 @@ def first_nonempty(*values: Any, default: Any = None) -> Any:
         if value is not None and value != "":
             return value
     return default
+
+
+def _payload_meta(payload: Any) -> Mapping[str, Any]:
+    if not isinstance(payload, Mapping):
+        return {}
+    meta = payload.get("meta")
+    return meta if isinstance(meta, Mapping) else {}
+
+
+def _utc_timestamp(value: Any) -> datetime | None:
+    if value is None or value == "":
+        return None
+    raw = str(value).strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            parsed = datetime.fromisoformat(raw[:10])
+        except ValueError:
+            return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def derive_site_timestamps(
+    legacy_meta: Mapping[str, Any],
+    model_payload: Any,
+    model_profiles_payload: Any,
+    public_meta: Mapping[str, Any],
+) -> tuple[str, str]:
+    """Return a coherent snapshot date and timestamp for the derived site.
+
+    Catalog/profile metadata can advance independently of the legacy seed and
+    the public evidence snapshot.  The page date therefore follows the newest
+    declared input rather than whichever file happens to be read first.
+    """
+
+    model_meta = _payload_meta(model_payload)
+    profile_meta = _payload_meta(model_profiles_payload)
+    date_values = (
+        legacy_meta.get("asOf", legacy_meta.get("as_of")),
+        model_meta.get("as_of", model_meta.get("asOf")),
+        profile_meta.get("as_of", profile_meta.get("asOf")),
+        public_meta.get("generatedAt", public_meta.get("generated_at")),
+    )
+    parsed_dates = [stamp for value in date_values if (stamp := _utc_timestamp(value)) is not None]
+    if parsed_dates:
+        as_of = max(parsed_dates).date().isoformat()
+    else:
+        as_of = "2026-08-27"
+
+    timestamp_values = (
+        f"{as_of}T00:00:00Z",
+        legacy_meta.get("lastUpdated", legacy_meta.get("last_updated")),
+        public_meta.get("generatedAt", public_meta.get("generated_at")),
+    )
+    parsed_timestamps = [
+        stamp for value in timestamp_values if (stamp := _utc_timestamp(value)) is not None
+    ]
+    last_updated = max(parsed_timestamps).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return as_of, last_updated
+
+
+def _has_runtime_value(value: Any) -> bool:
+    return value is not None and value != "" and value != [] and value != {}
+
+
+PUBLIC_EVIDENCE_RUNTIME_FIELDS = (
+    "id",
+    "canonicalModelId",
+    "modelName",
+    "modelRef",
+    "benchmarkId",
+    "benchmarkName",
+    "benchmarkVersion",
+    "benchmarkVersionHint",
+    "benchmarkVersionId",
+    "metricId",
+    "value",
+    "rawValue",
+    "unit",
+    # Used by evidenceStrength() when several public sources share a cell.
+    "evidenceLevel",
+    "sourceId",
+    "sourceLabel",
+    "sourceUrl",
+    "sourcePageUrl",
+    "sourceApiUrl",
+    "sourceLocator",
+    "retrievedAt",
+    "observedAt",
+    "publishedAt",
+    "payloadSha256",
+    "protocol",
+    "harnessId",
+    "qualityFlags",
+    "subjectType",
+    "sourceSubjectType",
+    "mappingStatus",
+    # Despite its name this is display behavior, not review-only metadata:
+    # app.js and models.js use it to select the representative observation.
+    "selectionRank",
+)
+
+
+def public_evidence_for_site(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Project a full public evidence row into the browser display contract.
+
+    The complete, review-oriented row remains in ``public.json`` and
+    ``evidence.jsonl``.  This DTO retains everything the three pages need for
+    matrix joins, subject/harness semantics, provenance drawers and telemetry
+    disclosure, while omitting raw source payloads and duplicated defaults.
+    """
+
+    result = {
+        key: row.get(key)
+        for key in PUBLIC_EVIDENCE_RUNTIME_FIELDS
+        if _has_runtime_value(row.get(key))
+    }
+
+    source_url = row.get("sourceUrl")
+    evidence_url = row.get("evidenceUrl")
+    if _has_runtime_value(evidence_url) and evidence_url != source_url:
+        result["evidenceUrl"] = evidence_url
+
+    source_metric = row.get("sourceMetricId")
+    if _has_runtime_value(source_metric) and source_metric != row.get("metricId"):
+        result["sourceMetricId"] = source_metric
+
+    harness = row.get("harness")
+    if _has_runtime_value(harness) and harness != row.get("harnessId"):
+        result["harness"] = harness
+
+    if row.get("matrixExcluded") is True:
+        result["matrixExcluded"] = True
+        reason = row.get("matrixExcludedReason")
+        if _has_runtime_value(reason):
+            result["matrixExcludedReason"] = reason
+
+    # These fields have safe browser defaults but may carry a future
+    # non-default value that changes ranking or the public disclosure label.
+    comparability = row.get("comparability")
+    if _has_runtime_value(comparability) and comparability != "conditional":
+        result["comparability"] = comparability
+    status = row.get("status")
+    if _has_runtime_value(status) and status != "reported":
+        result["status"] = status
+    return result
+
+
+PUBLIC_UNMAPPED_RUNTIME_FIELDS = (
+    "modelRef",
+    "rowCount",
+    "numericRowCount",
+    "benchmarkCount",
+    "benchmarkIds",
+    "sourceIds",
+    "sourceLabels",
+    "sourceUrls",
+    "mappingStatusCounts",
+    "mappingStatus",
+    "latestRetrievedAt",
+    "observedAtMax",
+    "aliases",
+    "canonicalModelId",
+    "suggestedCanonicalModelId",
+)
+
+PUBLIC_UNMAPPED_EXAMPLE_FIELDS = (
+    "sourceId",
+    "sourceLabel",
+    "sourceUrl",
+    "evidenceUrl",
+    "sourceLocator",
+    "locator",
+    "retrievedAt",
+    "observedAt",
+)
+
+
+def public_unmapped_model_for_site(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Keep only alias-card data and one compact provenance example."""
+
+    result = {
+        key: row.get(key)
+        for key in PUBLIC_UNMAPPED_RUNTIME_FIELDS
+        if _has_runtime_value(row.get(key))
+    }
+    examples = row.get("examples")
+    if not isinstance(examples, list):
+        examples = row.get("sampleEvidence")
+    first_example = examples[0] if isinstance(examples, list) and examples else None
+    if isinstance(first_example, Mapping):
+        compact_example = {
+            key: first_example.get(key)
+            for key in PUBLIC_UNMAPPED_EXAMPLE_FIELDS
+            if _has_runtime_value(first_example.get(key))
+        }
+        if compact_example:
+            result["examples"] = [compact_example]
+    return result
+
+
+def write_compact_json(path: Path, payload: Any) -> None:
+    """Write a generated browser artifact without human-oriented indentation."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as handle:
+        json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
+        handle.write("\n")
 
 
 def source_ids_for(row: Mapping[str, Any]) -> list[str]:
@@ -240,6 +464,38 @@ def scale_for(metric: Mapping[str, Any]) -> int | float | dict[str, Any]:
 
 def canonical_model_list(payload: Any) -> list[dict[str, Any]]:
     return as_list(payload, "models")
+
+
+def model_profile_map(payload: Any) -> dict[str, dict[str, Any]]:
+    """Return the optional, source-linked profile layer keyed by model id.
+
+    Profiles intentionally live beside the identity registry: release ids and
+    scores remain stable while descriptive facts can be enriched independently.
+    Accept both ``{"profiles": {id: profile}}`` and a list of profile rows so
+    future maintenance scripts can use either shape.
+    """
+
+    value: Any = payload.get("profiles", {}) if isinstance(payload, Mapping) else payload
+    if isinstance(value, Mapping):
+        return {
+            str(identifier): dict(profile)
+            for identifier, profile in value.items()
+            if isinstance(identifier, str) and isinstance(profile, Mapping)
+        }
+    if isinstance(value, list):
+        result: dict[str, dict[str, Any]] = {}
+        for profile in value:
+            if not isinstance(profile, Mapping):
+                continue
+            identifier = profile.get("model_id", profile.get("modelId", profile.get("id")))
+            if isinstance(identifier, str) and identifier:
+                result[identifier] = {
+                    key: item
+                    for key, item in profile.items()
+                    if key not in {"id", "model_id", "modelId"}
+                }
+        return result
+    return {}
 
 
 def canonical_benchmark_list(payload: Any) -> list[dict[str, Any]]:
@@ -501,6 +757,7 @@ def benchmark_for_site(
     benchmark: Mapping[str, Any],
     source_by_id: Mapping[str, Mapping[str, Any]],
     as_of: str,
+    profile: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     identifier = str(benchmark.get("id"))
     metric = metric_for(benchmark)
@@ -519,7 +776,7 @@ def benchmark_for_site(
         # marked as system runs even when their broad family is shared with
         # direct code-generation or reasoning benchmarks.
         evaluation_mode = "system" if ({family, category} & {"coding-agent", "tool-use", "computer-use", "cyber"}) else "direct"
-    return {
+    site_benchmark = {
         "id": identifier,
         "canonicalId": identifier,
         "short": benchmark.get("short") or benchmark.get("name") or identifier,
@@ -546,6 +803,13 @@ def benchmark_for_site(
         "metrics": benchmark.get("metrics", []),
         "featured": bool(benchmark.get("featured", False)),
     }
+    # Long-form benchmark profiles live in a separate catalog file so that
+    # the compact registry stays easy to scan.  Keep the profile opaque here:
+    # the browser renders its task/dataset/protocol/comparison fields without
+    # turning qualitative notes into observations or scores.
+    if isinstance(profile, Mapping):
+        site_benchmark["profile"] = dict(profile)
+    return site_benchmark
 
 
 def model_for_site(
@@ -555,6 +819,7 @@ def model_for_site(
     benchmark_by_id: Mapping[str, Mapping[str, Any]],
     source_by_id: Mapping[str, Mapping[str, Any]],
     harness_by_id: Mapping[str, Mapping[str, Any]],
+    profile: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     identifier = str(model.get("id"))
     scores: dict[str, Any] = {}
@@ -632,6 +897,9 @@ def model_for_site(
         "paramsActive": model.get("params_active", model.get("paramsActive")),
         "openWeights": model.get("open_weights", model.get("openWeights")),
         "variant": model.get("variant", {}),
+        # Keep the descriptive profile separate from canonical identity fields
+        # so page copy can evolve without changing score semantics.
+        "profile": dict(profile) if isinstance(profile, Mapping) else {},
         "sourceIds": source_ids if isinstance(source_ids, list) else [],
         "scores": scores,
         "scoreCount": len(scores),
@@ -706,13 +974,22 @@ def build(root: Path, output: Path) -> dict[str, Any]:
 
     model_payload = load_json(catalog_dir / "models.json", [])
     benchmark_payload = load_json(catalog_dir / "benchmarks.json", [])
+    benchmark_profiles_payload = load_json(catalog_dir / "benchmark_profiles.json", {})
+    model_profiles_payload = load_json(catalog_dir / "model_profiles.json", {})
     source_payload = load_json(catalog_dir / "sources.json", [])
     harness_payload = load_json(catalog_dir / "harnesses.json", [])
     preset_payload = load_json(catalog_dir / "presets.json", [])
     legacy = load_json(legacy_path, {})
+    public_meta, public_stats, public_rows, public_unmapped_models = load_public_evidence(root)
 
     canonical_models = canonical_model_list(model_payload)
     canonical_benchmarks = canonical_benchmark_list(benchmark_payload)
+    benchmark_profiles = (
+        benchmark_profiles_payload
+        if isinstance(benchmark_profiles_payload, Mapping)
+        else {}
+    )
+    model_profiles = model_profile_map(model_profiles_payload)
     canonical_sources = canonical_source_list(source_payload)
     canonical_harnesses = canonical_harness_list(harness_payload)
     canonical_presets = canonical_preset_list(preset_payload)
@@ -771,9 +1048,21 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     meta_legacy = legacy.get("meta") if isinstance(legacy, Mapping) else {}
     if not isinstance(meta_legacy, Mapping):
         meta_legacy = {}
-    as_of = str(meta_legacy.get("asOf") or "2026-08-27")
-    last_updated = str(meta_legacy.get("lastUpdated") or f"{as_of}T00:00:00Z")
-    site_benchmarks = [benchmark_for_site(item, source_by_id, as_of) for item in canonical_benchmarks]
+    as_of, last_updated = derive_site_timestamps(
+        meta_legacy,
+        model_payload,
+        model_profiles_payload,
+        public_meta,
+    )
+    site_benchmarks = [
+        benchmark_for_site(
+            item,
+            source_by_id,
+            as_of,
+            benchmark_profiles.get(str(item.get("id"))),
+        )
+        for item in canonical_benchmarks
+    ]
 
     scored_models: list[dict[str, Any]] = []
     catalog_models: list[dict[str, Any]] = []
@@ -796,6 +1085,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             benchmarks_by_id,
             source_by_id,
             harness_by_id,
+            model_profiles.get(model_id),
         )
         site_model["systemRunCount"] = system_counts.get(model_id, 0)
         catalog_models.append(site_model)
@@ -808,12 +1098,14 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         run_for_site(row, models_by_id, benchmarks_by_id, source_by_id, harness_by_id)
         for row in sorted(registered_rows, key=lambda item: (str(item.get("observed_at") or ""), str(item.get("id"))), reverse=True)
     ]
-    # Public/reported evidence is a parallel display layer.  It is loaded
-    # after canonical selection so these rows cannot influence the default
-    # atlas ranking or coverage calculation.  The compact index is generated
-    # by ``scripts/build_public_evidence.py`` and keeps omitted/unmapped rows
-    # in a separate JSONL export.
-    public_meta, public_stats, public_rows = load_public_evidence(root)
+    # Public/reported evidence is a parallel display layer and cannot influence
+    # canonical atlas statistics.  The complete review rows remain in
+    # ``public.json``/``evidence.jsonl``; only the browser display contract is
+    # embedded below.
+    public_site_rows = [public_evidence_for_site(row) for row in public_rows]
+    public_site_unmapped_models = [
+        public_unmapped_model_for_site(row) for row in public_unmapped_models
+    ]
     featured_ids = [item["id"] for item in site_benchmarks if item.get("featured")]
     numeric_rows = [
         row
@@ -848,6 +1140,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "coverage": round(len(direct_cells) / total_possible, 4) if total_possible else 0,
         "coveragePct": round(100 * len(direct_cells) / total_possible, 1) if total_possible else 0,
         "legacyMigrated": sum(1 for row in registered_rows if row.get("legacy_migrated")),
+        "modelProfiles": sum(1 for model in catalog_models if model.get("profile")),
+        "modelProfilesMissing": sum(1 for model in catalog_models if not model.get("profile")),
     }
     meta = {
         "title": meta_legacy.get("title") or "Frontier Model Bench",
@@ -857,14 +1151,16 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "status": "curated",
         "lastUpdated": last_updated,
         "owner": meta_legacy.get("owner") or "Cunxin Huang",
-        "note": "Canonical catalog + long-form observations；官方自报结果标记为 reported/conditional，catalog-only 模型不参与默认矩阵。",
+        "note": "Canonical catalog + long-form observations；公开披露层默认作为 coverage map 展示，catalog-only 行无分数且不参与成绩计算。",
         "updateCadence": meta_legacy.get("updateCadence") or "每周复核，重大模型发布时加急",
         "defaultView": "atlas",
-        "defaultPreset": "frontier-current",
+        "defaultPreset": "public-coverage",
         "defaultBenchmarkIds": featured_ids,
         "generatedFrom": [
             "data/catalog/models.json",
             "data/catalog/benchmarks.json",
+            "data/catalog/benchmark_profiles.json",
+            "data/catalog/model_profiles.json",
             "data/catalog/sources.json",
             "data/catalog/harnesses.json",
             "data/catalog/presets.json",
@@ -883,14 +1179,12 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "runs": site_runs,
         "presets": canonical_presets,
         "stats": stats,
-        "publicEvidence": public_rows,
+        "publicEvidence": public_site_rows,
+        "publicUnmappedModels": public_site_unmapped_models,
         "publicMeta": public_meta,
         "publicStats": public_stats,
     }
-    output.parent.mkdir(parents=True, exist_ok=True)
-    with output.open("w", encoding="utf-8") as handle:
-        json.dump(site, handle, ensure_ascii=False, indent=2)
-        handle.write("\n")
+    write_compact_json(output, site)
     return site
 
 

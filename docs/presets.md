@@ -58,7 +58,7 @@ benchmark suite/version/split
 }
 ```
 
-`catalog-only` 默认不进入 preset；用户打开“全量目录”后可看到灰色无分数行。未知参数、未知成本和未知上下文保持 `null`，不以 0 参与筛选。
+默认 `public-coverage` preset 会保留 `scoreCoverage: catalog-only` 条目作为覆盖地图中的无 canonical 分数行；这是派生的成绩覆盖状态，不是模型生命周期。其它窄 preset 可隐藏它们，用户也可打开“全量目录”查看完整注册表。未知参数、未知成本和未知上下文保持 `null`，不以 0 参与筛选。
 
 ## 3. Benchmark 映射
 
@@ -103,12 +103,12 @@ benchmark suite/version/split
 - **选择**：名称含 Flash/Fast 只是候选标签；最终按价格 tier、TTFT、output tok/s、context 和 active params 验证。可包括 GPT-5.6 Luna、Gemini Flash、DeepSeek V4 Flash、Qwen3.8 Flash-Next、GLM-5.3-Flash、Kimi K2.7 HighSpeed、MiniMax HighSpeed、MiMo V2.5。
 - **benchmark**：GPQA/MMLU-Pro/LiveCodeBench + Terminal-Bench/Toolathlon（固定 harness）；效率指标做 Pareto，不给单一“性价比总分”。
 
-### P3 · Small / efficient models
+### P3 · Fast / resource-efficient candidates（legacy id: `small-efficient`）
 
 - **主体**：`model` + deployment facts。
-- **选择**：优先 `params_active`、实际成本、VRAM 和吞吐；total params 未知不淘汰，也不假设为小模型。
+- **选择**：这个兼容 preset 同时收录两类候选：有来源支持的较小权重/active-parameter 档，以及带 Flash/Fast/Highspeed/UltraSpeed 等服务标签的效率端点。后者可能来自巨大 MoE，不能称为“小模型”。
 - **benchmark**：MMLU-Pro、GPQA、AIME、LiveCodeBench、BFCL；另列 quality、cost、latency、memory。
-- **规则**：dense 与 MoE 分组；active 参数和 total 参数不能互换排序。
+- **规则**：先按“可核验规模档”与“托管效率端点”分组；dense 与 MoE 再分组。只有 source-backed `params_total` / `params_active` 才进入规模筛选；实际成本、VRAM、TTFT 和吞吐必须带 deployment 条件。active 参数和 total 参数不能互换排序，产品标签也不能替代实测效率。
 
 ### P4 · Math / science
 
@@ -193,5 +193,5 @@ benchmark suite/version/split
 - preset URL 应可分享，例如 `?preset=coding-agent&version=terminal-bench@2.1`；筛选状态不写回 observation。
 - 每个分数单元显示 `value · evidence · harness/effort`，点击展开完整 protocol 和 source locator。
 - 默认列按 benchmark registry 顺序；同列只有在 `exact` 时显示排序徽标，`conditional` 只显示比较提示。
-- `catalog-only`、`preview`、`restricted`、`stale`、`conflict` 都用明确徽标，不用空白或 0 混淆。
+- `scoreCoverage: catalog-only` 与生命周期 `preview` / `restricted` 分开显示；`stale`、`conflict` 也用明确徽标，不用空白或 0 混淆。
 - 自动更新流程只产生 candidate observations；人工确认后才进入 `approved`/默认矩阵。来源适配器应保存 URL、retrieved_at、published_at、hash 和 parser version。

@@ -279,13 +279,29 @@
     "staleness_after_days": 30
   },
   {
+    "id": "swebench-official",
+    "label": "SWE-bench · official leaderboard JSON",
+    "kind": "benchmark",
+    "publisher": "SWE-bench",
+    "url": "https://raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json",
+    "web_url": "https://www.swebench.com/",
+    "api_url": "https://raw.githubusercontent.com/swe-bench/swe-bench.github.io/master/data/leaderboards.json",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "adapter_id": "swebench-official",
+    "enabled": true,
+    "notes": "Official JSON leaderboard; preserves benchmark variant, agent/scaffold, checked flag, cost and instance calls. Rows are source-reported and not independently reproduced."
+  },
+  {
     "id": "livecodebench",
     "label": "LiveCodeBench official leaderboard",
     "kind": "benchmark",
     "publisher": "LiveCodeBench",
-    "url": "https://livecodebench.github.io/leaderboard_v5.html",
+    "url": "https://livecodebench.github.io/leaderboard.html",
     "default_evidence_level": "A",
-    "staleness_after_days": 45
+    "staleness_after_days": 45,
+    "legacy_url": "https://livecodebench.github.io/leaderboard_v5.html",
+    "notes": "动态页面默认展示当前时间窗口；历史 V5 页面保留为 legacy_url。记录 start/end dates、release version、语言与污染标记。"
   },
   {
     "id": "mmlu-pro",
@@ -372,8 +388,8 @@
     "id": "src-nl2repo",
     "label": "NL2Repo benchmark",
     "kind": "benchmark",
-    "publisher": "NL2Repo",
-    "url": "https://github.com/JetBrains-Research/NL2Repo",
+    "publisher": "M-A-P / NL2Repo-Bench",
+    "url": "https://github.com/multimodal-art-projection/NL2RepoBench",
     "default_evidence_level": "A",
     "staleness_after_days": 365
   },
@@ -629,11 +645,11 @@
   },
   {
     "id": "agents-last-exam",
-    "label": "Agents' Last Exam · ALE-V1 leaderboard API",
+    "label": "Agents' Last Exam · ALE-V1 leaderboard",
     "kind": "official_api",
     "publisher": "UC Berkeley RDI",
-    "url": "https://agents-last-exam.org/api/demo/leaderboard",
-    "web_url": "https://agents-last-exam.org/leaderboard",
+    "url": "https://agents-last-exam.org/leaderboard",
+    "api_url": "https://agents-last-exam.org/api/demo/leaderboard",
     "default_evidence_level": "A",
     "staleness_after_days": 14,
     "adapter_id": "agents-last-exam",
@@ -720,5 +736,135 @@
     "enabled": true,
     "license": "CC-BY-4.0",
     "license_note": "Epoch AI permits reuse/distribution with attribution; external tables retain original licences. Keep source file, row locator, and original source link."
+  },
+  {
+    "id": "src-mathvista",
+    "label": "MathVista · official project and dataset",
+    "kind": "benchmark",
+    "publisher": "MathVista",
+    "url": "https://mathvista.github.io/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Official project page documents the 6,141-example dataset, testmini/test split, task families and evaluation protocol."
+  },
+  {
+    "id": "src-video-mme",
+    "label": "Video-MME · official project",
+    "kind": "benchmark",
+    "publisher": "Video-MME",
+    "url": "https://video-mme.github.io/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Official project page and paper; preserve video release, duration bucket, frame sampling, audio and subtitle settings."
+  },
+  {
+    "id": "src-ruler",
+    "label": "RULER · official code and paper",
+    "kind": "benchmark",
+    "publisher": "NVIDIA / RULER authors",
+    "url": "https://github.com/NVIDIA/RULER",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Official repository generates configurable synthetic tasks; version, seed, task configuration and context buckets are part of the protocol."
+  },
+  {
+    "id": "src-longbench",
+    "label": "LongBench v2 · official project",
+    "kind": "benchmark",
+    "publisher": "LongBench",
+    "url": "https://longbench2.github.io/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Official LongBench v2 project; retain the v2 question set, six task categories, language and context-length settings."
+  },
+  {
+    "id": "src-cybergym-paper",
+    "label": "CyberGym · paper and evaluator",
+    "kind": "benchmark",
+    "publisher": "UC Berkeley RDI",
+    "url": "https://arxiv.org/abs/2506.02548",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Paper defines the vulnerability-reproduction task and reports the 1,507-instance release; environment/scorer versions remain required."
+  },
+  {
+    "id": "src-qwen35",
+    "label": "Qwen · Qwen3.5 model family",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3.5",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "Official family announcement and model cards; preserve the exact dense/MoE checkpoint because Qwen3.5 sizes are separate releases."
+  },
+  {
+    "id": "src-qwen35-max-preview",
+    "label": "Qwen · Qwen3.5-Max-Preview Arena announcement",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3.5-max-preview",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90,
+    "notes": "Official preview announcement dated 2026-03-18; it identifies an Arena preview, not a final or open-weight Max release."
+  },
+  {
+    "id": "src-qwen3-coder",
+    "label": "Qwen · Qwen3-Coder 480B-A35B",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwenlm.github.io/blog/qwen3-coder/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365,
+    "notes": "Official announcement for Qwen3-Coder-480B-A35B-Instruct; exact checkpoint, context extension and agent harness must remain visible."
+  },
+  {
+    "id": "src-qwen3-coder-next",
+    "label": "Qwen · Qwen3-Coder-Next model card",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://huggingface.co/Qwen/Qwen3-Coder-Next",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "Official Qwen organization model card; Next is a distinct checkpoint and is not collapsed into the 480B-A35B release."
+  },
+  {
+    "id": "src-google-gemini-models",
+    "label": "Google · Gemini API model catalog",
+    "kind": "documentation",
+    "publisher": "Google DeepMind",
+    "url": "https://ai.google.dev/gemini-api/docs/models",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "notes": "Official endpoint catalog distinguishes Gemini 3.7, 3.6, 3.5 Flash and Flash-Lite; latest aliases may change and are not used as release identities here."
+  },
+  {
+    "id": "src-xai-grok45",
+    "label": "SpaceXAI · Introducing Grok 4.5",
+    "kind": "primary",
+    "publisher": "xAI",
+    "url": "https://x.ai/news/grok-4-5",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180,
+    "notes": "Official 2026-07-16 release announcement; effort, search and partner harness presentations remain protocol variants."
+  },
+  {
+    "id": "src-xai-grok46",
+    "label": "SpaceXAI · Introducing Grok 4.6",
+    "kind": "primary",
+    "publisher": "xAI",
+    "url": "https://x.ai/news/grok-4-6",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120,
+    "notes": "Official 2026-08-12 release announcement; benchmark rows must retain reasoning effort and agent harness."
+  },
+  {
+    "id": "src-glm5v-turbo",
+    "label": "Z.ai · GLM-5V-Turbo documentation",
+    "kind": "documentation",
+    "publisher": "Z.ai",
+    "url": "https://docs.z.ai/guides/vlm/glm-5v-turbo",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official multimodal coding model guide; documents the glm-5v-turbo endpoint, modalities, 200K context and 128K maximum output."
   }
 ]

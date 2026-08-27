@@ -58,6 +58,10 @@
     runs: [],
     publicEvidence: [],
     publicByModel: new Map(),
+    // Optional aggregate of source model names that could not be safely
+    // normalised to a canonical release.  The field is deliberately
+    // additive: older snapshots simply leave this list empty.
+    publicUnmappedModels: [],
     view: "cards",
     query: "",
     provider: "all",
@@ -91,12 +95,34 @@
     return Number.isFinite(parsed) ? parsed : null;
   };
   const norm = (value) => String(value ?? "").trim().toLowerCase();
+  // Source metadata is data, not trusted markup. Only external HTTP(S)
+  // links are rendered as anchors; other schemes stay plain text.
+  const safeUrl = (value) => {
+    const raw = String(value ?? "").trim();
+    if (!/^https?:\/\//i.test(raw)) return "";
+    try {
+      const parsed = new URL(raw);
+      return parsed.protocol === "http:" || parsed.protocol === "https:" ? raw : "";
+    } catch (_error) {
+      return "";
+    }
+  };
+  // Validate each candidate independently so a malformed first field cannot
+  // hide a usable source URL in a later fallback field.
+  const firstSafeUrl = (...values) => {
+    for (const value of values) {
+      const url = safeUrl(value);
+      if (url) return url;
+    }
+    return "";
+  };
   const isCurrent = (model) => ["active", "preview", "restricted"].includes(norm(model.status));
   const hasScores = (model) => scoreEntries(model).length > 0 || publicEntries(model).length > 0 || Number(model.systemRunCount || 0) > 0 || relatedRuns(model).length > 0;
 
   function normaliseModel(raw) {
     const source = raw && typeof raw === "object" ? raw : {};
     const variant = source.variant && typeof source.variant === "object" ? source.variant : {};
+    const profile = source.profile && typeof source.profile === "object" ? source.profile : {};
     const id = text(first(source.id, source.canonicalId, source.canonical_id, source.modelId, source.name), "unknown-model");
     const status = text(first(source.status, source.state, source.lifecycle), source.catalogOnly ? "catalog-only" : "active");
     return {
@@ -114,13 +140,14 @@
       availability: first(source.availability, source.access),
       aliases: list(first(source.aliases, source.alias)),
       tags: list(first(source.tags, source.capabilities)),
-      summary: text(first(source.summary, source.description, source.note), "暂无模型说明。"),
+      summary: text(first(source.summary, source.description, source.note, profile.positioning), "暂无模型说明。"),
       modalities: list(first(source.modalities, source.modality)).map(String),
       contextWindow: first(source.contextWindow, source.context_window, source.context),
       paramsTotal: first(source.paramsTotal, source.params_total, source.totalParams, source.parameters),
       paramsActive: first(source.paramsActive, source.params_active, source.activeParams),
       openWeights: source.openWeights === true || source.open_weights === true,
       variant,
+      profile,
       sourceIds: list(first(source.sourceIds, source.source_ids)),
       scores: source.scores && typeof source.scores === "object" ? source.scores : {},
       scoreCount: Number(source.scoreCount || source.score_count || 0),
@@ -188,6 +215,41 @@
       selectionRank: number(item.selectionRank || item.selection_rank),
       subjectType: first(item.subjectType, item.subject_type),
     };
+  }
+
+  function normaliseUnmappedModel(raw, keyHint = "") {
+    const source = raw && typeof raw === "object" ? raw : {};
+    const modelRef = first(source.modelRef, source.model_ref, source.modelName, source.model_name, keyHint);
+    const sampleRaw = first(source.sampleEvidence, source.sample_evidence, source.samples, source.sampleRows, source.sample_rows, source.examples);
+    const mappingCounts = first(source.mappingStatusCounts, source.mapping_status_counts, source.mappingCounts, source.mapping_counts);
+    return {
+      ...source,
+      modelRef: text(modelRef, "unknown source model"),
+      rowCount: number(first(source.rowCount, source.row_count, source.count)) || 0,
+      numericRowCount: number(first(source.numericRowCount, source.numeric_row_count)) || 0,
+      benchmarkCount: number(first(source.benchmarkCount, source.benchmark_count)) || profileList(first(source.benchmarkIds, source.benchmark_ids)).length,
+      sourceIds: profileList(first(source.sourceIds, source.source_ids, source.sourceId, source.source_id, source.sources)),
+      sourceLabels: profileList(first(source.sourceLabels, source.source_labels)),
+      sourceUrls: profileList(first(source.sourceUrls, source.source_urls)),
+      aliases: profileList(first(source.aliases, source.modelRefs, source.model_refs)),
+      sampleEvidence: Array.isArray(sampleRaw) ? sampleRaw.filter((item) => item && typeof item === "object") : [],
+      mappingStatusCounts: mappingCounts && typeof mappingCounts === "object" ? mappingCounts : {},
+      latestRetrievedAt: first(source.latestRetrievedAt, source.latest_retrieved_at, source.retrievedAt, source.retrieved_at),
+    };
+  }
+
+  function unmappedModelList(value) {
+    if (Array.isArray(value)) return value.map((item) => normaliseUnmappedModel(item));
+    if (!value || typeof value !== "object") return [];
+    // Accept a wrapped aggregate as well as a map keyed by the source's
+    // original model spelling.  This keeps the UI forward-compatible with
+    // both compact and human-authored snapshots.
+    const wrapped = first(value.models, value.items, value.entries, value.aliases);
+    if (Array.isArray(wrapped)) return wrapped.map((item) => normaliseUnmappedModel(item));
+    return Object.entries(value).map(([key, item]) => {
+      if (item && typeof item === "object" && !Array.isArray(item)) return normaliseUnmappedModel(item, key);
+      return normaliseUnmappedModel({ modelRef: key, rowCount: item }, key);
+    });
   }
 
   function sourceFor(idOrUrl) {
@@ -372,6 +434,123 @@
     return ({ text: "文本", image: "图像", video: "视频", audio: "音频", code: "代码" })[norm(value)] || text(value);
   }
 
+  function profileList(value) {
+    return list(value).filter((item) => item !== null && item !== undefined && item !== "").map(String);
+  }
+
+  function profileListText(value, fallback = "未注明") {
+    const values = profileList(value);
+    return values.length ? values.join(" · ") : fallback;
+  }
+
+  function profileBulletMarkup(value, empty = "未注明") {
+    const values = profileList(value);
+    return values.length
+      ? `<ul class="model-profile-list">${values.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`
+      : `<p class="model-profile-empty">${esc(empty)}</p>`;
+  }
+
+  // This key is only for joining a displayed source spelling to an existing
+  // catalog alias.  It never mutates canonical identity and intentionally
+  // keeps release/variant tokens intact.
+  function sourceAliasKey(value) {
+    return norm(value).replace(/[^a-z0-9]+/g, "");
+  }
+
+  function modelAliasKeys(model) {
+    const values = [
+      model?.id,
+      model?.canonicalId,
+      model?.name,
+      ...(model?.aliases || []),
+      ...profileList(model?.profile?.endpoint_ids),
+    ];
+    return new Set(values.map(sourceAliasKey).filter(Boolean));
+  }
+
+  function publicUnmappedFor(model) {
+    if (!model || !state.publicUnmappedModels.length) return [];
+    const directIds = new Set([model.id, model.canonicalId].map(norm).filter(Boolean));
+    const aliases = modelAliasKeys(model);
+    return state.publicUnmappedModels.filter((item) => {
+      const candidateIds = [
+        item.canonicalModelId,
+        item.canonical_model_id,
+        item.suggestedCanonicalModelId,
+        item.suggested_canonical_model_id,
+      ].map(norm).filter(Boolean);
+      if (candidateIds.some((id) => directIds.has(id))) return true;
+      const spellings = [item.modelRef, ...(item.aliases || [])];
+      return spellings.some((value) => aliases.has(sourceAliasKey(value)));
+    });
+  }
+
+  function publicSourceAliases(model) {
+    const rows = publicEntries(model);
+    const byKey = new Map();
+    rows.forEach((item) => {
+      // Do not fall back to the catalog-resolved display name here: this
+      // section is specifically about the source's original spelling.
+      const raw = first(item.modelRef, item.model_ref);
+      const key = sourceAliasKey(raw);
+      if (!key) return;
+      const current = byKey.get(key) || {
+        alias: String(raw),
+        sourceIds: new Set(),
+        rowCount: 0,
+        status: "reported",
+      };
+      current.rowCount += 1;
+      if (item.sourceId) current.sourceIds.add(String(item.sourceId));
+      if (item.mappingStatus && norm(item.mappingStatus) !== "exact_alias") current.status = String(item.mappingStatus);
+      byKey.set(key, current);
+    });
+    return [...byKey.values()].sort((a, b) => b.rowCount - a.rowCount || a.alias.localeCompare(b.alias));
+  }
+
+  function aliasSourceLinks(sourceIds, labels = [], urls = []) {
+    const ids = profileList(sourceIds);
+    const links = profileList(urls);
+    if (!ids.length && !labels.length && !links.length) return "来源未注明";
+    const values = [];
+    ids.forEach((id) => {
+      const source = sourceFor(id);
+      values.push(sourceLinkMarkup(source, null, source?.label || id));
+    });
+    labels.forEach((label) => {
+      if (!values.some((item) => item.includes(esc(label)))) values.push(`<span class="source-link source-link-muted">${esc(label)}</span>`);
+    });
+    links.forEach((url) => {
+      const external = safeUrl(url);
+      if (external && !values.some((item) => item.includes(esc(external)))) values.push(`<a class="source-link" href="${esc(external)}" target="_blank" rel="noreferrer">source ↗</a>`);
+    });
+    return values.join(" · ");
+  }
+
+  function sourceAliasMarkup(model) {
+    const mapped = publicSourceAliases(model);
+    const pending = publicUnmappedFor(model);
+    const mappedRows = mapped.slice(0, 12).map((item) => `<li><div><code>${esc(item.alias)}</code><small>${aliasSourceLinks([...item.sourceIds])}</small></div><span>${item.rowCount} 条 · ${esc(item.status)}</span></li>`).join("");
+    const pendingRows = pending.slice(0, 12).map((item) => {
+      const samples = item.sampleEvidence || [];
+      const sample = samples[0] || {};
+      const sourceIds = item.sourceIds || (sample.sourceId ? [sample.sourceId] : []);
+      const sourceLabels = item.sourceLabels || [];
+      const sourceUrls = item.sourceUrls || (sample.sourceUrl ? [sample.sourceUrl] : []);
+      const count = item.rowCount || 0;
+      const benchmarks = item.benchmarkCount || 0;
+      const reason = Object.keys(item.mappingStatusCounts || {})[0] || item.mappingStatus || "unmatched";
+      return `<li><div><code>${esc(item.modelRef)}</code><small>${aliasSourceLinks(sourceIds, sourceLabels, sourceUrls)}</small></div><span>${count} 条${benchmarks ? ` · ${benchmarks} benchmarks` : ""} · ${esc(reason)}</span></li>`;
+    }).join("");
+    const globalPending = state.publicUnmappedModels.reduce((sum, item) => sum + (Number(item.rowCount) || 0), 0);
+    const pendingHint = pending.length
+      ? `<p class="model-alias-pending-note">这些原名与当前 canonical alias 仅作线索，尚未晋升为 model release；仍保留在公开 evidence 队列。</p>`
+      : globalPending
+        ? `<p class="model-alias-pending-note">snapshot 另有 ${globalPending} 条公开行未能安全关联到本模型；可查看已发布的 <a href="data/public/unmapped-summary.json" target="_blank" rel="noreferrer">unmapped summary ↗</a>。完整 JSONL 仅作为维护 artifact 保存。</p>`
+        : "";
+    return `<section class="detail-section"><h4>SOURCE ALIASES / NORMALIZATION</h4><p class="model-alias-section-note">公开榜单原名与 canonical release 分开保存；这里仅显示可追溯的 spelling 线索，不改变模型身份。</p><div class="model-source-alias-columns"><div><label>REPORTED SPELLINGS${mapped.length > 12 ? ` · ${mapped.length} total` : ""}</label>${mappedRows ? `<ul class="model-source-alias-list">${mappedRows}</ul>` : '<p class="model-profile-empty">暂无已映射公开原名。</p>'}</div><div><label>PENDING NORMALIZATION${pending.length > 12 ? ` · ${pending.length} groups` : ""}</label>${pendingRows ? `<ul class="model-source-alias-list pending">${pendingRows}</ul>` : '<p class="model-profile-empty">暂无与此模型精确相符的待归一化原名。</p>'}</div></div>${pendingHint}</section>`;
+  }
+
   function variantLabels(model) {
     const v = model.variant || {};
     const labels = [];
@@ -388,7 +567,9 @@
 
   function searchable(model) {
     const publicTerms = publicEntries(model).flatMap((item) => [item.benchmarkId, item.benchmarkName, item.metricId, item.harness]);
-    return [model.id, model.name, model.provider, model.familyId, model.summary, model.release, model.access, ...model.aliases, ...model.tags, ...model.modalities, ...variantLabels(model), ...publicTerms]
+    const profile = model.profile || {};
+    const unmappedTerms = publicUnmappedFor(model).flatMap((item) => [item.modelRef, ...(item.aliases || []), ...(item.sourceIds || [])]);
+    return [model.id, model.name, model.provider, model.familyId, model.summary, model.release, model.access, profile.positioning, profile.architecture, profile.context_note, profile.parameter_note, ...profileList(profile.capabilities), ...profileList(profile.best_for), ...profileList(profile.endpoint_ids), ...profileList(profile.availability), ...profileList(profile.caveats), ...model.aliases, ...model.tags, ...model.modalities, ...variantLabels(model), ...publicTerms, ...unmappedTerms]
       .filter(Boolean).join(" ").toLowerCase();
   }
 
@@ -467,6 +648,7 @@
         <span><small>MODALITIES</small><strong>${esc(modalities)}</strong></span>
       </div>
       <div class="model-card-tags">${tags || '<span class="model-badge muted-badge">暂无标签</span>'}</div>
+      <p class="model-card-provenance">目录 / source-linked · 未独立核验</p>
       <div class="model-card-evidence">
         <div class="model-score-preview">${canonicalPreview}${publicScorePreview || (!canonicalPreview ? '<span class="model-score-empty">暂无已收录成绩；打开详情查看目录来源。</span>' : "")}</div>
         <div class="model-card-foot"><span>${scores.length || publicRows.length ? `${scores.length ? `${scores.length} canonical` : ""}${scores.length && publicRows.length ? " · " : ""}${publicRows.length ? `${publicRows.length} 条披露` : ""}` : "catalog-only"}${model.openWeights ? " · open weights" : ""}</span><span class="model-open-link">查看详情 ↗</span></div>
@@ -555,7 +737,9 @@
     if (els.directoryNote) {
       const canonicalTotal = models.reduce((sum, model) => sum + scoreEntries(model).length, 0);
       const publicTotal = models.reduce((sum, model) => sum + publicEntries(model).length, 0);
-      els.directoryNote.textContent = `${models.length} / ${state.models.length} 个模型条目 · ${canonicalTotal} 条 canonical + ${publicTotal} 条公开披露 · 目录字段缺失会显示“未注明”，不会推断。`;
+      const pendingRows = state.publicUnmappedModels.reduce((sum, item) => sum + (Number(item.rowCount) || 0), 0);
+      const pendingNote = state.publicUnmappedModels.length ? ` · ${state.publicUnmappedModels.length} 个来源原名待归一化（${pendingRows} 行）` : "";
+      els.directoryNote.textContent = `${models.length} / ${state.models.length} 个模型条目 · ${canonicalTotal} 条 canonical + ${publicTotal} 条公开披露${pendingNote} · 目录字段缺失会显示“未注明”，不会推断。`;
     }
     if (els.modelGrid) els.modelGrid.innerHTML = models.map(cardMarkup).join("");
     if (els.modelTableBody) els.modelTableBody.innerHTML = models.map(tableMarkup).join("");
@@ -566,7 +750,7 @@
   }
 
   function sourceLinkMarkup(source, fallbackUrl, label) {
-    const url = first(source?.url, source?.web_url, source?.page_url, fallbackUrl);
+    const url = firstSafeUrl(source?.url, source?.web_url, source?.page_url, fallbackUrl);
     if (!url) return `<span class="source-link source-link-muted">${esc(label || source?.id || "未注明来源")}</span>`;
     return `<a class="source-link" href="${esc(url)}" target="_blank" rel="noreferrer">${esc(label || source?.label || url)} ↗</a>`;
   }
@@ -602,7 +786,8 @@
       : [];
     const urls = [];
     [[sourceUrl, first(item.sourceLabel, source?.label, "来源")], [pageUrl, "source page"], [apiUrl, "source API"]].forEach(([url, label]) => {
-      if (url && !urls.some(([known]) => known === url)) urls.push([url, label]);
+      const external = safeUrl(url);
+      if (external && !urls.some(([known]) => known === external)) urls.push([external, label]);
     });
     return `<article class="model-public-row">
       <div class="model-score-row-head"><div><strong>${esc(benchmarkLabel(item.benchmarkId, item.benchmarkName))}</strong><small>${esc(version)} · ${esc(item.metricId || "metric 未注明")}</small></div><strong class="model-score-value public-value">${esc(formatPublicEvidence(item))}</strong></div>
@@ -644,12 +829,20 @@
     const publicDetail = publicDetailEntries(model);
     const runs = relatedRuns(model);
     const variant = variantLabels(model);
-    const sourceIds = [...new Set(model.sourceIds)];
+    const profile = model.profile || {};
+    const sourceIds = [...new Set([...model.sourceIds, ...profileList(profile.fact_source_ids)])];
     const sources = sourceIds.map((id) => sourceFor(id) || { id }).filter(Boolean);
     const aliases = model.aliases.length ? model.aliases.map((alias) => `<code>${esc(alias)}</code>`).join(" ") : "未注明";
     const tags = [...model.tags, ...variant].filter(Boolean).map((tag) => `<span class="model-badge">${esc(tag)}</span>`).join("");
     const modalities = model.modalities.length ? model.modalities.map(modalityLabel).join(" · ") : "未注明";
     const reasoning = model.variant?.reasoning === true ? "支持 / 标注" : model.variant?.reasoning === false ? "不标注" : "未注明";
+    const profileReasoning = profileListText(profile.reasoning_modes);
+    const profileAvailability = profileListText(profile.availability, model.availability ? profileListText(model.availability) : "未注明");
+    const profileCapabilities = profileList(profile.capabilities);
+    const profileBestFor = profileList(profile.best_for);
+    const profileCaveats = profileList(profile.caveats);
+    const profilePositioning = first(profile.positioning, model.summary, "暂无模型说明。");
+    const profileEndpoints = profileListText(profile.endpoint_ids);
     const sourceMarkup = sources.length ? sources.map((source) => `<li>${sourceLinkMarkup(source, null, source.label || source.id)}<small>${esc(first(source.publisher, source.kind, "source") || "")}</small></li>`).join("") : '<li class="model-source-empty">暂无直接来源链接。</li>';
     const rawJson = JSON.stringify(model, null, 2);
     els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">${esc(model.mark || model.name.slice(0, 1))}</span><div><h3 id="drawerTitle">${esc(model.name)}</h3><p>${esc(model.provider)} · ${esc(familyName(model))}</p><div class="drawer-status-row">${statusBadge(model)}<span class="model-detail-id">${esc(model.id)}</span></div></div></div>
@@ -661,13 +854,21 @@
         ${detailItem("STATUS", esc(statusLabel(model.status)))}
         ${detailItem("MODALITIES", esc(modalities))}
         ${detailItem("REASONING", esc(reasoning))}
+        ${detailItem("REASONING MODES", esc(profileReasoning))}
+        ${detailItem("AVAILABILITY", esc(profileAvailability))}
+        ${detailItem("ARCHITECTURE", esc(text(profile.architecture, "未注明")))}
         ${detailItem("CONTEXT", esc(formatContext(model.contextWindow)))}
+        ${detailItem("MAX OUTPUT", esc(formatContext(profile.max_output_tokens)))}
         ${detailItem("PARAMETERS", esc(formatParams(model.paramsTotal, model.paramsActive)))}
+        ${detailItem("KNOWLEDGE CUTOFF", esc(text(profile.knowledge_cutoff, "未注明")))}
+        ${detailItem("LICENSE", esc(text(profile.license, "未注明")))}
         ${detailItem("OPEN WEIGHTS", model.openWeights ? '<span class="table-yes">yes</span>' : '<span class="table-muted">no / 未注明</span>')}
         ${detailItem("CATALOG STATE", model.catalogOnly ? "catalog-only" : "scored release")}
       </div></section>
-      <section class="detail-section"><h4>ALIASES / ENDPOINT</h4><p class="model-aliases">${aliases}</p>${model.endpoint ? `<p class="model-endpoint"><span>endpoint</span> <code>${esc(model.endpoint)}</code></p>` : ""}</section>
-      <section class="detail-section"><h4>PRIMARY SOURCES · ${sources.length}</h4><ul class="model-source-list">${sourceMarkup}</ul></section>
+      <section class="detail-section"><h4>ALIASES / ENDPOINT</h4><p class="model-aliases">${aliases}</p><p class="model-endpoint"><span>endpoint ids</span> <code>${esc(profileEndpoints)}</code></p>${model.endpoint ? `<p class="model-endpoint"><span>endpoint</span> <code>${esc(model.endpoint)}</code></p>` : ""}</section>
+      ${sourceAliasMarkup(model)}
+      <section class="detail-section"><h4>PROFILE NOTES</h4><p class="model-profile-provenance">CURATED PROFILE · source-linked discovery metadata；部分 source 仅覆盖 family / release notes，未必是该 release 的逐项官方确认；不等同于本站独立复现或 benchmark 运行。</p><p class="model-profile-positioning">${esc(profilePositioning)}</p><div class="model-profile-columns"><div><label>CAPABILITIES</label>${profileBulletMarkup(profileCapabilities)}</div><div><label>BEST FOR</label>${profileBulletMarkup(profileBestFor)}</div></div>${profile.context_note ? `<p class="model-profile-note"><span>context</span> ${esc(profile.context_note)}</p>` : ""}${profile.parameter_note ? `<p class="model-profile-note"><span>parameters</span> ${esc(profile.parameter_note)}</p>` : ""}${profileCaveats.length ? `<div class="model-profile-caveats"><label>CAVEATS</label>${profileBulletMarkup(profileCaveats)}</div>` : ""}${profile.last_checked ? `<p class="model-profile-checked">profile checked ${esc(formatDate(profile.last_checked))}</p>` : ""}</section>
+      <section class="detail-section"><h4>PRIMARY / DISCOVERY SOURCES · ${sources.length}</h4><p class="model-source-scope-note">来源链接用于定位模型族、发布说明或公开榜单；release 身份与成绩仍以每条 evidence 的原名、协议和 locator 为准。</p><ul class="model-source-list">${sourceMarkup}</ul></section>
       <section class="detail-section"><h4>CANONICAL / CURATED SIGNALS · ${scoreItems.length}</h4>${scoreItems.length ? `<div class="model-score-list">${scoreItems.map(scoreMarkup).join("")}</div>` : '<p class="detail-note">当前目录暂无 canonical 成绩；这不表示模型未被测试。</p>'}</section>
       <section class="detail-section"><h4>PUBLIC REPORTED SIGNALS · ${publicDetail.rows.length}</h4>${publicDetail.rows.length ? `<p class="public-section-note">公开来源共 ${publicDetail.rows.length} 行，按 benchmark / metric / harness 去重后显示 ${publicDetail.distinct.length} 个代表项；全部保留在 snapshot 中，均标记“披露 · 未复现”。</p><div class="model-public-list">${publicDetail.distinct.slice(0, 100).map(publicMarkup).join("")}</div>${publicDetail.distinct.length > 100 ? `<p class="public-section-note">详情抽屉显示前 100 个代表项；可下载完整 <a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">公开 evidence JSONL ↗</a>。</p>` : ""}` : '<p class="detail-note">当前 snapshot 没有映射到该 release 的公开披露行；这不表示模型未被测试。</p>'}</section>
       <section class="detail-section"><h4>SYSTEM RUNS · ${runs.length}</h4>${runs.length ? `<div class="model-run-list">${runs.map(runMarkup).join("")}</div>` : '<p class="detail-note">当前 snapshot 没有与该 release 精确关联的 system run。</p>'}</section>
@@ -781,7 +982,7 @@
   }
 
   async function loadData() {
-    const response = await fetch("data/derived/site.json", { cache: "no-store" });
+    const response = await fetch("data/derived/site.json");
     if (!response.ok) throw new Error(`snapshot ${response.status}`);
     return response.json();
   }
@@ -793,6 +994,12 @@
     state.benchmarks = new Map(list(data?.benchmarks).map((benchmark) => [String(benchmark.id), benchmark]));
     state.runs = list(data?.runs).map(normaliseRun);
     state.publicEvidence = list(first(data?.publicEvidence, data?.public_evidence)).map(normalisePublicEvidence).filter((item) => item.canonicalModelId);
+    state.publicUnmappedModels = unmappedModelList(first(
+      data?.publicUnmappedModels,
+      data?.public_unmapped_models,
+      data?.publicMeta?.unmappedModels,
+      data?.publicMeta?.unmapped_models,
+    ));
     state.publicByModel = new Map();
     state.publicEvidence.forEach((item) => {
       const key = norm(item.canonicalModelId);

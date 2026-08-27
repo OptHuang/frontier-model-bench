@@ -48,8 +48,35 @@ DEFAULT_OUTPUT = ROOT / "data" / "derived" / "public.json"
 DEFAULT_JSONL_OUTPUT = ROOT / "data" / "public" / "evidence.jsonl"
 DEFAULT_UNMAPPED_OUTPUT = ROOT / "data" / "public" / "unmapped.jsonl"
 DEFAULT_ALTERNATIVES_OUTPUT = ROOT / "data" / "public" / "alternatives.jsonl"
+DEFAULT_UNMAPPED_SUMMARY_OUTPUT = ROOT / "data" / "public" / "unmapped-summary.json"
+DEFAULT_ALIAS_REGISTRY = ROOT / "data" / "public" / "model_aliases.json"
 SCHEMA_VERSION = "public-evidence@0.1"
-DEFAULT_MAX_PER_KEY = 3
+# The public layer is an index of what sources report.  Keep every mapped
+# row by default; pass a positive value for a deliberately compact preview.
+# (``0`` is interpreted as unlimited in ``select_public_rows``.)
+DEFAULT_MAX_PER_KEY = 0
+
+# Public tables sometimes mix task scores with counters and telemetry in the
+# same row. Keep those measurements in the evidence ledger, but mark them as
+# evidence-only so downstream consumers cannot mistake latency, tokens, or
+# sample counts for benchmark performance.
+PUBLIC_TELEMETRY_METRICS = {
+    "eval",
+    "train",
+    "truncated",
+    "prompt-tokens",
+    "output-tokens",
+    "input-tokens",
+    "total-tokens",
+    "observed-inference-time-s",
+    "inference-time-s",
+    "latency-ms",
+    "runtime-seconds",
+    "cost-usd",
+    "num-samples",
+    "sample-count",
+    "n",
+}
 
 
 def utc_now() -> str:
@@ -88,6 +115,21 @@ def _finite(value: Any) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(float(value))
 
 
+def _public_metric_key(value: Any) -> str:
+    text = str(value or "score").strip().casefold()
+    return re.sub(r"^-+|-+$", "", re.sub(r"[^a-z0-9@^]+", "-", text)) or "score"
+
+
+def _is_public_telemetry_metric(value: Any) -> bool:
+    key = _public_metric_key(value)
+    return (
+        key in PUBLIC_TELEMETRY_METRICS
+        or key.startswith("prompt-tokens")
+        or key.startswith("output-tokens")
+        or key.startswith("observed-inference-time")
+    )
+
+
 def _as_list(payload: Any, key: str) -> list[Mapping[str, Any]]:
     value = payload.get(key, []) if isinstance(payload, Mapping) else payload
     if not isinstance(value, list):
@@ -120,6 +162,80 @@ def load_catalog(root: Path) -> dict[str, dict[str, Mapping[str, Any]]]:
             if identifier:
                 result[kind][identifier] = item
     return result
+
+
+def load_public_aliases(
+    root: Path,
+    models: Mapping[str, Mapping[str, Any]] | None = None,
+    path: Path | None = None,
+) -> tuple[dict[tuple[str, str], set[str]], dict[str, dict[str, Any]], list[str]]:
+    """Load explicitly reviewed source-specific public model aliases.
+
+    The normalizer intentionally avoids fuzzy matching because a release,
+    endpoint, quantized checkpoint, and effort presentation can have nearly
+    identical names.  This small registry is the opt-in escape hatch for
+    aliases that have been inspected by a maintainer.  Entries are keyed by
+    ``(source_id, normalized_alias)``; an entry without ``sourceIds`` is
+    treated as a wildcard only when it maps to a single catalog release.
+
+    The function returns the lookup, a note/metadata map keyed by
+    ``source_id|normalized_alias``, and non-fatal validation warnings.  A
+    malformed or unknown target is ignored rather than changing a row's
+    identity implicitly.
+    """
+
+    alias_path = (path or DEFAULT_ALIAS_REGISTRY)
+    if not alias_path.is_absolute():
+        alias_path = root / alias_path
+    payload = _json_load(alias_path, {})
+    if not isinstance(payload, Mapping):
+        return {}, {}, [f"alias registry is not an object: {alias_path.name}"]
+    entries = payload.get("aliases", payload.get("modelAliases", []))
+    if not isinstance(entries, list):
+        return {}, {}, [f"alias registry aliases must be a list: {alias_path.name}"]
+    known_models = set(models or {})
+    lookup: dict[tuple[str, str], set[str]] = defaultdict(set)
+    metadata: dict[str, dict[str, Any]] = {}
+    warnings: list[str] = []
+    for index, item in enumerate(entries):
+        if not isinstance(item, Mapping):
+            warnings.append(f"alias registry entry {index} is not an object")
+            continue
+        target = _nonempty(item.get("canonicalModelId") or item.get("canonical_model_id"))
+        if not target or (known_models and target not in known_models):
+            warnings.append(f"alias registry entry {index} has unknown target: {target or 'missing'}")
+            continue
+        values = item.get("values", item.get("aliases", item.get("alias")))
+        if isinstance(values, str):
+            values = [values]
+        if not isinstance(values, list):
+            warnings.append(f"alias registry entry {index} has no values")
+            continue
+        source_ids = item.get("sourceIds", item.get("source_ids", item.get("sourceId", item.get("source_id"))))
+        if isinstance(source_ids, str):
+            source_ids = [source_ids]
+        if not isinstance(source_ids, list) or not source_ids:
+            source_ids = ["*"]
+        sources = [str(value).strip() for value in source_ids if str(value).strip()]
+        if not sources:
+            sources = ["*"]
+        note = _nonempty(item.get("note"))
+        confidence = _nonempty(item.get("confidence")) or "high"
+        for value in values:
+            normalized = _normal_model_text(value)
+            if not normalized:
+                warnings.append(f"alias registry entry {index} has empty alias")
+                continue
+            for source_id in sources:
+                key = (source_id, normalized)
+                lookup[key].add(target)
+                metadata_key = f"{source_id}|{normalized}"
+                metadata[metadata_key] = {
+                    "registry": str(alias_path.name),
+                    "note": note,
+                    "confidence": confidence,
+                }
+    return lookup, metadata, warnings
 
 
 def discover_candidate_files(input_dirs: Sequence[Path], input_files: Sequence[Path] = ()) -> tuple[list[Path], list[str]]:
@@ -193,7 +309,7 @@ def _source_url(source: Mapping[str, Any] | None) -> str | None:
         return None
     for key in ("url", "api_url", "download_url"):
         value = _nonempty(source.get(key))
-        if value:
+        if value and _valid_url(value):
             return value
     return None
 
@@ -380,6 +496,59 @@ def annotate_public_mapping(
             row["mappingCandidates"] = matches
 
 
+def annotate_curated_public_mapping(
+    row: dict[str, Any],
+    alias_lookup: Mapping[tuple[str, str], set[str]],
+    alias_metadata: Mapping[str, Mapping[str, Any]] | None = None,
+) -> None:
+    """Apply an explicit, source-scoped alias without guessing identity.
+
+    Curated aliases run before the generic presentation-suffix normalizer.
+    A source-specific mapping wins only when it resolves to exactly one
+    catalog release; conflicting registry entries are left ambiguous.  The
+    original ``modelRef`` is never changed, and the row remains public /
+    unverified after mapping.
+    """
+
+    if row.get("canonicalModelId"):
+        return
+    source_id = _nonempty(row.get("sourceId")) or _nonempty(row.get("source_id")) or ""
+    normalized = _normal_model_text(row.get("modelRef"))
+    if not normalized:
+        return
+    keys = [(source_id, normalized), ("*", normalized)]
+    matches: set[str] = set()
+    matched_key: tuple[str, str] | None = None
+    for key in keys:
+        candidates = set(alias_lookup.get(key, set()))
+        if not candidates:
+            continue
+        if matched_key is None:
+            matched_key = key
+            matches = candidates
+        else:
+            matches.update(candidates)
+    if len(matches) != 1:
+        if len(matches) > 1:
+            row["mappingStatus"] = "ambiguous_alias"
+            row["mappingCandidates"] = sorted(matches)
+        return
+    target = sorted(matches)[0]
+    row["canonicalModelId"] = target
+    row["mappingStatus"] = "curated_alias"
+    row["mappingCandidates"] = [target]
+    flags = set(row.get("qualityFlags") or [])
+    flags.add("curated_model_alias")
+    row["qualityFlags"] = sorted(flags)
+    metadata_key = f"{matched_key[0]}|{normalized}" if matched_key else ""
+    details = dict((alias_metadata or {}).get(metadata_key, {}))
+    if details:
+        row["mappingEvidence"] = details
+        note = _nonempty(details.get("note"))
+        if note:
+            row["mappingNote"] = note
+
+
 def _version(row: Mapping[str, Any], protocol: Mapping[str, Any], metadata: Mapping[str, Any]) -> tuple[str | None, str | None]:
     version_id = None
     version_label = None
@@ -399,6 +568,66 @@ def _harness(row: Mapping[str, Any], protocol: Mapping[str, Any], metadata: Mapp
     harness = _nonempty(protocol.get("harness")) or _nonempty(metadata.get("harness"))
     harness_id = harness_id or _nonempty(protocol.get("harness_id")) or _nonempty(metadata.get("harness_id"))
     return harness_id or harness, harness
+
+
+def _public_metric_id(source_id: str, source_metric: str, protocol: Mapping[str, Any]) -> str:
+    """Upgrade legacy HELM table-wide score ids during artifact rebuilds."""
+
+    if source_id.startswith("helm-") and source_metric == "score":
+        table = _nonempty(protocol.get("table"))
+        table_id = re.sub(r"[^a-z0-9]+", "-", str(table or "").casefold()).strip("-")
+        if table_id and table_id != "accuracy":
+            return f"{table_id}-score"
+    return source_metric
+
+
+_SYSTEM_SUBJECT_TYPES = {"system", "agent", "agent-system", "agentic", "harness"}
+_SYSTEM_HARNESS_KIND_TOKENS = ("agent", "terminal", "computer-use", "tool-use")
+_MODEL_HARNESS_IDS = {"", "model-only", "lm-eval", "helm", "vendor-default", "unspecified-reported"}
+
+
+def _resolve_subject_type(
+    candidate: Mapping[str, Any],
+    protocol: Mapping[str, Any],
+    benchmark: Mapping[str, Any],
+    harness: Mapping[str, Any],
+    harness_id: str | None,
+) -> tuple[str, str | None, list[str]]:
+    """Resolve display semantics while retaining the source's own subject.
+
+    A source row may call its immediate subject a model even though the
+    registered benchmark evaluates a complete agent/environment system.  The
+    public layer uses the stronger system semantic for routing, but publishes
+    ``sourceSubjectType`` separately so this inference is auditable.
+    """
+
+    source_subject = _nonempty(candidate.get("subject_type")) or _nonempty(candidate.get("subjectType"))
+    source_subject = source_subject or _nonempty(protocol.get("subject_type")) or _nonempty(protocol.get("subjectType"))
+    source_subject = source_subject.casefold() if source_subject else None
+    benchmark_mode = _nonempty(benchmark.get("evaluation_mode")) or _nonempty(benchmark.get("evaluationMode"))
+    benchmark_mode = benchmark_mode.casefold() if benchmark_mode else None
+    harness_kind = _nonempty(harness.get("kind")) or _nonempty(harness.get("type"))
+    harness_kind = harness_kind.casefold() if harness_kind else None
+    normalized_harness_id = str(harness_id or "").strip().casefold()
+
+    signals: list[str] = []
+    if source_subject in _SYSTEM_SUBJECT_TYPES:
+        signals.append(f"source:subject_type={source_subject}")
+    if benchmark_mode in _SYSTEM_SUBJECT_TYPES:
+        signals.append(f"benchmark:evaluation_mode={benchmark_mode}")
+    if harness_kind and any(token in harness_kind for token in _SYSTEM_HARNESS_KIND_TOKENS):
+        signals.append(f"harness:kind={harness_kind}")
+    elif (
+        normalized_harness_id not in _MODEL_HARNESS_IDS
+        and any(token in normalized_harness_id for token in ("agent", "codex", "claude-code", "terminus"))
+    ):
+        signals.append(f"harness:id={normalized_harness_id}")
+
+    if signals:
+        return "system", source_subject, signals
+    if source_subject:
+        return source_subject, source_subject, [f"source:subject_type={source_subject}"]
+    return "model", None, ["default:model"]
 
 
 def _reported_status(row: Mapping[str, Any], metadata: Mapping[str, Any]) -> tuple[str, str]:
@@ -429,6 +658,9 @@ def _semantic_key(row: Mapping[str, Any]) -> dict[str, Any]:
         "benchmarkId": row.get("benchmarkId"),
         "benchmarkVersionId": row.get("benchmarkVersionId"),
         "metricId": row.get("metricId"),
+        "subjectType": row.get("subjectType"),
+        "sourceSubjectType": row.get("sourceSubjectType"),
+        "harnessId": row.get("harnessId"),
         "value": row.get("value"),
         "rawValue": row.get("rawValue"),
         "unit": row.get("unit"),
@@ -463,7 +695,8 @@ def normalize_candidate(
     source_id = _nonempty(candidate.get("source_id")) or _nonempty(manifest.get("source_id")) or "unknown-source"
     model_ref = _nonempty(candidate.get("model_ref"))
     benchmark_id = _nonempty(candidate.get("benchmark_ref")) or "unknown-benchmark"
-    metric_id = _nonempty(candidate.get("metric")) or "score"
+    source_metric_id = _nonempty(candidate.get("metric")) or "score"
+    metric_id = _public_metric_id(source_id, source_metric_id, protocol)
     version_id, version_label = _version(candidate, protocol, metadata)
     version_status = "source_reported" if version_id else ("source_hint" if version_label else "unknown")
     benchmark_catalog = catalog.get("benchmarks", {}).get(benchmark_id, {})
@@ -474,9 +707,31 @@ def normalize_candidate(
             benchmark_version_hint = str(default_version)
             version_status = "catalog_default_hint"
     harness_id, harness = _harness(candidate, protocol, metadata)
+    harness_catalog = catalog.get("harnesses", {}).get(harness_id or "", {})
+    subject_type, source_subject_type, subject_inferred_by = _resolve_subject_type(
+        candidate,
+        protocol,
+        benchmark_catalog if isinstance(benchmark_catalog, Mapping) else {},
+        harness_catalog if isinstance(harness_catalog, Mapping) else {},
+        harness_id,
+    )
     source = catalog.get("sources", {}).get(source_id)
     manifest_url = _nonempty(manifest.get("resolved_url")) or _nonempty(manifest.get("requested_url"))
-    source_url = _nonempty(candidate.get("source_url")) or manifest_url or _source_url(source)
+    # Never publish local ``file://`` or maintainer-path links from an
+    # adapter artifact.  Prefer a row-specific HTTP link, then the immutable
+    # fetch manifest, then the catalog source endpoint.
+    source_url = next(
+        (
+            value
+            for value in (
+                _nonempty(candidate.get("source_url")),
+                manifest_url,
+                _source_url(source),
+            )
+            if _valid_url(value)
+        ),
+        None,
+    )
     row_url = _metadata_url(metadata)
     status, review_status = _reported_status(candidate, metadata)
     canonical_model_id = _nonempty(candidate.get("canonical_model_id"))
@@ -510,6 +765,9 @@ def normalize_candidate(
                 "benchmarkId": benchmark_id,
                 "benchmarkVersionId": version_id,
                 "metricId": metric_id,
+                "subjectType": subject_type,
+                "sourceSubjectType": source_subject_type,
+                "harnessId": harness_id,
                 "value": candidate.get("value"),
                 "rawValue": candidate.get("raw_value"),
                 "unit": candidate.get("unit"),
@@ -534,6 +792,11 @@ def normalize_candidate(
         "benchmarkVersionHint": benchmark_version_hint,
         "benchmarkVersionStatus": version_status,
         "metricId": metric_id,
+        "sourceMetricId": source_metric_id,
+        "matrixExcluded": _is_public_telemetry_metric(metric_id),
+        "matrixExcludedReason": (
+            "telemetry_metric" if _is_public_telemetry_metric(metric_id) else None
+        ),
         "value": candidate.get("value") if _finite(candidate.get("value")) else None,
         "rawValue": candidate.get("raw_value"),
         "unit": _nonempty(candidate.get("unit")) or "unknown",
@@ -546,7 +809,9 @@ def normalize_candidate(
         "evidenceNote": "公开来源报告值；尚未由本项目独立复现/核验。",
         "evidenceLevel": _nonempty(candidate.get("evidence_level")) or "D",
         "comparability": _nonempty(candidate.get("comparability")) or "conditional",
-        "subjectType": _nonempty(candidate.get("subject_type")) or _nonempty(protocol.get("subject_type")) or "model",
+        "subjectType": subject_type,
+        "sourceSubjectType": source_subject_type,
+        "subjectInferredBy": subject_inferred_by,
         "harnessId": harness_id,
         "harness": harness,
         "protocol": protocol,
@@ -701,9 +966,9 @@ def _selection_group(row: Mapping[str, Any]) -> str:
     """Group rows for the compact public index.
 
     A source can publish many effort tiers/splits for one model and metric.
-    Keep a small number of alternatives per model × benchmark × metric ×
-    source, while preserving every unselected row in ``unmapped.jsonl`` or
-    the caller's audit artifact.
+    The default full mode keeps every mapped row; a positive cap can be used
+    for a compact preview.  Unmapped rows are always preserved in the
+    unresolved JSONL/summary queue rather than guessed into a release.
     """
 
     return _digest(
@@ -760,8 +1025,8 @@ def select_public_rows(
     a count and provenance for later review.
     """
 
-    if max_per_key < 1:
-        raise ValueError("max_per_key must be positive")
+    if max_per_key < 0:
+        raise ValueError("max_per_key must be zero or positive")
     grouped: defaultdict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         grouped[_selection_group(row)].append(dict(row))
@@ -773,7 +1038,11 @@ def select_public_rows(
         mapped = any(item.get("canonicalModelId") for item in ordered)
         # For a group with no mapping, keep it in the full audit export.  This
         # prevents a large third-party table from inflating the page payload.
-        take = ordered[:max_per_key] if mapped else []
+        # ``0`` is the full mapped snapshot mode.  Unmapped rows remain in
+        # the separate queue because assigning them a canonical release would
+        # be an identity guess.
+        full_group = mapped and (max_per_key == 0 or len(ordered) <= max_per_key)
+        take = ordered if full_group else (ordered[:max_per_key] if mapped else [])
         for index, item in enumerate(take, 1):
             item["selection"] = "curated"
             item["selectionRank"] = index
@@ -781,7 +1050,7 @@ def select_public_rows(
             item["selectionKey"] = group_id
             item["selectionReason"] = [
                 "canonical_model_mapping",
-                "bounded_source_variants",
+                "all_source_variants" if full_group else "bounded_source_variants",
             ]
             selected.append(item)
         for item in ordered[len(take) :]:
@@ -815,10 +1084,17 @@ def build_index(
     max_per_key: int = DEFAULT_MAX_PER_KEY,
 ) -> dict[str, Any]:
     catalog = load_catalog(root)
+    curated_alias_lookup, curated_alias_metadata, alias_warnings = load_public_aliases(
+        root,
+        catalog.get("models", {}),
+    )
     files, discovery_errors = discover_candidate_files(input_dirs, input_files)
     raw_rows, read_errors = read_candidates(files, catalog)
     alias_lookup = build_model_alias_lookup(catalog.get("models", {}))
     for row in raw_rows:
+        # Apply explicit source-scoped aliases first.  The generic matcher
+        # remains deliberately conservative and is only a fallback.
+        annotate_curated_public_mapping(row, curated_alias_lookup, curated_alias_metadata)
         annotate_public_mapping(row, alias_lookup)
         canonical_id = row.get("canonicalModelId")
         if canonical_id:
@@ -841,6 +1117,9 @@ def build_index(
     status_counts = Counter(str(row.get("status") or "candidate") for row in all_rows)
     mapping_counts = Counter(str(row.get("mappingStatus") or "unmatched") for row in all_rows)
     numeric_rows = [row for row in all_rows if _finite(row.get("value"))]
+    mapped_rows = [row for row in all_rows if row.get("canonicalModelId")]
+    mapped_performance_rows = [row for row in mapped_rows if not row.get("matrixExcluded")]
+    mapped_telemetry_rows = [row for row in mapped_rows if row.get("matrixExcluded")]
     retrieved_values = sorted(str(row.get("retrievedAt")) for row in all_rows if row.get("retrievedAt"))
     payload_hashes = sorted({str(row.get("payloadSha256")) for row in all_rows if row.get("payloadSha256")})
     sources = []
@@ -852,15 +1131,56 @@ def build_index(
             "url": _source_url(source),
             "rowCount": count,
         })
-    benchmarks = [
-        {"id": identifier, "name": catalog.get("benchmarks", {}).get(identifier, {}).get("name"), "rowCount": count}
-        for identifier, count in sorted(benchmark_counts.items())
-    ]
-    models = [
-        {"id": identifier, "rowCount": count, "mapped": identifier in catalog.get("models", {})}
-        for identifier, count in sorted(model_counts.items())
-    ]
-    errors = discovery_errors + read_errors
+    benchmark_rows: defaultdict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    model_rows: defaultdict[str, list[Mapping[str, Any]]] = defaultdict(list)
+    for row in all_rows:
+        benchmark_rows[str(row.get("benchmarkId") or "unknown-benchmark")].append(row)
+        model_rows[str(row.get("canonicalModelId") or row.get("modelRef") or "unknown-model")].append(row)
+    benchmarks = []
+    for identifier, count in sorted(benchmark_counts.items()):
+        group = benchmark_rows[identifier]
+        retrieved = sorted(str(row.get("retrievedAt")) for row in group if row.get("retrievedAt"))
+        observed = sorted(
+            str(row.get("observedAt") or row.get("publishedAt"))
+            for row in group
+            if row.get("observedAt") or row.get("publishedAt")
+        )
+        benchmarks.append({
+            "id": identifier,
+            "name": catalog.get("benchmarks", {}).get(identifier, {}).get("name"),
+            "rowCount": count,
+            "numericRowCount": sum(1 for row in group if _finite(row.get("value"))),
+            "modelCount": len({str(row.get("canonicalModelId") or row.get("modelRef") or "") for row in group}),
+            "sourceIds": sorted({str(row.get("sourceId")) for row in group if row.get("sourceId")}),
+            "metricIds": sorted({str(row.get("metricId")) for row in group if row.get("metricId")}),
+            "units": sorted({str(row.get("unit")) for row in group if row.get("unit")}),
+            "latestObservedAt": observed[-1] if observed else None,
+            "latestRetrievedAt": retrieved[-1] if retrieved else None,
+        })
+    models = []
+    for identifier, count in sorted(model_counts.items()):
+        group = model_rows[identifier]
+        retrieved = sorted(str(row.get("retrievedAt")) for row in group if row.get("retrievedAt"))
+        observed = sorted(
+            str(row.get("observedAt") or row.get("publishedAt"))
+            for row in group
+            if row.get("observedAt") or row.get("publishedAt")
+        )
+        model = catalog.get("models", {}).get(identifier, {})
+        mapping_statuses = Counter(str(row.get("mappingStatus") or "unmatched") for row in group)
+        models.append({
+            "id": identifier,
+            "name": model.get("name") if isinstance(model, Mapping) else None,
+            "rowCount": count,
+            "numericRowCount": sum(1 for row in group if _finite(row.get("value"))),
+            "benchmarkCount": len({str(row.get("benchmarkId")) for row in group if row.get("benchmarkId")}),
+            "sourceIds": sorted({str(row.get("sourceId")) for row in group if row.get("sourceId")}),
+            "mappingStatusCounts": dict(sorted(mapping_statuses.items())),
+            "latestObservedAt": observed[-1] if observed else None,
+            "latestRetrievedAt": retrieved[-1] if retrieved else None,
+            "mapped": identifier in catalog.get("models", {}),
+        })
+    errors = discovery_errors + read_errors + alias_warnings
     generated = generated_at or utc_now()
     return {
         "meta": {
@@ -872,10 +1192,11 @@ def build_index(
             "note": "公开榜单/模型卡报告值的展示层；不等同于本项目复现，也不覆盖 canonical observations。",
             "inputFiles": [_public_input_label(path) for path in files],
             "errors": errors,
+            "aliasRegistry": "data/public/model_aliases.json",
             "payloadHashes": payload_hashes,
             "selection": {
                 "maxPerModelBenchmarkMetricSource": max_per_key,
-                "selectedPolicy": "mapped rows only; highest evidence/current/featured/numeric priority",
+                "selectedPolicy": "all mapped rows by default; positive max_per_key keeps the highest evidence/current/featured/numeric variants",
                 "omittedPolicy": "complete omitted rows are written to unmapped/alternatives JSONL",
             },
         },
@@ -891,6 +1212,45 @@ def build_index(
             "selectedReportedRows": sum(1 for row in selected_rows if row.get("status") == "reported"),
             "selectedCandidateRows": sum(1 for row in selected_rows if row.get("status") == "candidate"),
             "mappedRows": sum(1 for row in all_rows if row.get("canonicalModelId")),
+            "mappedPerformanceRows": len(mapped_performance_rows),
+            "mappedTelemetryRows": len(mapped_telemetry_rows),
+            # ``mappedCells`` follows the matrix's model × benchmark grain;
+            # keep the metric-inclusive count separately for audit users who
+            # need to distinguish multiple metrics within one visual cell.
+            "mappedCells": len({
+                (
+                    str(row.get("canonicalModelId")),
+                    str(row.get("benchmarkId")),
+                )
+                for row in all_rows
+                if row.get("canonicalModelId")
+            }),
+            "mappedMetricCells": len({
+                (
+                    str(row.get("canonicalModelId")),
+                    str(row.get("benchmarkId")),
+                    str(row.get("metricId")),
+                )
+                for row in all_rows
+                if row.get("canonicalModelId")
+            }),
+            "mappedPerformanceMetricCells": len({
+                (
+                    str(row.get("canonicalModelId")),
+                    str(row.get("benchmarkId")),
+                    str(row.get("metricId")),
+                )
+                for row in mapped_performance_rows
+            }),
+            "mappedTelemetryMetricCells": len({
+                (
+                    str(row.get("canonicalModelId")),
+                    str(row.get("benchmarkId")),
+                    str(row.get("metricId")),
+                )
+                for row in mapped_telemetry_rows
+            }),
+            "curatedAliasRows": sum(1 for row in all_rows if row.get("mappingStatus") == "curated_alias"),
             "unmappedRows": sum(1 for row in all_rows if not row.get("canonicalModelId")),
             "conflictRows": sum(1 for row in all_rows if row.get("conflictGroup")),
             "sources": len(source_counts),
@@ -911,6 +1271,7 @@ def build_index(
         "rows": selected_rows,
         "omitted": {
             "unmappedPath": "data/public/unmapped.jsonl",
+            "unmappedSummaryPath": "data/public/unmapped-summary.json",
             "alternativesPath": "data/public/alternatives.jsonl",
             "rows": len(omitted_rows),
             "unmappedRows": sum(1 for row in omitted_rows if row.get("selection") == "unmapped"),
@@ -929,14 +1290,168 @@ def write_jsonl(path: Path, rows: Iterable[Mapping[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n")
 
 
+def build_unmapped_summary(index: Mapping[str, Any]) -> dict[str, Any]:
+    """Build a compact, path-safe index of source model refs left unmapped.
+
+    The complete rows stay in ``unmapped.jsonl`` for forensic review.  This
+    companion index makes the unresolved aliases discoverable without loading
+    a large JSONL file in the browser or leaking the maintainer's local
+    artifact path.  It deliberately reports source spellings and candidate
+    hints only; it never promotes an alias to a catalog release.
+    """
+
+    omitted = index.get("_omittedRows", [])
+    rows = [
+        row
+        for row in omitted
+        if isinstance(row, Mapping) and row.get("selection") == "unmapped"
+    ]
+    by_alias: defaultdict[tuple[str, str], list[Mapping[str, Any]]] = defaultdict(list)
+    source_counts: Counter[str] = Counter()
+    benchmark_counts: Counter[str] = Counter()
+    status_counts: Counter[str] = Counter()
+    mapping_counts: Counter[str] = Counter()
+    numeric_rows = 0
+    for row in rows:
+        source_id = str(row.get("sourceId") or "unknown-source")
+        model_ref = str(row.get("modelRef") or "")
+        benchmark_id = str(row.get("benchmarkId") or "unknown-benchmark")
+        by_alias[(source_id, model_ref)].append(row)
+        source_counts[source_id] += 1
+        benchmark_counts[benchmark_id] += 1
+        status_counts[str(row.get("status") or "candidate")] += 1
+        mapping_counts[str(row.get("mappingStatus") or "unmatched")] += 1
+        numeric_rows += 1 if _finite(row.get("value")) else 0
+
+    source_by_id = {
+        str(item.get("id")): item
+        for item in (index.get("sources") or [])
+        if isinstance(item, Mapping) and item.get("id")
+    }
+    aliases: list[dict[str, Any]] = []
+    for (source_id, model_ref), group in sorted(
+        by_alias.items(),
+        key=lambda item: (-len(item[1]), item[0][0], item[0][1]),
+    ):
+        group_benchmarks = sorted({str(row.get("benchmarkId")) for row in group if row.get("benchmarkId")})
+        group_metrics = sorted({str(row.get("metricId")) for row in group if row.get("metricId")})
+        group_urls = sorted({str(row.get("sourceUrl")) for row in group if _valid_url(row.get("sourceUrl"))})
+        observed = sorted(
+            str(row.get("observedAt") or row.get("publishedAt"))
+            for row in group
+            if row.get("observedAt") or row.get("publishedAt")
+        )
+        candidates = sorted(
+            {
+                str(candidate)
+                for row in group
+                for candidate in (row.get("mappingCandidates") or [])
+                if str(candidate).strip()
+            }
+        )
+        examples: list[dict[str, Any]] = []
+        for row in sorted(
+            group,
+            key=lambda item: (
+                str(item.get("benchmarkId") or ""),
+                str(item.get("sourceLocator") or ""),
+                str(item.get("id") or ""),
+            ),
+        )[:3]:
+            source_row = row.get("sourceRow") if isinstance(row.get("sourceRow"), Mapping) else {}
+            examples.append(
+                {
+                    "benchmarkId": row.get("benchmarkId"),
+                    "benchmarkName": row.get("benchmarkName"),
+                    "metricId": row.get("metricId"),
+                    "value": row.get("value"),
+                    "rawValue": row.get("rawValue"),
+                    "unit": row.get("unit"),
+                    "sourceId": row.get("sourceId"),
+                    "sourceLabel": row.get("sourceLabel"),
+                    "sourceUrl": row.get("sourceUrl"),
+                    "evidenceUrl": row.get("evidenceUrl"),
+                    "sourceLocator": row.get("sourceLocator"),
+                    "observedAt": row.get("observedAt") or row.get("publishedAt"),
+                    "protocol": row.get("protocol") or {},
+                    "artifact": source_row.get("artifact"),
+                    "line": source_row.get("line"),
+                }
+            )
+        source = source_by_id.get(source_id, {})
+        source_label = _source_label(source, source_id)
+        aliases.append(
+            {
+                "sourceId": source_id,
+                "sourceLabels": [source_label],
+                "modelRef": model_ref,
+                "rowCount": len(group),
+                "numericRowCount": sum(1 for row in group if _finite(row.get("value"))),
+                "benchmarkCount": len(group_benchmarks),
+                "sourceIds": [source_id],
+                "statusCounts": dict(sorted(Counter(str(row.get("status") or "candidate") for row in group).items())),
+                "mappingStatusCounts": dict(sorted(Counter(str(row.get("mappingStatus") or "unmatched") for row in group).items())),
+                "benchmarkIds": group_benchmarks,
+                "metricIds": group_metrics,
+                "sourceUrls": group_urls,
+                "mappingCandidates": candidates,
+                "observedAtMin": observed[0] if observed else None,
+                "observedAtMax": observed[-1] if observed else None,
+                "latestRetrievedAt": max((str(row.get("retrievedAt")) for row in group if row.get("retrievedAt")), default=None),
+                # ``examples`` is deliberately the single compact sample
+                # field.  The model directory normalizer accepts this name
+                # (and legacy ``sampleEvidence``), so do not duplicate the
+                # same objects and inflate the static site payload.
+                "examples": examples,
+            }
+        )
+    stats = index.get("stats") if isinstance(index.get("stats"), Mapping) else {}
+    generated_at = (index.get("meta") or {}).get("generatedAt") if isinstance(index.get("meta"), Mapping) else None
+    return {
+        "meta": {
+            "schemaVersion": "public-unmapped-summary@0.1",
+            "generatedAt": generated_at,
+            "status": "unmapped-unreviewed",
+            "verified": False,
+            "fullRowsPath": "data/public/unmapped.jsonl",
+            "note": "Source model spellings without a safe canonical release alias; inspect and promote only with an explicit, source-scoped review.",
+            "publicEvidenceGeneratedAt": generated_at,
+        },
+        "stats": {
+            "rows": len(rows),
+            "numericRows": numeric_rows,
+            "uniqueAliases": len(aliases),
+            "uniqueSources": len(source_counts),
+            "uniqueBenchmarks": len(benchmark_counts),
+            "sourceCounts": dict(sorted(source_counts.items())),
+            "benchmarkCounts": dict(sorted(benchmark_counts.items())),
+            "statusCounts": dict(sorted(status_counts.items())),
+            "mappingCounts": dict(sorted(mapping_counts.items())),
+            "publicDeduplicatedRows": stats.get("deduplicatedRows"),
+        },
+        "aliases": aliases,
+    }
+
+
+def write_unmapped_summary(path: Path, index: Mapping[str, Any]) -> None:
+    """Write the path-safe unresolved model-reference summary."""
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(build_unmapped_summary(index), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
 def write_index(
     index: Mapping[str, Any],
     output: Path,
     jsonl_output: Path | None = None,
     unmapped_output: Path | None = None,
     alternatives_output: Path | None = None,
+    unmapped_summary_output: Path | None = None,
 ) -> None:
-    """Write the compact index and optional long-form exports."""
+    """Write the public index and optional long-form exports."""
 
     output.parent.mkdir(parents=True, exist_ok=True)
     # ``_omittedRows`` is an in-memory handoff to the writer and must never be
@@ -965,6 +1480,8 @@ def write_index(
                 if isinstance(row, Mapping) and row.get("selection") == "alternative"
             ],
         )
+    if unmapped_summary_output is not None:
+        write_unmapped_summary(unmapped_summary_output, index)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -1001,10 +1518,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="mapped rows omitted by the per-group display cap",
     )
     parser.add_argument(
+        "--unmapped-summary-output",
+        type=Path,
+        default=DEFAULT_UNMAPPED_SUMMARY_OUTPUT,
+        help="path-safe summary of unresolved source model refs",
+    )
+    parser.add_argument(
         "--max-per-key",
         type=int,
         default=DEFAULT_MAX_PER_KEY,
-        help="maximum selected rows per model×benchmark×metric×source group",
+        help="maximum selected rows per model×benchmark×metric×source group (0 = all mapped rows)",
     )
     parser.add_argument("--generated-at", help="fixed ISO timestamp for reproducible output")
     args = parser.parse_args(argv)
@@ -1023,12 +1546,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         jsonl_output = args.jsonl_output if args.jsonl_output.is_absolute() else root / args.jsonl_output
         unmapped_output = args.unmapped_output if args.unmapped_output.is_absolute() else root / args.unmapped_output
         alternatives_output = args.alternatives_output if args.alternatives_output.is_absolute() else root / args.alternatives_output
+        unmapped_summary_output = args.unmapped_summary_output if args.unmapped_summary_output.is_absolute() else root / args.unmapped_summary_output
         write_index(
             index,
             output.resolve(),
             jsonl_output.resolve(),
             unmapped_output.resolve(),
             alternatives_output.resolve(),
+            unmapped_summary_output.resolve(),
         )
     except (OSError, ValueError, json.JSONDecodeError) as exc:
         print(f"build public evidence failed: {exc}", file=sys.stderr)

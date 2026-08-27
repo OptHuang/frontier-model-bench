@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=20260828-ui1" />
   </head>
   <body>
     <div class="app-shell">
@@ -65,7 +65,7 @@
           <article class="stat-card stat-primary">
             <span class="stat-kicker">TRACKED MODELS</span>
             <strong id="modelCount">—</strong>
-            <span class="stat-note">已纳入索引的模型</span>
+            <span class="stat-note">已纳入索引的 model / config entry</span>
           </article>
           <article class="stat-card">
             <span class="stat-kicker">BENCHMARKS</span>
@@ -202,16 +202,18 @@
             <span><i class="source-chip">S</i>点击查看来源与设置</span>
             <span class="evidence-legend"><i class="score-evidence evidence-approved">approved</i>已核验</span>
             <span class="evidence-legend"><i class="score-evidence evidence-public">披露 · 未复现</i>公开来源</span>
+            <span class="evidence-legend"><i class="score-evidence evidence-public evidence-system">system</i>含 harness / 环境</span>
           </div>
           <section id="publicEvidenceSection" class="public-evidence-section" hidden aria-labelledby="publicEvidenceTitle">
             <div class="public-evidence-heading">
               <div>
                 <h3 id="publicEvidenceTitle">公开披露索引</h3>
-                <p>这里列出榜单、模型卡和公开 API 已报告的代表性行。它们会帮助填满信息地图，但每一行都明确标记“本站未复现”；点击可展开来源、定位、协议与快照。无法安全映射的来源原名不会被猜成另一个模型。</p>
+                <p>这里按来源索引已映射的公开报告（首屏展示代表性 60 条，完整 evidence JSONL 可下载）。它们会帮助填满信息地图，但每一行都明确标记“本站未复现”；点击可展开来源、定位、协议与快照。身份徽标区分 exact / curated / heuristic alias，只表示归一化路径，不表示复现等级。无法安全映射的来源原名不会被猜成另一个模型，而会保留在 aliases 队列。</p>
               </div>
-              <span class="public-evidence-actions"><span id="publicEvidenceCount" class="section-note"></span><a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">精选 JSONL ↗</a><a href="data/public/alternatives.jsonl" target="_blank" rel="noreferrer">其它映射 ↗</a></span>
+              <span class="public-evidence-actions"><span id="publicEvidenceCount" class="section-note"></span><a href="data/public/evidence.jsonl" target="_blank" rel="noreferrer">已映射 evidence JSONL ↗</a><a href="data/public/unmapped-summary.json" target="_blank" rel="noreferrer">待归一化 aliases ↗</a><a href="data/public/alternatives.jsonl" target="_blank" rel="noreferrer">其它映射 ↗</a></span>
             </div>
             <div id="publicEvidenceList" class="public-evidence-list"></div>
+            <div id="publicAliasLedger" class="public-alias-ledger" hidden></div>
           </section>
         </section>
 
@@ -260,6 +262,6 @@
     </aside>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js" defer></script>
+    <script src="app.js?v=20260828-public16" defer></script>
   </body>
 </html>

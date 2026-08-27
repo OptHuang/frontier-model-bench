@@ -15,6 +15,9 @@
     family: "all",
     sort: "featured",
     featuredOnly: false,
+    includePublic: true,
+    canonicalCount: 0,
+    publicOnlyCount: 0,
     selectedId: null,
   };
 
@@ -25,10 +28,10 @@
     familyAllCount: $("familyAllCount"), familyRail: $("familyRail"), benchmarkGrid: $("benchmarkGrid"),
     emptyState: $("emptyState"), benchSearch: $("benchSearch"), categoryFilter: $("categoryFilter"),
     modeFilter: $("modeFilter"), metricFilter: $("metricFilter"), sortFilter: $("sortFilter"),
-    featuredOnly: $("featuredOnly"), activeFilters: $("activeFilters"), resetFilters: $("resetFilters"),
+    featuredOnly: $("featuredOnly"), includePublic: $("includePublic"), activeFilters: $("activeFilters"), resetFilters: $("resetFilters"),
     emptyReset: $("emptyReset"), detailDrawer: $("detailDrawer"), drawerBackdrop: $("drawerBackdrop"),
     drawerContent: $("drawerContent"), closeDrawer: $("closeDrawer"), themeToggle: $("themeToggle"),
-    catalogFreshness: $("catalogFreshness"), footerStatus: $("footerStatus"), toast: $("toast"),
+    catalogFreshness: $("catalogFreshness"), catalogNote: $("catalogNote"), footerStatus: $("footerStatus"), toast: $("toast"),
   };
 
   const CATEGORY_LABELS = {
@@ -95,6 +98,17 @@
     "aider-polyglot": ["Aider Polyglot 用多语言代码编辑任务测试模型在真实编辑器工作流中的完成率。", "edit format、repo/task snapshot、endpoint、temperature 和 patch 应用方式需一并记录。"],
     androidworld: ["AndroidWorld 在 Android emulator 中执行真实应用任务，覆盖点击、输入、导航和状态判断。", "设备镜像、应用版本、屏幕尺寸、执行器和任务版本是系统协议；成功率不能脱离环境。"],
     "mle-bench": ["MLE-bench 把 Kaggle 机器学习竞赛改造成可审计的 ML engineering Agent 任务。", "Lite/Medium/High/All、GPU/时间预算、提交分数和 grader track 需分开，不能与普通代码 pass@1 合并。"],
+    livebench: ["LiveBench 按日期滚动发布题目和子任务，覆盖数学、代码、推理、语言与数据分析，重点降低静态题库污染。", "比较时必须固定 release date、task/category、judge 与模型 endpoint；总分和 23 个子任务切片不能互相替代。"],
+    "epoch-arc_agi_2_external": ["ARC-AGI-2 通过抽象视觉网格转换任务衡量从少量示例归纳新规则的能力；这里展示 Epoch 汇总的外部公开记录。", "官方提交、第三方 harness、工具/采样预算和 private evaluation 可能不同；不要把 ARC-AGI-1 与 ARC-AGI-2 合并。"],
+    "epoch-frontiermath_tier_4": ["FrontierMath Tier 4 是比 T1–T3 更高难度的独立切片；这里保留 Epoch 来源中的原始公开行。", "题目可见性、版本窗口、工具和 judge 条件必须一致；T4 分数不能与 T1–T3 直接平均。"],
+    "epoch-bbh_external": ["BIG-Bench Hard（BBH）汇集 23 个对早期模型较难的推理任务；这里是 Epoch 汇总的外部结果。", "CoT、few-shot、任务平均方式和答案解析会显著改变结果；旧题污染风险也应纳入解读。"],
+    "helm-ifeval": ["IFEval 用可自动验证的显式指令约束检查模型是否真正遵循格式、数量、关键词和结构要求。", "prompt-level 与 instruction-level accuracy、strict/loose evaluator、HELM release 和解码设置必须分开。"],
+    "helm-math": ["HELM 的 MATH 切片覆盖竞赛数学问题与 exact/equivalence grader，用于比较结构化数学推理。", "MATH 原版、MATH-500、不同 shot/CoT 与等价判定器不是同一协议；需查看 HELM table 和 release。"],
+    "helm-mmlu": ["HELM 的 MMLU 切片覆盖多学科选择题，并同时公开准确率、效率和一般信息字段。", "只比较同一 HELM release、shot、subject aggregation 与 Accuracy table；token、runtime、样本数不应进入性能分数矩阵。"],
+    "helm-gsm8k": ["HELM 的 GSM8K 切片测小学数学文字题的多步算术推理。", "exact match、CoT、shot、答案抽取和 HELM release 必须固定；效率/样本计数属于 telemetry。"],
+    "swebench-lite": ["SWE-bench Lite 是从真实 GitHub issue 精简出的较小软件工程任务集，仍然是模型与 agent harness 的联合评测。", "Lite、Verified、Pro、Multilingual 与不同 harness/timeout 不可混排；Resolved 必须保留仓库快照和测试策略。"],
+    "swebench-multilingual": ["SWE-bench Multilingual 扩展到多语言代码仓库和生态，衡量跨语言 issue 修复。", "语言/仓库构成、镜像、测试和 agent scaffold 都影响结果；不要与英文 Verified 总分直接平均。"],
+    "swebench-multimodal": ["SWE-bench Multimodal 把截图、界面或其他视觉信息加入真实 issue 修复任务。", "视觉输入管线、分辨率、浏览器/GUI 工具和 harness 是协议组成部分；不能当作纯文本模型成绩。"],
   };
 
   const CATEGORY_FALLBACK = {
@@ -106,6 +120,138 @@
     arena: ["通过 pairwise 人类偏好聚合的竞技型评测。", "Elo 是相对指标，时间窗口、投票池和置信区间不可省略。"],
   };
 
+  // The canonical catalog is intentionally curated, while public adapters
+  // often expose additional dated suites or metric slices (for example
+  // HELM/LiveBench/Epoch rows).  Build lightweight, explicitly public-only
+  // directory entries from those rows so the Benchmarks page does not hide
+  // evidence merely because a maintainer has not yet promoted a definition
+  // into the canonical registry.
+  function publicSliceCategory(id) {
+    const value = String(id || "").toLowerCase();
+    if (value.includes("arena")) return value.includes("agent") || value.includes("web") || value.includes("search") ? "agent-workflow" : "preference";
+    if (value.includes("swe") || value.includes("code") || value.includes("terminal") || value.includes("aider") || value.includes("cyber")) return "coding-agent";
+    if (value.includes("math") || value.includes("aime") || value.includes("hmmt") || value.includes("gpqa")) return "math";
+    if (value.includes("mmlu") || value.includes("qa") || value.includes("knowledge")) return "knowledge";
+    if (value.includes("helm")) return "knowledge-work";
+    if (value.includes("vision") || value.includes("video") || value.includes("mmmu")) return "multimodal";
+    if (value.includes("tool") || value.includes("function") || value.includes("bfcl")) return "tool-use";
+    return value.startsWith("epoch-") ? "knowledge-work" : "other";
+  }
+
+  function publicSliceMode(id, rows) {
+    const value = String(id || "").toLowerCase();
+    if (value.includes("arena") && !value.includes("agent") && !value.includes("web") && !value.includes("search")) return "preference";
+    const hasSystem = rows.some((row) => String(first(row.subjectType, row.subject_type, row.protocol?.subject_type, "")).toLowerCase() === "system");
+    return hasSystem || ["coding-agent", "tool-use", "agent-workflow", "browsing-agent", "ml-engineering"].includes(publicSliceCategory(id)) ? "system" : "direct";
+  }
+
+  function publicSliceProfile(id, name, rows, sourceLabel) {
+    const metrics = [...new Set(rows.map((row) => first(row.metricId, row.metric_id, row.metric)).filter(Boolean).map(String))];
+    const versions = [...new Set(rows.map((row) => first(row.benchmarkVersionId, row.benchmark_version_id, row.benchmarkVersion, row.version)).filter(Boolean).map(String))];
+    const harnesses = [...new Set(rows.map((row) => first(row.harnessId, row.harness_id, row.harness, row.protocol?.harness)).filter(Boolean).map(String))];
+    const subject = publicSliceMode(id, rows);
+    const lowerId = String(id || "").toLowerCase();
+    const aleNote = lowerId.includes("ale_bench") || lowerId.includes("ale-bench")
+      ? "该来源切片的命名含 ale_bench；不等同于 SakanaAI ALE-Bench、Agents' Last Exam (ALE-V1) 或 Atari ALE。"
+      : lowerId.includes("agents-last-exam")
+        ? "这是 Agents' Last Exam (ALE-V1) 系统评测；不等同于 SakanaAI ALE-Bench 或 Atari ALE。"
+        : "";
+    return {
+      task: {
+        summary: `公开来源中的「${name}」切片；此条目用于索引已发布的榜单记录，不表示本站重新运行了该 benchmark。${aleNote ? ` ${aleNote}` : ""}`,
+        input: "来源榜单 / 模型卡中的公开行",
+        output: metrics.length ? `来源指标：${metrics.join("、")}` : "来源报告的分数或排名",
+      },
+      dataset: {
+        size: `${rows.length} 条已收录公开记录`,
+        splits: versions.length ? versions.join(" · ") : "版本由来源行决定，未统一归并",
+        availability: "公开快照；定义与题集以来源页面为准",
+      },
+      protocol: {
+        mode: subject === "system" ? "系统 / harness 或工具流程" : subject === "preference" ? "pairwise / 偏好聚合" : "模型直接评测",
+        grader: "来源自带 evaluator、投票聚合或 judge；本站未独立复核",
+        tools: harnesses.length ? `来源 harness：${harnesses.join(" · ")}` : "工具 / harness 未在全部来源行注明",
+        sampling: "保留来源 metric、版本、日期和 locator；不跨来源重算总分",
+      },
+      comparison: {
+        recommended: "只与相同 source、版本、metric、模型身份和 protocol 的行比较。",
+        avoid: `不要把 public-only slice 当作 canonical 定义，也不要与同名但不同版本的 benchmark 合并。${aleNote ? ` ${aleNote}` : ""}`,
+      },
+      source_locator: first(rows[0]?.sourceLocator, rows[0]?.locator, "public evidence rows; see source URL and locator"),
+    };
+  }
+
+  function buildPublicSliceEntries(data, canonicalIds) {
+    const rows = Array.isArray(data?.publicEvidence) ? data.publicEvidence : [];
+    const groups = new Map();
+    rows.forEach((row) => {
+      if (!row || typeof row !== "object") return;
+      const id = String(first(row.displayBenchmarkId, row.display_benchmark_id, row.benchmarkId, row.benchmark_id, "")).trim();
+      if (!id || canonicalIds.has(id)) return;
+      const group = groups.get(id) || [];
+      group.push(row);
+      groups.set(id, group);
+    });
+    return [...groups.entries()].map(([id, group]) => {
+      const firstRow = group[0] || {};
+      const name = String(first(firstRow.sourceBenchmark, firstRow.source_benchmark, firstRow.benchmarkName, firstRow.benchmark_name, id));
+      const metrics = [...new Set(group.map((row) => first(row.metricId, row.metric_id, row.metric)).filter(Boolean).map(String))];
+      const units = [...new Set(group.map((row) => first(row.unit, row.displayUnit, "%")).filter(Boolean).map(String))];
+      const versions = [...new Set(group.map((row) => first(row.benchmarkVersionId, row.benchmark_version_id, row.benchmarkVersion, row.version)).filter(Boolean).map(String))];
+      const sourceIds = [...new Set(group.map((row) => first(row.sourceId, row.source_id)).filter(Boolean).map(String))];
+      const sourceRows = [];
+      const seenUrls = new Set();
+      group.forEach((row) => {
+        const page = firstSafeUrl(row.sourcePageUrl, row.source_page_url);
+        const endpoint = firstSafeUrl(row.sourceUrl, row.source_url, row.evidenceUrl, row.evidence_url);
+        const url = page || endpoint;
+        if (!url || seenUrls.has(url)) return;
+        seenUrls.add(url);
+        sourceRows.push({
+          id: first(row.sourceId, row.source_id, `public-${sourceRows.length}`),
+          label: first(row.sourceLabel, row.source_label, row.sourceId, "公开来源"),
+          url: page || endpoint,
+          web_url: page || undefined,
+          api_url: endpoint && endpoint !== page ? endpoint : undefined,
+        });
+      });
+      const category = publicSliceCategory(id);
+      const mode = publicSliceMode(id, group);
+      const sourceLabel = first(firstRow.sourceLabel, firstRow.source_label, sourceIds[0], "公开来源");
+      return {
+        id,
+        canonicalId: id,
+        short: name === id ? id.replace(/^epoch-/, "Epoch · ").replace(/[-_]+/g, " ") : name,
+        name,
+        family: category,
+        category,
+        familyLabel: categoryLabel(category),
+        evaluationMode: mode,
+        metric: metrics[0] || "score",
+        metricLabel: metrics[0] || "score",
+        metrics: metrics.map((metric) => ({ id: metric, label: METRIC_LABELS[metric] || metric, unit: units[0] || "%", direction: metric === "rank" ? "lower" : "higher" })),
+        unit: units[0] || "%",
+        scale: units[0] === "fraction" ? { min: 0, max: 1 } : units[0] === "%" || !units.length ? 100 : null,
+        direction: metrics.some((metric) => metric === "rank") ? "lower" : "higher",
+        version: versions[0] || "public snapshot",
+        versionId: versions[0] || null,
+        defaultVersionId: versions[0] || null,
+        description: `公开来源切片：${name}。页面直接索引来源报告值，全部标记为「披露 · 未复现」。`,
+        owner: sourceLabel,
+        sourceIds,
+        source: sourceRows[0]?.url || first(firstRow.sourceUrl, firstRow.evidenceUrl),
+        sourceLabel,
+        _publicSources: sourceRows,
+        _publicRows: group,
+        publicOnly: true,
+        publicReported: true,
+        featured: false,
+        tags: ["公开切片", "reported-only", sourceLabel],
+        profile: publicSliceProfile(id, name, group, sourceLabel),
+      };
+    }).sort((a, b) => String(a.name).localeCompare(String(b.name), "zh"));
+  }
+
   const first = (...values) => values.find((v) => v !== undefined && v !== null && v !== "");
   const arr = (v) => Array.isArray(v) ? v : (v === undefined || v === null ? [] : [v]);
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
@@ -113,7 +259,29 @@
   const number = (v) => { const n = Number(v); return Number.isFinite(n) ? n : null; };
   const fmt = (v) => { const n = number(v); return n === null ? text(v) : Number.isInteger(n) ? String(n) : n.toFixed(1).replace(/\.0$/, ""); };
   const slug = (v) => text(v, "unknown").toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/gi, "-").replace(/^-+|-+$/g, "") || "unknown";
-  const safeUrl = (v) => /^https?:\/\//i.test(String(v || "")) ? String(v) : "";
+  // Source URLs are snapshot data and may be edited independently of the
+  // renderer.  Accept only absolute HTTP(S) URLs so a malformed or alternate
+  // scheme can never become an active link in the detail drawer.
+  const safeUrl = (v) => {
+    const raw = String(v ?? "").trim();
+    if (!/^https?:\/\//i.test(raw)) return "";
+    try {
+      const parsed = new URL(raw);
+      return parsed.protocol === "http:" || parsed.protocol === "https:" ? raw : "";
+    } catch (_error) {
+      return "";
+    }
+  };
+
+  // Try candidates independently so a malformed preferred field cannot hide
+  // a valid page/API URL supplied later in the same source record.
+  const firstSafeUrl = (...values) => {
+    for (const value of values) {
+      const url = safeUrl(value);
+      if (url) return url;
+    }
+    return "";
+  };
 
   function categoryLabel(value) { return CATEGORY_LABELS[value] || text(value, "其它"); }
   function modeOf(bench) {
@@ -142,13 +310,41 @@
   function familyLabel(bench) { return first(bench.familyLabel, bench.family_label, CATEGORY_LABELS[bench.family], categoryLabel(bench.category)); }
   function detailsFor(bench) {
     const note = BENCHMARK_NOTES[bench.id];
+    const profile = profileOf(bench);
+    const profileTask = profile.task && typeof profile.task === "object" ? profile.task.summary : "";
+    const profileAvoid = profile.comparison && typeof profile.comparison === "object" ? profile.comparison.avoid : "";
+    if (profileTask || profileAvoid) {
+      return {
+        focus: first(profileTask, note && note[0], bench.description, "该 benchmark 的任务定义与公开协议见来源页面。"),
+        guardrail: first(profileAvoid, note && note[1], "比较前请固定版本、指标、数据切分、工具和评测器。"),
+      };
+    }
     if (note) return { focus: note[0], guardrail: note[1] };
     const fallback = CATEGORY_FALLBACK[bench.family] || CATEGORY_FALLBACK[bench.category] || [text(bench.description, "该 benchmark 的任务定义与公开协议见来源页面。"), "比较前请固定版本、指标、数据切分、工具和评测器。"];
     return { focus: fallback[0], guardrail: fallback[1] };
   }
 
+  function profileOf(bench) {
+    return bench && bench.profile && typeof bench.profile === "object" ? bench.profile : {};
+  }
+  function profileField(value) {
+    if (Array.isArray(value)) return value.filter((item) => item !== undefined && item !== null && item !== "").join(" · ");
+    if (value && typeof value === "object") return Object.values(value).filter((item) => item !== undefined && item !== null && item !== "").join(" · ");
+    return text(value, "未注明");
+  }
+  function renderProfileGroup(bench, title, profileKey, labels) {
+    const group = profileOf(bench)[profileKey];
+    if (!group || typeof group !== "object") return "";
+    const rows = labels.map(([key, label, wide]) => {
+      const value = group[key];
+      if (value === undefined || value === null || value === "" || (Array.isArray(value) && !value.length)) return "";
+      return `<div class="bench-profile-item${wide ? " wide" : ""}"><label>${esc(label)}</label><p>${esc(profileField(value))}</p></div>`;
+    }).filter(Boolean).join("");
+    return rows ? `<section class="bench-drawer-section bench-profile-section"><h3>${esc(title)}</h3><div class="bench-profile-grid">${rows}</div></section>` : "";
+  }
+
   async function loadJson(path) {
-    const response = await fetch(path, { cache: "no-store" });
+    const response = await fetch(path);
     if (!response.ok) throw new Error(`${response.status} ${path}`);
     return response.json();
   }
@@ -165,8 +361,42 @@
     if (!sources.length && loadedPath !== DATA_PATHS[0]) {
       try { sources = await loadJson("data/catalog/sources.json"); } catch (error) { /* source links remain optional */ }
     }
+    // Long-form profiles are kept in a separate catalog file.  A freshly
+    // derived site embeds them, while this fallback also supports local
+    // previews built from an older site.json.
+    let externalProfiles = {};
+    try {
+      const profilePayload = await loadJson("data/catalog/benchmark_profiles.json");
+      if (profilePayload && typeof profilePayload === "object" && !Array.isArray(profilePayload)) {
+        // Accept both the current flat catalog map and a wrapped `{profiles}`
+        // payload so an exported profile bundle can be used as a fallback.
+        externalProfiles = profilePayload.profiles && typeof profilePayload.profiles === "object"
+          ? profilePayload.profiles
+          : profilePayload;
+      }
+    } catch (error) { /* embedded profiles remain usable */ }
     state.data = data;
-    state.benchmarks = benchmarks.map((b) => ({ ...b, _mode: modeOf(b), _metrics: metricList(b), _versions: versionList(b) }));
+    const canonicalEntries = benchmarks.map((b) => ({
+      ...b,
+      // An older derived index may contain an empty profile object while the
+      // catalog file has since been enriched; prefer the non-empty source.
+      profile: b.profile && typeof b.profile === "object" && Object.keys(b.profile).length
+        ? b.profile
+        : externalProfiles[b.id] || {},
+      _mode: modeOf(b),
+      _metrics: metricList(b),
+      _versions: versionList(b),
+    }));
+    const canonicalIds = new Set(canonicalEntries.map((bench) => String(bench.id)));
+    const publicEntries = buildPublicSliceEntries(data, canonicalIds).map((b) => ({
+      ...b,
+      _mode: modeOf(b),
+      _metrics: metricList(b),
+      _versions: versionList(b),
+    }));
+    state.canonicalCount = canonicalEntries.length;
+    state.publicOnlyCount = publicEntries.length;
+    state.benchmarks = [...canonicalEntries, ...publicEntries];
     state.sources = sources;
     state.publicCounts = (data.publicStats && data.publicStats.benchmarkCounts) || {};
     state.runs = Array.isArray(data.runs) ? data.runs : [];
@@ -177,8 +407,16 @@
     const sourceMap = new Map(state.sources.map((source) => [source.id, source]));
     const ids = arr(first(bench.sourceIds, bench.source_ids));
     const rows = ids.map((id) => sourceMap.get(id) || { id, label: id, url: "" }).filter(Boolean);
-    const direct = safeUrl(first(bench.source, bench.sourceUrl, bench.source_url));
+    const direct = firstSafeUrl(bench.source, bench.sourceUrl, bench.source_url);
     if (direct && !rows.some((row) => row.url === direct)) rows.unshift({ id: "catalog-source", label: first(bench.sourceLabel, "Benchmark source"), url: direct });
+    arr(bench._publicSources).forEach((candidate) => {
+      if (!candidate || typeof candidate !== "object") return;
+      const page = firstSafeUrl(candidate.web_url, candidate.page_url, candidate.url);
+      const api = firstSafeUrl(candidate.api_url, candidate.apiUrl);
+      const url = page || api;
+      if (!url || rows.some((row) => row.url === url || row.api_url === api)) return;
+      rows.push({ ...candidate, url, api_url: api && api !== url ? api : undefined });
+    });
     return rows;
   }
   function evidenceCount(bench) { return number(state.publicCounts[bench.id]) || 0; }
@@ -216,7 +454,7 @@
     const query = state.search.trim().toLowerCase();
     const result = state.benchmarks.filter((bench) => {
       const haystack = [bench.id, bench.short, bench.name, bench.description, bench.owner, bench.category, bench.family, bench.familyLabel, ...arr(bench.tags)].filter(Boolean).join(" ").toLowerCase();
-      return (!query || haystack.includes(query)) && (state.category === "all" || bench.category === state.category) && (state.mode === "all" || bench._mode === state.mode) && (state.metric === "all" || bench._metrics.some((m) => m.id === state.metric)) && (state.family === "all" || familyOf(bench) === state.family) && (!state.featuredOnly || bench.featured === true);
+      return (!query || haystack.includes(query)) && (state.includePublic || !bench.publicOnly) && (state.category === "all" || bench.category === state.category) && (state.mode === "all" || bench._mode === state.mode) && (state.metric === "all" || bench._metrics.some((m) => m.id === state.metric)) && (state.family === "all" || familyOf(bench) === state.family) && (!state.featuredOnly || bench.featured === true);
     });
     const sorted = [...result];
     sorted.sort((a, b) => {
@@ -236,6 +474,7 @@
     if (state.metric !== "all") tags.push(`指标：${METRIC_LABELS[state.metric] || state.metric}`);
     if (state.family !== "all") tags.push(`家族：${familyLabel({ family: state.family })}`);
     if (state.featuredOnly) tags.push("重点评测");
+    if (!state.includePublic) tags.push("隐藏公开切片");
     els.activeFilters.innerHTML = tags.length ? tags.map((tag) => `<span class="bench-filter-tag">${esc(tag)}</span>`).join("") : "<span>浏览全量目录 · 点击卡片打开详情</span>";
   }
   function renderCard(bench, index) {
@@ -244,8 +483,8 @@
     const evidence = evidenceCount(bench);
     const canonical = canonicalCount(bench);
     const metric = bench._metrics[0] || {};
-    return `<article class="benchmark-card${bench.featured === true ? " is-featured" : ""}" data-benchmark-id="${esc(bench.id)}" tabindex="0" role="button" aria-label="查看 ${esc(bench.name || bench.id)} 详情">
-      <div class="bench-card-top"><span class="bench-index">${String(index + 1).padStart(2, "0")}</span><span class="bench-category-pill">${esc(categoryLabel(bench.category))}</span></div>
+    return `<article class="benchmark-card${bench.featured === true ? " is-featured" : ""}${bench.publicOnly ? " is-public-only" : ""}" data-benchmark-id="${esc(bench.id)}" tabindex="0" role="button" aria-label="查看 ${esc(bench.name || bench.id)} 详情">
+      <div class="bench-card-top"><span class="bench-index">${String(index + 1).padStart(2, "0")}</span><span class="bench-category-pill">${bench.publicOnly ? "公开切片" : esc(categoryLabel(bench.category))}</span></div>
       <h3>${esc(first(bench.name, bench.id))}</h3><p class="bench-card-id">${esc(first(bench.short, bench.id))} · ${esc(bench.owner || "owner 未注明")}</p>
       <p class="bench-card-description">${esc(first(detail.focus, bench.description, "暂无描述"))}</p>
       <div class="bench-card-meta"><span><label>PRIMARY METRIC</label><strong>${esc(first(metric.label, metricLabel(bench)))}${metric.direction === "lower" ? " ↓" : " ↑"}</strong></span><span><label>VERSION</label><strong>${esc(first(bench.version, versions.find((v) => v.status === "active")?.label, versions[0]?.label, "未注明"))}</strong></span></div>
@@ -277,9 +516,34 @@
     const rows = sourceRows(bench);
     if (!rows.length) return `<p class="bench-evidence-note">目录暂未登记稳定来源链接；请在数据契约中补充 source_ids。</p>`;
     return rows.map((source) => {
-      const url = safeUrl(source.url);
-      return `<div class="bench-source-row"><div><strong>${esc(first(source.label, source.id, "source"))}</strong><small>${esc(first(source.publisher, source.kind, source.id, "source"))}</small>${url ? `<small class="bench-source-url">${esc(url)}</small>` : ""}</div>${url ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">打开 ↗</a>` : `<span class="bench-drawer-id">链接待补</span>`}</div>`;
+      // Prefer a human-facing page when a registry entry also exposes an API
+      // endpoint.  Keep API/download links visible so a reader can inspect
+      // the exact machine-readable evidence behind the catalog description.
+      const url = firstSafeUrl(source.web_url, source.page_url, source.url, source.source_url);
+      // Some older registry rows used `url` for the API and kept the
+      // human-facing page in `web_url`; preserve that endpoint as a secondary
+      // link when the preferred primary URL differs.
+      const apiUrl = firstSafeUrl(source.api_url, source.url !== url ? source.url : "");
+      const downloadUrl = firstSafeUrl(source.download_url);
+      const note = first(source.notes, source.license_note, source.licenseNote, "");
+      const evidence = first(source.default_evidence_level, source.defaultEvidenceLevel, "");
+      const metadata = [source.publisher, source.kind, evidence ? `evidence ${evidence}` : ""].filter(Boolean).join(" · ");
+      const links = [];
+      if (url) links.push(`<a href="${esc(url)}" target="_blank" rel="noreferrer">打开 ↗</a>`);
+      if (apiUrl && apiUrl !== url) links.push(`<a href="${esc(apiUrl)}" target="_blank" rel="noreferrer">API ↗</a>`);
+      if (downloadUrl && downloadUrl !== url && downloadUrl !== apiUrl) links.push(`<a href="${esc(downloadUrl)}" target="_blank" rel="noreferrer">下载 ↗</a>`);
+      return `<div class="bench-source-row"><div><strong>${esc(first(source.label, source.id, "source"))}</strong>${metadata ? `<small>${esc(metadata)}</small>` : ""}${url ? `<small class="bench-source-url">${esc(url)}</small>` : ""}${note ? `<small class="bench-source-note">${esc(note)}</small>` : ""}</div>${links.length ? `<div class="bench-source-links">${links.join("")}</div>` : `<span class="bench-drawer-id">链接待补</span>`}</div>`;
     }).join("");
+  }
+  function renderProfileSections(bench) {
+    const sections = [
+      renderProfileGroup(bench, "Task & scope", "task", [["summary", "任务摘要", true], ["input", "输入", false], ["output", "输出", false]]),
+      renderProfileGroup(bench, "Dataset & splits", "dataset", [["size", "规模", true], ["splits", "切分 / track", true], ["availability", "公开状态", true]]),
+      renderProfileGroup(bench, "Evaluation protocol", "protocol", [["mode", "评估对象", false], ["grader", "判定器", false], ["tools", "工具 / 环境", true], ["sampling", "采样与聚合", true]]),
+      renderProfileGroup(bench, "Comparison notes", "comparison", [["recommended", "建议比较", true], ["avoid", "避免混合", true]]),
+    ].join("");
+    const locator = profileOf(bench).source_locator;
+    return sections + (locator ? `<div class="bench-profile-source-note"><span>SOURCE LOCATOR</span><p>${esc(locator)}</p></div>` : "");
   }
   function renderDrawer(bench) {
     if (!bench) return;
@@ -289,16 +553,17 @@
     const latest = latestDate(bench);
     const sourceCount = sourceRows(bench).length;
     els.drawerContent.innerHTML = `<div class="bench-drawer-title-row"><div><h2 id="drawerTitle">${esc(first(bench.name, bench.id))}</h2><p>${esc(first(bench.owner, "Owner 未注明"))} · ${esc(categoryLabel(bench.category))}</p></div><span class="bench-drawer-id">${esc(bench.id)}</span></div>
-      <div class="bench-drawer-tags"><span class="bench-drawer-tag accent">${esc(modeLabel(bench._mode))}</span><span class="bench-drawer-tag">${esc(familyLabel(bench))}</span>${bench.featured === true ? '<span class="bench-drawer-tag">重点评测</span>' : ""}<span class="bench-drawer-tag">${esc(first(bench.version, bench._versions[0]?.label, "version 未注明"))}</span></div>
+      <div class="bench-drawer-tags"><span class="bench-drawer-tag accent">${esc(modeLabel(bench._mode))}</span><span class="bench-drawer-tag">${esc(familyLabel(bench))}</span>${bench.publicOnly ? '<span class="bench-drawer-tag public">公开切片 · 未复现</span>' : ""}${bench.featured === true ? '<span class="bench-drawer-tag">重点评测</span>' : ""}<span class="bench-drawer-tag">${esc(first(bench.version, bench._versions[0]?.label, "version 未注明"))}</span></div>
       <p class="bench-drawer-summary">${esc(detail.focus)}</p>
       <section class="bench-drawer-section"><h3>Identity & protocol</h3><div class="bench-meta-grid"><div class="bench-meta-item"><label>CANONICAL ID</label><strong>${esc(bench.id)}</strong></div><div class="bench-meta-item"><label>EVALUATION MODE</label><strong>${esc(modeLabel(bench._mode))}</strong></div><div class="bench-meta-item"><label>OWNER</label><strong>${esc(first(bench.owner, "未注明"))}</strong></div><div class="bench-meta-item"><label>FAMILY</label><strong>${esc(familyLabel(bench))}</strong></div><div class="bench-meta-item"><label>DEFAULT VERSION</label><strong>${esc(first(bench.defaultVersionId, bench.default_version_id, bench._versions[0]?.id, "未注明"))}</strong></div><div class="bench-meta-item"><label>PRIMARY METRIC</label><strong>${esc(metricLabel(bench))}</strong></div></div></section>
       <section class="bench-drawer-section"><h3>What it measures</h3><p class="bench-drawer-summary">${esc(first(bench.description, detail.focus))}</p></section>
+      ${renderProfileSections(bench)}
       <section class="bench-drawer-section"><h3>Metrics</h3><div class="bench-metric-list">${renderMetrics(bench)}</div></section>
       <section class="bench-drawer-section"><h3>Versions</h3><div class="bench-version-list">${renderVersions(bench)}</div></section>
       <section class="bench-drawer-section"><h3>Comparison guardrail</h3><p class="bench-guardrail">${esc(detail.guardrail)}</p></section>
-      <section class="bench-drawer-section"><h3>Evidence footprint</h3><div class="bench-evidence-summary"><div class="bench-evidence-pill"><label>PUBLIC REPORTED</label><strong>${fmt(publicRows)}</strong></div><div class="bench-evidence-pill"><label>CANONICAL RUNS</label><strong>${fmt(canonicalRows)}</strong></div><div class="bench-evidence-pill"><label>SOURCES</label><strong>${fmt(sourceCount)}</strong></div></div><p class="bench-evidence-note">公开记录来自榜单、模型卡或公开 API，默认标记“披露 · 未复现”；canonical run 仍需结合具体模型、harness 和 protocol 阅读。${latest ? ` 最近观测：${esc(latest)}。` : ""}</p></section>
+      <section class="bench-drawer-section"><h3>Evidence footprint</h3><div class="bench-evidence-summary"><div class="bench-evidence-pill"><label>PUBLIC REPORTED</label><strong>${fmt(publicRows)}</strong></div><div class="bench-evidence-pill"><label>CANONICAL RUNS</label><strong>${fmt(canonicalRows)}</strong></div><div class="bench-evidence-pill"><label>SOURCES</label><strong>${fmt(sourceCount)}</strong></div></div><p class="bench-evidence-note">公开记录来自榜单、模型卡或公开 API，默认标记“披露 · 未复现”；canonical run 仍需结合具体模型、harness 和 protocol 阅读。${bench.publicOnly ? "此条目是由公开 evidence 自动汇总的切片，尚未进入 canonical benchmark registry。" : ""}${latest ? ` 最近观测：${esc(latest)}。` : ""}</p></section>
       <section class="bench-drawer-section"><h3>Primary sources</h3><div class="bench-source-list">${renderSources(bench)}</div></section>
-      <div class="bench-drawer-cta"><a href="index.html#matrix">在评测矩阵中查看 ↗</a><a href="data/catalog/benchmarks.json" target="_blank" rel="noreferrer">打开原始目录 ↗</a></div>`;
+      <div class="bench-drawer-cta"><a href="index.html#matrix">在评测矩阵中查看 ↗</a><a href="data/catalog/benchmarks.json" target="_blank" rel="noreferrer">打开原始目录 ↗</a><a href="data/catalog/benchmark_profiles.json" target="_blank" rel="noreferrer">打开 profile 数据 ↗</a></div>`;
   }
   function setHash(id) {
     const next = id ? `#bench=${encodeURIComponent(id)}` : "#catalog";
@@ -330,8 +595,8 @@
     else if (state.selectedId) closeDrawer(false);
   }
   function resetFilters() {
-    state.search = ""; state.category = "all"; state.mode = "all"; state.metric = "all"; state.family = "all"; state.sort = "featured"; state.featuredOnly = false;
-    els.benchSearch.value = ""; els.categoryFilter.value = "all"; els.modeFilter.value = "all"; els.metricFilter.value = "all"; els.sortFilter.value = "featured"; els.featuredOnly.checked = false;
+    state.search = ""; state.category = "all"; state.mode = "all"; state.metric = "all"; state.family = "all"; state.sort = "featured"; state.featuredOnly = false; state.includePublic = true;
+    els.benchSearch.value = ""; els.categoryFilter.value = "all"; els.modeFilter.value = "all"; els.metricFilter.value = "all"; els.sortFilter.value = "featured"; els.featuredOnly.checked = false; if (els.includePublic) els.includePublic.checked = true;
     render();
   }
   let toastTimer;
@@ -349,7 +614,7 @@
     });
   }
   function bindEvents() {
-    [els.benchSearch, els.categoryFilter, els.modeFilter, els.metricFilter, els.sortFilter, els.featuredOnly].forEach((element) => {
+    [els.benchSearch, els.categoryFilter, els.modeFilter, els.metricFilter, els.sortFilter, els.featuredOnly, els.includePublic].filter(Boolean).forEach((element) => {
       element.addEventListener("input", () => {
         state.search = els.benchSearch.value;
         state.category = els.categoryFilter.value;
@@ -357,6 +622,7 @@
         state.metric = els.metricFilter.value;
         state.sort = els.sortFilter.value;
         state.featuredOnly = els.featuredOnly.checked;
+        state.includePublic = !els.includePublic || els.includePublic.checked;
         render();
       });
       element.addEventListener("change", () => {
@@ -366,6 +632,7 @@
         state.metric = els.metricFilter.value;
         state.sort = els.sortFilter.value;
         state.featuredOnly = els.featuredOnly.checked;
+        state.includePublic = !els.includePublic || els.includePublic.checked;
         render();
       });
     });
@@ -391,17 +658,22 @@
   }
   function updateSummary() {
     const families = new Set(state.benchmarks.map(familyOf));
-    const active = state.benchmarks.reduce((sum, bench) => sum + activeVersions(bench), 0);
-    const sourceIds = new Set(state.benchmarks.flatMap((bench) => arr(first(bench.sourceIds, bench.source_ids))));
+    // Keep the headline useful when public-only slices are enabled: active
+    // versions describe the curated registry, while the companion note tells
+    // the reader how many source slices were indexed alongside it.
+    const active = state.benchmarks.filter((bench) => !bench.publicOnly).reduce((sum, bench) => sum + activeVersions(bench), 0);
+    const sourceIds = new Set(state.sources.map((source) => source && source.id).filter(Boolean));
     els.catalogCount.textContent = state.benchmarks.length;
     els.familyCount.textContent = families.size;
     els.sourceCount.textContent = sourceIds.size;
     els.activeVersionCount.textContent = active;
-    const generated = first(state.data?.publicMeta?.generatedAt, state.data?.meta?.generatedAt, state.data?.meta?.asOf);
-    if (generated) {
-      const date = String(generated).slice(0, 10);
+    if (els.catalogNote) els.catalogNote.textContent = `${state.canonicalCount} canonical · ${state.publicOnlyCount} public-only slices`;
+    const snapshotDates = [state.data?.publicMeta?.generatedAt, state.data?.meta?.generatedAt, state.data?.meta?.asOf, state.data?.meta?.lastUpdated]
+      .filter(Boolean).map((value) => String(value).slice(0, 10)).sort();
+    const date = snapshotDates.at(-1);
+    if (date) {
       els.catalogFreshness.innerHTML = `<span class="status-dot"></span><span>snapshot ${esc(date)}</span>`;
-      els.footerStatus.textContent = `${state.benchmarks.length} 个 benchmark · ${sourceIds.size} 个来源 · 详情页记录版本、指标与比较边界。`;
+      els.footerStatus.textContent = `${state.canonicalCount} 个 canonical benchmark · ${state.publicOnlyCount} 个公开切片 · ${sourceIds.size} 个来源。`;
     }
   }
 

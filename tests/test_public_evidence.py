@@ -8,8 +8,11 @@ from pathlib import Path
 
 from scripts.build_public_evidence import (
     _model_alias_keys,
+    annotate_curated_public_mapping,
+    build_unmapped_summary,
     build_index,
     build_model_alias_lookup,
+    load_public_aliases,
     write_index,
 )
 
@@ -168,6 +171,65 @@ class PublicEvidenceTests(unittest.TestCase):
         self.assertIn("frontier2026", lookup)
         self.assertEqual(lookup["frontier2026"], {"acme/frontier@2026"})
 
+    def test_source_scoped_curated_alias_preserves_original_ref(self) -> None:
+        root = Path(tempfile.mkdtemp(prefix="fmb-public-alias-"))
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        alias_path = root / "aliases.json"
+        alias_path.write_text(
+            json.dumps(
+                {
+                    "aliases": [
+                        {
+                            "canonicalModelId": "acme/frontier@2026",
+                            "sourceIds": ["fixture-source"],
+                            "values": ["frontier-2026-unknown"],
+                            "note": "setting suffix",
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        lookup, metadata, warnings = load_public_aliases(
+            root,
+            {"acme/frontier@2026": {"id": "acme/frontier@2026"}},
+            alias_path,
+        )
+        self.assertFalse(warnings)
+        row = {"sourceId": "fixture-source", "modelRef": "frontier-2026-unknown"}
+        annotate_curated_public_mapping(row, lookup, metadata)
+        self.assertEqual(row["canonicalModelId"], "acme/frontier@2026")
+        self.assertEqual(row["mappingStatus"], "curated_alias")
+        self.assertEqual(row["modelRef"], "frontier-2026-unknown")
+        self.assertIn("curated_model_alias", row["qualityFlags"])
+
+    def test_curated_alias_does_not_cross_source(self) -> None:
+        root = Path(tempfile.mkdtemp(prefix="fmb-public-alias-"))
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        alias_path = root / "aliases.json"
+        alias_path.write_text(
+            json.dumps(
+                {
+                    "aliases": [
+                        {
+                            "canonicalModelId": "acme/frontier@2026",
+                            "sourceIds": ["fixture-source"],
+                            "values": ["frontier-2026-unknown"],
+                        }
+                    ]
+                }
+            ),
+            encoding="utf-8",
+        )
+        lookup, metadata, _ = load_public_aliases(
+            root,
+            {"acme/frontier@2026": {"id": "acme/frontier@2026"}},
+            alias_path,
+        )
+        row = {"sourceId": "other-source", "modelRef": "frontier-2026-unknown"}
+        annotate_curated_public_mapping(row, lookup, metadata)
+        self.assertNotIn("canonicalModelId", row)
+
     def test_build_separates_curated_and_unmapped_rows(self) -> None:
         root, _ = self.make_fixture()
         index = build_index(
@@ -203,6 +265,82 @@ class PublicEvidenceTests(unittest.TestCase):
         self.assertTrue(any(row["mappingStatus"] == "unmatched" for row in omitted))
         self.assertTrue(any(row["status"] == "candidate" for row in omitted))
 
+    def test_system_benchmark_overrides_source_model_subject_without_losing_it(self) -> None:
+        root, source_dir = self.make_fixture()
+        benchmark_path = root / "data" / "catalog" / "benchmarks.json"
+        benchmark_payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
+        benchmark_payload["benchmarks"][0]["evaluation_mode"] = "system"
+        benchmark_path.write_text(json.dumps(benchmark_payload), encoding="utf-8")
+
+        candidate_path = source_dir / "candidates.jsonl"
+        candidates = [json.loads(line) for line in candidate_path.read_text(encoding="utf-8").splitlines()]
+        candidates[0]["protocol"]["subject_type"] = "model"
+        candidate_path.write_text(
+            "\n".join(json.dumps(row) for row in candidates) + "\n",
+            encoding="utf-8",
+        )
+
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=0,
+        )
+        row = next(item for item in index["rows"] if item["sourceLocator"] == "table=main;row=0")
+
+        self.assertEqual(row["subjectType"], "system")
+        self.assertEqual(row["sourceSubjectType"], "model")
+        self.assertIn("benchmark:evaluation_mode=system", row["subjectInferredBy"])
+
+    def test_legacy_helm_efficiency_score_is_qualified_during_rebuild(self) -> None:
+        root, source_dir = self.make_fixture()
+        candidate_path = source_dir / "candidates.jsonl"
+        candidates = [json.loads(line) for line in candidate_path.read_text(encoding="utf-8").splitlines()]
+        candidates[0]["source_id"] = "helm-capabilities"
+        candidates[0]["metric"] = "score"
+        candidates[0]["protocol"]["table"] = "Efficiency"
+        candidate_path.write_text(
+            "\n".join(json.dumps(row) for row in candidates) + "\n",
+            encoding="utf-8",
+        )
+
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=0,
+        )
+        row = next(item for item in index["rows"] if item["sourceLocator"] == "table=main;row=0")
+
+        self.assertEqual(row["metricId"], "efficiency-score")
+        self.assertEqual(row["sourceMetricId"], "score")
+
+    def test_telemetry_is_persistently_excluded_from_matrix_stats(self) -> None:
+        root, source_dir = self.make_fixture()
+        candidate_path = source_dir / "candidates.jsonl"
+        candidates = [json.loads(line) for line in candidate_path.read_text(encoding="utf-8").splitlines()]
+        candidates[0]["metric"] = "prompt_tokens"
+        candidates[0]["value"] = 1234
+        candidate_path.write_text(
+            "\n".join(json.dumps(row) for row in candidates) + "\n",
+            encoding="utf-8",
+        )
+
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=0,
+        )
+        row = next(item for item in index["rows"] if item["sourceLocator"] == "table=main;row=0")
+
+        self.assertTrue(row["matrixExcluded"])
+        self.assertEqual(row["matrixExcludedReason"], "telemetry_metric")
+        self.assertEqual(index["stats"]["mappedTelemetryRows"], 1)
+        self.assertEqual(index["stats"]["mappedTelemetryMetricCells"], 1)
+        self.assertEqual(index["stats"]["mappedPerformanceRows"], 1)
+        self.assertEqual(index["stats"]["mappedPerformanceMetricCells"], 1)
+
     def test_write_index_keeps_omitted_rows_out_of_page_json(self) -> None:
         root, _ = self.make_fixture()
         index = build_index(
@@ -222,6 +360,23 @@ class PublicEvidenceTests(unittest.TestCase):
         self.assertEqual(len(evidence.read_text(encoding="utf-8").splitlines()), 1)
         self.assertEqual(len(unmapped.read_text(encoding="utf-8").splitlines()), 1)
         self.assertEqual(len(alternatives.read_text(encoding="utf-8").splitlines()), 1)
+
+    def test_unmapped_summary_preserves_source_refs_without_local_paths(self) -> None:
+        root, _ = self.make_fixture()
+        index = build_index(
+            root,
+            [root / "artifacts" / "fetch"],
+            generated_at="2026-08-27T08:00:00Z",
+            max_per_key=1,
+        )
+        summary = build_unmapped_summary(index)
+        self.assertEqual(summary["meta"]["fullRowsPath"], "data/public/unmapped.jsonl")
+        self.assertEqual(summary["stats"]["rows"], 1)
+        self.assertEqual(summary["aliases"][0]["modelRef"], "unknown-frontier")
+        rendered = json.dumps(summary, ensure_ascii=False)
+        self.assertNotIn(str(root), rendered)
+        self.assertNotIn("/private/", rendered)
+        self.assertNotIn("/Users/", rendered)
 
 
 if __name__ == "__main__":

@@ -235,6 +235,36 @@ def row_benchmark_id(row: Mapping[str, Any]) -> str | None:
     return identifier(row.get("benchmark_id", row.get("benchmarkId")))
 
 
+def public_row_model_id(row: Mapping[str, Any]) -> str | None:
+    return identifier(row.get("canonicalModelId", row.get("canonical_model_id")))
+
+
+def public_row_benchmark_id(row: Mapping[str, Any]) -> str | None:
+    return identifier(row.get("benchmarkId", row.get("benchmark_id")))
+
+
+def is_mapped_public_evidence(row: Mapping[str, Any]) -> bool:
+    """Return whether a public row is a usable mapped score-review signal.
+
+    Public/reported evidence never counts as canonical coverage.  This helper
+    only prevents a mapped public score from being triaged as if no evidence
+    existed at all.  Telemetry-only rows remain evidence details, not score
+    coverage signals.
+    """
+
+    if not public_row_model_id(row) or not public_row_benchmark_id(row):
+        return False
+    if row.get("value") is None or row.get("matrixExcluded") is True:
+        return False
+    if str(row.get("status") or "reported").lower() in {
+        "missing",
+        "retracted",
+        "superseded",
+    }:
+        return False
+    return True
+
+
 def is_approved(row: Mapping[str, Any]) -> bool:
     status = row_status(row)
     # A row in the canonical JSONL has already crossed the repository review
@@ -365,6 +395,7 @@ def build_report(
     benchmarks = as_records(load_json(catalog_dir / "benchmarks.json", []))
     sources = as_records(load_json(catalog_dir / "sources.json", []))
     observations = load_jsonl(root / "data" / "observations" / "results.jsonl")
+    public_evidence = load_jsonl(root / "data" / "public" / "evidence.jsonl")
 
     if not models:
         raise MaintenanceError("models catalog 为空或格式不正确")
@@ -385,6 +416,7 @@ def build_report(
         featured_benchmarks = active_benchmarks
 
     by_cell: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    public_by_cell: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     by_source: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in observations:
         model_id = row_model_id(row)
@@ -394,6 +426,13 @@ def build_report(
         if is_approved(row):
             for source_id in source_ids_for(row):
                 by_source[source_id].append(row)
+    for row in public_evidence:
+        if not is_mapped_public_evidence(row):
+            continue
+        model_id = public_row_model_id(row)
+        benchmark_id = public_row_benchmark_id(row)
+        if model_id and benchmark_id:
+            public_by_cell[(model_id, benchmark_id)].append(row)
 
     # A direct model score and a system run are different cells.  For a direct
     # benchmark we require model-only; for an agentic benchmark any approved
@@ -430,6 +469,10 @@ def build_report(
     covered_featured = 0
     total_featured = len(current_models) * len(featured_benchmarks)
     covered_all = 0
+    public_reported_gaps = 0
+    no_public_evidence_gaps = 0
+    featured_public_reported_gaps = 0
+    featured_no_public_evidence_gaps = 0
     total_all = len(current_models) * len(active_benchmarks)
     for model in current_models:
         model_id = str(model.get("id"))
@@ -448,6 +491,7 @@ def build_report(
             urls = [source_url(sources_by_id[sid]) for sid in source_ids if sid in sources_by_id]
             urls = [url for url in urls if url]
             existing_rows = by_cell.get((model_id, benchmark_id), [])
+            public_rows = public_by_cell.get((model_id, benchmark_id), [])
             expected_version = default_version(benchmark)
             existing_versions = sorted(
                 {
@@ -467,19 +511,40 @@ def build_report(
                 and not is_approved(row)
                 for row in existing_rows
             )
-            if existing_versions and not has_current_pending:
+            if public_rows:
+                reason = (
+                    "已有已映射 public/reported evidence，但尚未复现或晋升 canonical；"
+                    "请核对 benchmark version、protocol、subject/harness 和来源后再决定是否晋升。"
+                )
+                kind = "public_reported"
+                public_reported_gaps += 1
+                if is_featured:
+                    featured_public_reported_gaps += 1
+            elif existing_versions and not has_current_pending:
                 reason = f"已有 observation，但版本不是当前 {expected_version}；请检查滚动 benchmark 的新快照。"
+                kind = "missing"
+                no_public_evidence_gaps += 1
+                if is_featured:
+                    featured_no_public_evidence_gaps += 1
             elif has_current_pending and not has_current_approved:
                 reason = "已有 current-version candidate 尚未审阅；请先核对来源、协议和证据，不要重复录入。"
+                kind = "missing"
+                no_public_evidence_gaps += 1
+                if is_featured:
+                    featured_no_public_evidence_gaps += 1
             else:
                 reason = "当前 release 尚无通过审阅的 observation；请先从来源快照生成 candidate，再人工确认 protocol/evidence。"
+                kind = "missing"
+                no_public_evidence_gaps += 1
+                if is_featured:
+                    featured_no_public_evidence_gaps += 1
             priority = "high" if is_featured else "normal"
             if str(model.get("status")) == "preview":
                 priority = "high"
             candidates.append(
                 {
                     "candidate_id": candidate_id(model_id, benchmark_id, default_version(benchmark), str(metric_for(benchmark).get("id"))),
-                    "kind": "missing",
+                    "kind": kind,
                     "priority": priority,
                     "model_id": model_id,
                     "model_name": model.get("name") or model_id,
@@ -495,6 +560,27 @@ def build_report(
                     "reason": reason,
                     "existing_observation_ids": [str(row.get("id")) for row in existing_rows if row.get("id")],
                     "existing_versions": existing_versions,
+                    "public_evidence_count": len(public_rows),
+                    "public_evidence_ids": [str(row.get("id")) for row in public_rows if row.get("id")],
+                    "public_source_ids": sorted(
+                        {
+                            str(row.get("sourceId", row.get("source_id")))
+                            for row in public_rows
+                            if row.get("sourceId", row.get("source_id"))
+                        }
+                    ),
+                    "public_evidence_urls": sorted(
+                        {
+                            str(url)
+                            for row in public_rows
+                            for url in (
+                                row.get("evidenceUrl"),
+                                row.get("sourcePageUrl"),
+                                row.get("sourceUrl"),
+                            )
+                            if isinstance(url, str) and url
+                        }
+                    ),
                 }
             )
 
@@ -595,8 +681,12 @@ def build_report(
         warnings.append("本次未进行网络探测；source freshness 仅根据 observation 日期估算。")
     if candidates:
         missing_count = sum(1 for item in candidates if item.get("kind") == "missing")
+        public_reported_count = sum(1 for item in candidates if item.get("kind") == "public_reported")
         refresh_count = sum(1 for item in candidates if item.get("kind") == "refresh")
-        warnings.append(f"发现 {len(candidates)} 个待处理 candidate（缺失 {missing_count}，刷新 {refresh_count}）。")
+        warnings.append(
+            f"发现 {len(candidates)} 个待处理 candidate（public reported 待 canonical 审阅 "
+            f"{public_reported_count}，无 mapped public evidence {missing_count}，刷新 {refresh_count}）。"
+        )
     if freshness_counts.get("stale"):
         warnings.append(f"有 {freshness_counts['stale']} 个来源按 registry 阈值过期。")
     if probe_counts.get("error"):
@@ -623,20 +713,26 @@ def build_report(
             "featured_benchmarks": len(featured_benchmarks),
             "sources": len(sources),
             "observations": len(observations),
+            "public_evidence": len(public_evidence),
         },
         "coverage": {
             "current_model_benchmark_cells": total_all,
             "covered_cells": covered_all,
             "missing_cells": total_all - covered_all,
+            "public_reported_awaiting_review_cells": public_reported_gaps,
+            "no_mapped_public_evidence_cells": no_public_evidence_gaps,
             "ratio": round(covered_all / total_all, 4) if total_all else 0,
             "featured_cells": total_featured,
             "featured_covered": covered_featured,
             "featured_missing": total_featured - covered_featured,
+            "featured_public_reported_awaiting_review": featured_public_reported_gaps,
+            "featured_no_mapped_public_evidence": featured_no_public_evidence_gaps,
             "featured_ratio": round(covered_featured / total_featured, 4) if total_featured else 0,
         },
         "candidates": {
             "total": len(candidates),
             "missing": sum(1 for item in candidates if item.get("kind") == "missing"),
+            "public_reported": sum(1 for item in candidates if item.get("kind") == "public_reported"),
             "refresh": sum(1 for item in candidates if item.get("kind") == "refresh"),
             "high_priority": sum(1 for item in candidates if item.get("priority") == "high"),
         },
@@ -678,6 +774,14 @@ def write_outputs(output_dir: Path, report: Mapping[str, Any]) -> None:
             str(item.get("benchmark_name", "")),
         ),
     )
+    public_reported_candidates = sorted(
+        (item for item in candidates if item.get("kind") == "public_reported"),
+        key=lambda item: (
+            priority_rank.get(str(item.get("priority")), 9),
+            str(item.get("model_name", "")),
+            str(item.get("benchmark_name", "")),
+        ),
+    )
     refresh_candidates = sorted(
         (item for item in candidates if item.get("kind") == "refresh"),
         key=lambda item: (
@@ -688,6 +792,16 @@ def write_outputs(output_dir: Path, report: Mapping[str, Any]) -> None:
     missing_rows = [
         [item.get("priority"), item.get("model_name"), item.get("benchmark_name"), item.get("evaluation_mode"), ", ".join(item.get("suggested_harness_ids", []))]
         for item in missing_candidates
+    ]
+    public_reported_rows = [
+        [
+            item.get("priority"),
+            item.get("model_name"),
+            item.get("benchmark_name"),
+            item.get("public_evidence_count"),
+            ", ".join(item.get("public_source_ids", [])) or "—",
+        ]
+        for item in public_reported_candidates
     ]
     refresh_rows = [
         [item.get("priority"), item.get("model_name"), item.get("benchmark_name"), item.get("age_days"), item.get("staleness_after_days")]
@@ -709,8 +823,20 @@ def write_outputs(output_dir: Path, report: Mapping[str, Any]) -> None:
         "## Coverage",
         "",
         f"当前模型 × active benchmark：{coverage['covered_cells']}/{coverage['current_model_benchmark_cells']}（{coverage['ratio']:.1%}）；featured：{coverage['featured_covered']}/{coverage['featured_cells']}（{coverage['featured_ratio']:.1%}）。",
+        f"Canonical gaps（口径不变）：{coverage['missing_cells']}；Public reported / awaiting canonical review：{coverage['public_reported_awaiting_review_cells']}；No mapped public evidence：{coverage['no_mapped_public_evidence_cells']}。",
         "",
-        "## Missing candidates",
+        "## Public reported / awaiting canonical review",
+        "",
+        "这些单元已有映射到 canonical model × benchmark 的公开披露值，但仍不计入 canonical coverage。完整队列见 `candidates.json`。",
+        "",
+        "<details>",
+        f"<summary>展开前 80 条（共 {len(public_reported_candidates)} 条）</summary>",
+        "",
+        markdown_table(public_reported_rows[:80], ["优先级", "模型", "Benchmark", "公开证据数", "来源"]),
+        "",
+        "</details>",
+        "",
+        "## No mapped public evidence candidates",
         "",
         markdown_table(missing_rows[:80], ["优先级", "模型", "Benchmark", "模式", "建议 harness"]),
         "",
