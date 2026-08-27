@@ -1,0 +1,123 @@
+[
+  {
+    "id": "model-only",
+    "name": "Model-only / single turn",
+    "label": "model-only",
+    "kind": "model",
+    "status": "active",
+    "owner": "benchmark protocol",
+    "description": "无外部 agent loop；保留 prompt、shots、解码和 reasoning 设置。",
+    "tools": [],
+    "source_ids": []
+  },
+  {
+    "id": "unspecified-reported",
+    "name": "Provider-reported (harness unspecified)",
+    "label": "未注明 harness",
+    "kind": "unknown",
+    "status": "active",
+    "owner": "provider report",
+    "description": "来源报告了结果但没有足够信息确定执行器；不得与固定 harness 的结果做 exact 比较。",
+    "tools": null,
+    "source_ids": []
+  },
+  {
+    "id": "swebench-official",
+    "name": "SWE-bench official harness",
+    "label": "SWE-bench official",
+    "kind": "benchmark",
+    "status": "active",
+    "owner": "SWE-bench",
+    "description": "官方 SWE-bench evaluator；实例、补丁应用和测试环境按 benchmark 版本固定。",
+    "tools": ["repository", "shell", "patch"],
+    "source_ids": ["swebench"]
+  },
+  {
+    "id": "mini-swe-agent",
+    "name": "mini-SWE-agent",
+    "label": "mini-SWE-agent",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "SWE-bench community",
+    "description": "轻量 coding agent scaffold；记录版本、timeout、temperature 和 rollout 聚合。",
+    "tools": ["shell", "editor"],
+    "source_ids": ["src-deepswe"]
+  },
+  {
+    "id": "terminus-2",
+    "name": "Terminus-2",
+    "label": "Terminus-2",
+    "kind": "terminal-agent",
+    "status": "active",
+    "owner": "Terminal-Bench",
+    "description": "Terminal-Bench 常见终端 agent；不同版本和 effort 是不同 protocol。",
+    "tools": ["terminal", "filesystem"],
+    "source_ids": ["terminal-bench"]
+  },
+  {
+    "id": "claude-code",
+    "name": "Claude Code",
+    "label": "Claude Code",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "Anthropic",
+    "description": "Claude Code CLI/agent scaffold；记录版本、权限、工具和上下文管理。",
+    "tools": ["shell", "filesystem", "editor"],
+    "source_ids": ["src-anthropic-system-cards"]
+  },
+  {
+    "id": "codex",
+    "name": "Codex harness",
+    "label": "Codex",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "OpenAI",
+    "description": "Codex/Responses coding agent scaffold；应记录 effort、sandbox、tools 和 timeout。",
+    "tools": ["shell", "filesystem", "editor"],
+    "source_ids": ["src-openai-gpt56"]
+  },
+  {
+    "id": "kimi-code",
+    "name": "Kimi Code",
+    "label": "Kimi Code",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "Moonshot AI",
+    "description": "Kimi 官方 coding harness；K3 官方 benchmark 明确使用该 harness。",
+    "tools": ["shell", "filesystem", "editor"],
+    "source_ids": ["src-kimi-k3", "src-kimi-code"]
+  },
+  {
+    "id": "deepseek-harness",
+    "name": "DeepSeek Harness",
+    "label": "DeepSeek Harness",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "DeepSeek",
+    "description": "DeepSeek V4 Flash 官方 agent 评测 harness；官方更新注明 minimal mode/max effort。",
+    "tools": ["shell", "filesystem", "editor"],
+    "source_ids": ["src-deepseek-updates"]
+  },
+  {
+    "id": "lm-eval",
+    "name": "EleutherAI lm-evaluation-harness",
+    "label": "lm-eval",
+    "kind": "static-eval",
+    "status": "active",
+    "owner": "EleutherAI",
+    "description": "静态 benchmark runner；记录 commit、task config、shots 和 generation 参数。",
+    "tools": [],
+    "source_ids": ["src-helm"]
+  },
+  {
+    "id": "vendor-default",
+    "name": "Vendor default evaluator",
+    "label": "厂商默认",
+    "kind": "provider",
+    "status": "active",
+    "owner": "provider",
+    "description": "厂商模型卡中的默认评测设置；作为 reported/conditional，不推断具体 agent。",
+    "tools": null,
+    "source_ids": []
+  }
+]

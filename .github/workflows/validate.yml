@@ -37,5 +37,6 @@ jobs:
           python-version: "3.11"
 
       - name: Validate data
-        run: python scripts/validate_data.py
-
+        run: |
+          python scripts/build_derived.py
+          python scripts/validate_data.py --strict

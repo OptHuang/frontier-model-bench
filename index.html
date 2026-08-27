@@ -24,7 +24,7 @@
         <nav class="topnav" aria-label="主导航">
           <a class="active" href="#matrix">Matrix</a>
           <a href="#method">Method</a>
-          <a href="data/models.json" target="_blank" rel="noreferrer">Data ↗</a>
+          <a id="dataLink" href="data/derived/site.json" target="_blank" rel="noreferrer">Data ↗</a>
         </nav>
         <div class="top-actions">
           <span id="freshnessPill" class="freshness-pill"><span class="status-dot"></span><span>demo snapshot</span></span>
@@ -46,9 +46,9 @@
           </div>
           <div class="hero-aside" aria-label="数据说明">
             <div class="signal-card">
-              <div class="signal-top"><span class="signal-label">EVIDENCE COVERAGE</span><span class="signal-value" id="qualityValue">—</span></div>
+              <div class="signal-top"><span class="signal-label">EVIDENCE QUALITY</span><span class="signal-value" id="qualityValue">—</span></div>
               <div class="quality-track"><span id="qualityBar"></span></div>
-              <p>已录入的分数都保留设置与来源；这不是把不同口径合成的“可信度分”。</p>
+              <p>已录入的分数保留设置与来源；这是记录质量，不是把不同口径合成的“总分”。</p>
             </div>
             <div class="quick-links">
               <a href="#matrix">查看全矩阵 <span>↘</span></a>
@@ -87,9 +87,19 @@
               <h2 id="matrixTitle">Benchmark matrix</h2>
               <p class="section-subtitle">先按同一评测口径比较，再打开单元格查看证据；不计算跨 benchmark 总分。</p>
             </div>
-            <div class="view-switcher" role="tablist" aria-label="视图切换">
-              <button class="view-tab active" role="tab" aria-selected="true" data-view="matrix">矩阵</button>
-              <button class="view-tab" role="tab" aria-selected="false" data-view="cards">卡片</button>
+            <div class="workspace-tabs">
+              <div id="modeSwitcher" class="mode-switcher" role="tablist" aria-label="比较模式">
+                <button class="mode-tab active" role="tab" aria-selected="true" data-mode="atlas">Model Atlas</button>
+                <button class="mode-tab" role="tab" aria-selected="false" data-mode="runs">System Runs</button>
+              </div>
+              <div id="atlasViewSwitcher" class="view-switcher" role="tablist" aria-label="Model Atlas 视图">
+                <button class="view-tab active" role="tab" aria-selected="true" data-view="matrix">矩阵</button>
+                <button class="view-tab" role="tab" aria-selected="false" data-view="cards">卡片</button>
+              </div>
+              <div id="runViewSwitcher" class="view-switcher" role="tablist" aria-label="System Runs 视图" hidden>
+                <button class="view-tab active" role="tab" aria-selected="true" data-run-view="table">表格</button>
+                <button class="view-tab" role="tab" aria-selected="false" data-run-view="cards">卡片</button>
+              </div>
             </div>
           </div>
 
@@ -104,8 +114,20 @@
               <select id="providerFilter"><option value="all">所有厂商</option></select>
             </label>
             <label class="select-wrap">
-              <span class="sr-only">能力面</span>
+              <span class="sr-only">能力面或标签</span>
               <select id="familyFilter"><option value="all">所有能力面</option></select>
+            </label>
+            <label class="select-wrap preset-select">
+              <span class="sr-only">比较预设</span>
+              <select id="presetSelect"><option value="all">所有模型 / benchmark</option></select>
+            </label>
+            <label id="harnessFilterWrap" class="select-wrap run-only-control" hidden>
+              <span class="sr-only">Harness</span>
+              <select id="harnessFilter"><option value="all">所有 harness</option></select>
+            </label>
+            <label id="runBenchmarkFilterWrap" class="select-wrap run-only-control" hidden>
+              <span class="sr-only">运行 benchmark</span>
+              <select id="runBenchmarkFilter"><option value="all">所有 benchmark</option></select>
             </label>
             <label class="select-wrap sort-select">
               <span class="sr-only">排序</span>
@@ -113,13 +135,18 @@
                 <option value="recent">按发布日期</option>
                 <option value="coverage">按覆盖率</option>
                 <option value="name">按模型名称</option>
+                <option value="run-recent">按运行时间</option>
+                <option value="score-desc">按分数</option>
+                <option value="cost">按成本</option>
               </select>
             </label>
             <label class="toggle-control"><input id="availableOnly" type="checkbox" /><span class="toggle-ui"></span><span>仅有成绩</span></label>
+            <label class="toggle-control"><input id="showCatalog" type="checkbox" /><span class="toggle-ui"></span><span>显示全量目录</span></label>
             <button id="resetFilters" class="text-button" type="button">重置</button>
           </div>
 
           <div id="activeFilters" class="active-filters" aria-live="polite"></div>
+          <p id="presetHint" class="preset-hint" hidden></p>
 
           <div id="matrixView" class="matrix-frame">
             <div class="matrix-scroll">
@@ -138,7 +165,30 @@
           </div>
           <div id="cardsView" class="cards-grid" hidden></div>
 
-          <div class="table-legend">
+          <div id="runsView" class="runs-panel" hidden>
+            <div class="run-summary" aria-live="polite">
+              <span><strong id="runCountLabel">0</strong> runs</span>
+              <span><i class="summary-dot"></i>结果按固定 protocol 展示，不跨 harness 合并</span>
+            </div>
+            <div id="runTableFrame" class="run-table-frame">
+              <div class="matrix-scroll">
+                <table class="run-table" aria-describedby="runTableCaption">
+                  <caption id="runTableCaption" class="sr-only">模型系统运行记录。点击一行查看 harness、protocol 与来源。</caption>
+                  <thead id="runTableHead"></thead>
+                  <tbody id="runTableBody"></tbody>
+                </table>
+              </div>
+              <div id="runEmptyState" class="empty-state" hidden>
+                <div class="empty-icon">∅</div>
+                <h3>没有匹配的运行记录</h3>
+                <p>试试切换预设、清空搜索词，或打开 Model Atlas 查看目录。</p>
+                <button id="runEmptyReset" class="outline-button" type="button">清空筛选</button>
+              </div>
+            </div>
+            <div id="runCardsView" class="run-cards-grid" hidden></div>
+          </div>
+
+          <div id="atlasLegend" class="table-legend">
             <span><i class="legend-dot high"></i>高于 85</span>
             <span><i class="legend-dot mid"></i>70–85</span>
             <span><i class="legend-dot low"></i>低于 70</span>
@@ -148,7 +198,7 @@
           </div>
         </section>
 
-        <section class="spotlight-section" aria-labelledby="spotlightTitle">
+        <section id="spotlightSection" class="spotlight-section" aria-labelledby="spotlightTitle">
           <div class="section-heading compact-heading">
             <div>
               <p class="section-index">02 / SIGNALS</p>

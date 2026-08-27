@@ -1,0 +1,488 @@
+[
+  {
+    "id": "openai-gpt5",
+    "label": "OpenAI · Introducing GPT-5",
+    "kind": "primary",
+    "publisher": "OpenAI",
+    "url": "https://openai.com/index/introducing-gpt-5/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "anthropic-claude4",
+    "label": "Anthropic · Introducing Claude 4",
+    "kind": "primary",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/news/claude-4",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "google-gemini25",
+    "label": "Google · Gemini 2.5 model card/blog",
+    "kind": "primary",
+    "publisher": "Google DeepMind",
+    "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-model-thinking-updates-march-2025/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "google-gemini31",
+    "label": "Google DeepMind · Gemini 3.1 Pro model card",
+    "kind": "primary",
+    "publisher": "Google DeepMind",
+    "url": "https://deepmind.google/models/model-cards/gemini-3-1-pro/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "xai-grok4fast",
+    "label": "xAI · Grok 4 Fast",
+    "kind": "primary",
+    "publisher": "xAI",
+    "url": "https://x.ai/news/grok-4-fast",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "deepseek-r1-0528",
+    "label": "DeepSeek API · R1-0528 update",
+    "kind": "primary",
+    "publisher": "DeepSeek",
+    "url": "https://api-docs.deepseek.com/updates/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "qwen3-max",
+    "label": "Qwen · Qwen3-Max-Thinking",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3-max-thinking",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-openai-models",
+    "label": "OpenAI API model catalog",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-openai-gpt56",
+    "label": "OpenAI · GPT-5.6 launch and evaluations",
+    "kind": "primary",
+    "publisher": "OpenAI",
+    "url": "https://openai.com/index/gpt-5-6/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-openai-gpt55",
+    "label": "OpenAI · Introducing GPT-5.5",
+    "kind": "primary",
+    "publisher": "OpenAI",
+    "url": "https://openai.com/index/introducing-gpt-5-5/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-anthropic-opus5",
+    "label": "Anthropic · Claude Opus 5",
+    "kind": "primary",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/news/claude-opus-5",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-anthropic-sonnet5",
+    "label": "Anthropic · Claude Sonnet 5 research",
+    "kind": "primary",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/research/claude-sonnet-5",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-anthropic-fable5",
+    "label": "Anthropic · Claude Fable 5 and Mythos 5",
+    "kind": "primary",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/news/claude-fable-5-mythos-5",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-anthropic-system-cards",
+    "label": "Anthropic system cards index",
+    "kind": "documentation",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/system-cards",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen38-flash",
+    "label": "Qwen · Qwen3.8-Flash-Next",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3.8-flash-next",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen38-repo",
+    "label": "Qwen3.8 official repository",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://github.com/QwenLM/Qwen3.8",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen38-27b",
+    "label": "Qwen · Qwen3.8-27B",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3.8-27b",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-qwen36",
+    "label": "Qwen · Qwen3.6 release notes",
+    "kind": "primary",
+    "publisher": "Qwen",
+    "url": "https://qwen.ai/blog?id=qwen3.6-35b-a3b",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-deepseek-v4",
+    "label": "DeepSeek V4 preview release",
+    "kind": "primary",
+    "publisher": "DeepSeek",
+    "url": "https://api-docs.deepseek.com/news/news260424/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-deepseek-updates",
+    "label": "DeepSeek API change log",
+    "kind": "primary",
+    "publisher": "DeepSeek",
+    "url": "https://api-docs.deepseek.com/updates/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 60
+  },
+  {
+    "id": "src-kimi-k3",
+    "label": "Kimi · K3 technical blog",
+    "kind": "primary",
+    "publisher": "Moonshot AI",
+    "url": "https://www.kimi.com/en/blog/kimi-k3",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-kimi-code",
+    "label": "Kimi Code model configuration",
+    "kind": "documentation",
+    "publisher": "Moonshot AI",
+    "url": "https://www.kimi.com/code/docs/en/kimi-code/models.html",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-glm53",
+    "label": "Z.ai · GLM-5.3",
+    "kind": "primary",
+    "publisher": "Z.ai",
+    "url": "https://z.ai/blog/glm-5.3",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-glm53-flash",
+    "label": "Z.ai · GLM-5.3 Flash",
+    "kind": "primary",
+    "publisher": "Z.ai",
+    "url": "https://z.ai/blog/glm-5.3-flash",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-glm52",
+    "label": "Z.ai · GLM-5.2",
+    "kind": "primary",
+    "publisher": "Z.ai",
+    "url": "https://z.ai/blog/glm-5.2",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-minimax-release",
+    "label": "MiniMax model release notes",
+    "kind": "documentation",
+    "publisher": "MiniMax",
+    "url": "https://platform.minimaxi.com/docs/release-notes/models",
+    "default_evidence_level": "A",
+    "staleness_after_days": 45
+  },
+  {
+    "id": "src-minimax-m3",
+    "label": "MiniMax · M3",
+    "kind": "primary",
+    "publisher": "MiniMax",
+    "url": "https://www.minimax.io/models/text/m3",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-mimo-models",
+    "label": "MiMo current model catalog",
+    "kind": "documentation",
+    "publisher": "Xiaomi MiMo",
+    "url": "https://mimo.mi.com/docs/en-US/quick-start/model",
+    "default_evidence_level": "A",
+    "staleness_after_days": 45
+  },
+  {
+    "id": "src-mimo-updates",
+    "label": "MiMo model updates",
+    "kind": "documentation",
+    "publisher": "Xiaomi MiMo",
+    "url": "https://mimo.mi.com/docs/en-US/updates/model",
+    "default_evidence_level": "A",
+    "staleness_after_days": 60
+  },
+  {
+    "id": "gpqa-paper",
+    "label": "GPQA paper",
+    "kind": "benchmark",
+    "publisher": "Stanford / Scale",
+    "url": "https://arxiv.org/abs/2311.12022",
+    "default_evidence_level": "A",
+    "staleness_after_days": 730
+  },
+  {
+    "id": "swebench",
+    "label": "SWE-bench official leaderboard",
+    "kind": "benchmark",
+    "publisher": "SWE-bench",
+    "url": "https://www.swebench.com/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "livecodebench",
+    "label": "LiveCodeBench official leaderboard",
+    "kind": "benchmark",
+    "publisher": "LiveCodeBench",
+    "url": "https://livecodebench.github.io/leaderboard_v5.html",
+    "default_evidence_level": "A",
+    "staleness_after_days": 45
+  },
+  {
+    "id": "mmlu-pro",
+    "label": "MMLU-Pro repository",
+    "kind": "benchmark",
+    "publisher": "TIGER-AI-Lab",
+    "url": "https://github.com/TIGER-AI-Lab/MMLU-Pro",
+    "default_evidence_level": "A",
+    "staleness_after_days": 730
+  },
+  {
+    "id": "mmmu",
+    "label": "MMMU benchmark",
+    "kind": "benchmark",
+    "publisher": "MMMU",
+    "url": "https://mmmu-benchmark.github.io/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 730
+  },
+  {
+    "id": "terminal-bench",
+    "label": "Terminal-Bench",
+    "kind": "benchmark",
+    "publisher": "Terminal-Bench",
+    "url": "https://www.tbench.ai/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "hle",
+    "label": "Scale Labs HLE leaderboard",
+    "kind": "benchmark",
+    "publisher": "Scale AI",
+    "url": "https://labs.scale.com/leaderboard/humanitys_last_exam",
+    "default_evidence_level": "A",
+    "staleness_after_days": 60
+  },
+  {
+    "id": "src-frontiermath",
+    "label": "FrontierMath benchmark",
+    "kind": "benchmark",
+    "publisher": "Epoch AI",
+    "url": "https://epoch.ai/benchmarks/frontiermath",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-hmmt",
+    "label": "HMMT benchmark",
+    "kind": "benchmark",
+    "publisher": "HMMT",
+    "url": "https://www.hmmt.org/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-simpleqa",
+    "label": "SimpleQA benchmark",
+    "kind": "benchmark",
+    "publisher": "OpenAI",
+    "url": "https://github.com/openai/simple-evals",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-swebench-pro",
+    "label": "SWE-bench Pro paper",
+    "kind": "benchmark",
+    "publisher": "SWE-bench",
+    "url": "https://arxiv.org/abs/2509.16941",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-deepswe",
+    "label": "DeepSWE leaderboard",
+    "kind": "benchmark",
+    "publisher": "DataCurve",
+    "url": "https://deepswe.datacurve.ai/",
+    "default_evidence_level": "C",
+    "staleness_after_days": 45
+  },
+  {
+    "id": "src-nl2repo",
+    "label": "NL2Repo benchmark",
+    "kind": "benchmark",
+    "publisher": "NL2Repo",
+    "url": "https://github.com/JetBrains-Research/NL2Repo",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-bfcl",
+    "label": "Berkeley Function Calling Leaderboard",
+    "kind": "benchmark",
+    "publisher": "Berkeley Gorilla Lab",
+    "url": "https://gorilla.cs.berkeley.edu/leaderboard",
+    "default_evidence_level": "A",
+    "staleness_after_days": 60
+  },
+  {
+    "id": "src-taubench",
+    "label": "τ-bench",
+    "kind": "benchmark",
+    "publisher": "τ-bench",
+    "url": "https://taubench.com/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-toolathlon",
+    "label": "Toolathlon benchmark",
+    "kind": "benchmark",
+    "publisher": "Toolathlon",
+    "url": "https://toolathlon.ai/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-gdpval",
+    "label": "GDPval methodology",
+    "kind": "benchmark",
+    "publisher": "Artificial Analysis",
+    "url": "https://artificialanalysis.ai/methodology/intelligence-benchmarking",
+    "default_evidence_level": "C",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-osworld",
+    "label": "OSWorld benchmark",
+    "kind": "benchmark",
+    "publisher": "OSWorld",
+    "url": "https://github.com/xlang-ai/OSWorld",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180
+  },
+  {
+    "id": "src-helm",
+    "label": "Stanford HELM",
+    "kind": "benchmark",
+    "publisher": "Stanford CRFM",
+    "url": "https://crfm.stanford.edu/helm/index.html",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90
+  },
+  {
+    "id": "src-livebench",
+    "label": "LiveBench",
+    "kind": "benchmark",
+    "publisher": "LiveBench",
+    "url": "https://livebench.ai/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-ceval",
+    "label": "C-Eval repository",
+    "kind": "benchmark",
+    "publisher": "HKUST NLP",
+    "url": "https://github.com/hkust-nlp/ceval",
+    "default_evidence_level": "A",
+    "staleness_after_days": 730
+  },
+  {
+    "id": "src-cmmlu",
+    "label": "CMMLU repository",
+    "kind": "benchmark",
+    "publisher": "CMMLU",
+    "url": "https://github.com/haonan-li/CMMLU",
+    "default_evidence_level": "A",
+    "staleness_after_days": 730
+  },
+  {
+    "id": "src-superclue",
+    "label": "SuperCLUE arena",
+    "kind": "benchmark",
+    "publisher": "SuperCLUE",
+    "url": "https://www.superclueai.com/arena",
+    "default_evidence_level": "C",
+    "staleness_after_days": 60
+  },
+  {
+    "id": "src-mmmlu",
+    "label": "MMMLU dataset",
+    "kind": "benchmark",
+    "publisher": "OpenAI",
+    "url": "https://huggingface.co/datasets/openai/MMMLU",
+    "default_evidence_level": "A",
+    "staleness_after_days": 365
+  },
+  {
+    "id": "src-cybergym",
+    "label": "CyberGym benchmark",
+    "kind": "benchmark",
+    "publisher": "CyberGym",
+    "url": "https://cybergym.ai/",
+    "default_evidence_level": "C",
+    "staleness_after_days": 120
+  }
+]

@@ -1,0 +1,129 @@
+[
+  {
+    "id": "frontier-current",
+    "label": "Frontier / current",
+    "description": "当前旗舰与重要 frontier release；各 benchmark 独立显示，不计算总分。",
+    "default": true,
+    "model_filter": {"status": ["active", "preview", "restricted"]},
+    "benchmark_ids": ["gpqa-diamond", "mmlu-pro", "hle", "swebench-pro", "terminal-bench", "mmmu-pro"],
+    "sort": "release_desc"
+  },
+  {
+    "id": "latest-vs-previous",
+    "label": "Latest vs previous",
+    "description": "同一 family 的最新 release 与上一代；保留历史而不让旧模型占默认榜。",
+    "model_filter": {"include_tags": ["旗舰", "上一代"]},
+    "benchmark_ids": ["gpqa-diamond", "aime-2025", "mmlu-pro", "livecodebench", "swebench-verified"],
+    "sort": "family_release"
+  },
+  {
+    "id": "flash-fast",
+    "label": "Flash / fast",
+    "description": "按 Flash、mini、highspeed 或 lower-latency variant 筛选；同时展示质量、成本和延迟。",
+    "model_filter": {"include_tags": ["Flash", "高速", "小模型", "效率"]},
+    "benchmark_ids": ["gpqa-diamond", "livecodebench", "terminal-bench", "bfcl"],
+    "sort": "efficiency_pareto",
+    "dimensions": ["score", "input_cost", "output_cost", "ttft", "output_tokens_per_second"]
+  },
+  {
+    "id": "small-efficient",
+    "label": "Small / efficient",
+    "description": "优先按 active parameters、显存、吞吐和单位任务成本比较；未知参数不猜。",
+    "model_filter": {"include_tags": ["小模型", "效率", "高速"]},
+    "benchmark_ids": ["mmlu-pro", "gpqa-diamond", "livecodebench", "bfcl"],
+    "sort": "active_params"
+  },
+  {
+    "id": "math-science",
+    "label": "Math / science",
+    "description": "数学与研究生科学推理；保留 pass@k、工具和采样设置。",
+    "benchmark_ids": ["aime-2025", "hmmt", "frontiermath", "gpqa-diamond", "hle"],
+    "model_filter": {"include_tags": ["推理", "数学"]},
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "static-coding",
+    "label": "Static coding",
+    "description": "无 agent loop 的代码能力；固定题目窗口与解码协议。",
+    "benchmark_ids": ["livecodebench", "mmlu-pro"],
+    "harness_ids": ["model-only", "lm-eval"],
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "coding-agent",
+    "label": "Coding Agent",
+    "description": "固定 harness 后比较端到端软件工程结果。",
+    "mode": "runs",
+    "benchmark_ids": ["swebench-verified", "swebench-pro", "deepswe", "nl2repo", "terminal-bench"],
+    "harness_ids": ["swebench-official", "mini-swe-agent", "terminus-2", "claude-code", "codex", "kimi-code", "deepseek-harness"],
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "harness-ab",
+    "label": "Same model × harness",
+    "description": "固定 model，切换 agent/harness，观察 scaffold effect；不与 model-only 分数混排。",
+    "mode": "runs",
+    "benchmark_ids": ["swebench-verified", "terminal-bench", "deepswe"],
+    "compare": {"axis": "harness", "group_by": "model_id"},
+    "sort": "harness"
+  },
+  {
+    "id": "tool-workflow",
+    "label": "Tools / workflow",
+    "description": "函数调用、业务流程和长程工具使用；同时看成功率与 pass^k。",
+    "mode": "runs",
+    "benchmark_ids": ["bfcl", "tau-bench", "toolathlon", "gdpval-aa"],
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "multimodal-computer",
+    "label": "Multimodal / computer use",
+    "description": "图像、视频和桌面环境；输入模态与 GUI scaffold 必须明确。",
+    "mode": "runs",
+    "benchmark_ids": ["mmmu", "mmmu-pro", "mathvista", "video-mme", "osworld"],
+    "model_filter": {"modalities_any": ["image", "video", "audio"]},
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "long-context",
+    "label": "Long context",
+    "description": "按 context bucket 查看检索/推理曲线，不用一个最大窗口数字替代实际表现。",
+    "benchmark_ids": ["ruler", "longbench"],
+    "model_filter": {"min_context_window": 128000},
+    "sort": "context_window"
+  },
+  {
+    "id": "open-weight-deployment",
+    "label": "Open weight / deployment",
+    "description": "开放权重模型的质量、license、total/active parameters、量化和部署成本。",
+    "model_filter": {"open_weights": true},
+    "benchmark_ids": ["gpqa-diamond", "mmlu-pro", "livecodebench", "swebench-verified"],
+    "sort": "active_params",
+    "dimensions": ["score", "params_total", "params_active", "license", "vram", "throughput"]
+  },
+  {
+    "id": "chinese-multilingual",
+    "label": "Chinese / multilingual",
+    "description": "中文与多语言单独比较，避免英语总分掩盖语言差异。",
+    "benchmark_ids": ["ceval", "cmmlu", "superclue", "mmmlu"],
+    "model_filter": {"modalities_any": ["text"]},
+    "sort": "benchmark_column"
+  },
+  {
+    "id": "reliability-safety",
+    "label": "Reliability / safety",
+    "description": "重复运行、拒答、事实性和网络安全；优先展示置信区间与失败类型。",
+    "benchmark_ids": ["simpleqa", "tau-bench", "cybergym", "hle"],
+    "sort": "benchmark_column",
+    "dimensions": ["score", "pass_k", "pass_power_k", "uncertainty", "failure_modes"]
+  },
+  {
+    "id": "scale-watchlist",
+    "label": "Scale watchlist",
+    "description": "只收 source-backed 参数；10T 目前是 watchlist，不对未知规模做排名。",
+    "model_filter": {"min_params_total": 1000000000000},
+    "benchmark_ids": ["gpqa-diamond", "frontiermath", "swebench-pro", "terminal-bench"],
+    "sort": "params_total",
+    "note": "total parameters and active parameters are separate fields; unknown is not zero"
+  }
+]
