@@ -211,6 +211,17 @@ const fixture = {
       sourceId: "lmarena-hf-dataset",
       protocol: { harness: "arena-human-preference", rating_method: "bradley-terry" },
     },
+    {
+      id: "epoch-unreviewed-probe",
+      canonicalModelId: "acme/model@1",
+      benchmarkId: "epoch-weirdml_external",
+      metricId: "Accuracy",
+      value: 41.6,
+      unit: "%",
+      sourceId: "src-epoch-benchmark-hub",
+      sourceUrl: "https://epoch.ai/data/benchmark_data.zip",
+      evidenceUrl: "https://htihle.github.io/weirdml.html",
+    },
   ],
   presets: [],
   sources: [],
@@ -279,6 +290,10 @@ async function main() {
     "grouped overview leaked a secondary metric into the global header",
   );
   assert(
+    !elements.matrixHead.innerHTML.includes('data-benchmark-col="epoch-weirdml_external"'),
+    "an unreviewed Epoch probe entered the default primary matrix",
+  );
+  assert(
     elements.benchmarkJump.innerHTML.includes("slices"),
     "grouped overview did not disclose that related slices are available",
   );
@@ -337,6 +352,10 @@ async function main() {
   assert(
     elements.publicEvidenceList.innerHTML.includes("telemetry · 仅证据"),
     "excluded telemetry disappeared from the inspectable evidence ledger",
+  );
+  assert(
+    elements.publicEvidenceList.innerHTML.includes("仅证据 · 默认隐藏"),
+    "an unreviewed Epoch probe lost its evidence-only disclosure label",
   );
 
   densityButtons.find((button) => button.dataset.matrixDensity === "standard").emit("click");

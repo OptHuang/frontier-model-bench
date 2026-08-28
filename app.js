@@ -43,6 +43,7 @@
     ["epoch-terminalbench_external", "terminal-bench"],
     ["epoch-osworld_2_external", "osworld"],
     ["epoch-webdev_arena_external", "arena-webdev"],
+    ["epoch-ale_bench_external", "ale-bench"],
     ["helm-gpqa", "gpqa-diamond"],
     ["helm-mmlu-pro", "mmlu-pro"],
     ["swebench-bash-only", "swebench-verified"],
@@ -51,6 +52,58 @@
     ["swebench-multilingual", "swebench-verified"],
     ["swebench-multimodal", "swebench-verified"],
   ]);
+
+  /*
+   * Epoch's downloadable hub is a useful discovery feed, not a flat list of
+   * equally authoritative benchmarks.  The hub mixes established suites,
+   * short-lived research probes, internal snapshots and composite indices.
+   * Keep the raw rows in the evidence ledger, but only promote a deliberately
+   * small set of recognisable benchmark families to the default matrix.  A
+   * future curator can extend this set after adding an owner, protocol and
+   * original source link; no score is deleted by this policy.
+   */
+  const PUBLIC_MATRIX_EPOCH_ALLOWLIST = new Set([
+    "epoch-ale_bench_external",
+    "epoch-arc_agi_external",
+    "epoch-arc_agi_2_external",
+    "epoch-bbh_external",
+    "epoch-deepswe_external",
+    "epoch-frontiermath_tier_4",
+    "epoch-gdpval_external",
+    "epoch-osworld_2_external",
+    "epoch-scicode_external",
+    "epoch-terminalbench_external",
+  ]);
+  const PUBLIC_MATRIX_EXCLUSION_REASON = "unreviewed_public_snapshot";
+  const PUBLIC_BENCHMARK_LABELS = {
+    "epoch-ale_bench_external": "ALE-Bench · Epoch snapshot",
+    "epoch-arc_agi_external": "ARC-AGI · Epoch snapshot",
+    "epoch-arc_agi_2_external": "ARC-AGI-2 · Epoch snapshot",
+    "epoch-bbh_external": "BIG-Bench Hard · Epoch snapshot",
+    "epoch-deepswe_external": "DeepSWE · Epoch snapshot",
+    "epoch-frontiermath_tier_4": "FrontierMath Tier 4 · Epoch snapshot",
+    "epoch-gdpval_external": "GDPval · Epoch snapshot",
+    "epoch-osworld_2_external": "OSWorld 2 · Epoch snapshot",
+    "epoch-scicode_external": "SciCode · Epoch snapshot",
+    "epoch-terminalbench_external": "Terminal-Bench · Epoch snapshot",
+    "epoch-chess_puzzles": "Chess Puzzles · public snapshot",
+    "epoch-critpt_external": "CritPt · public snapshot",
+    "epoch-epoch_capabilities_index": "Epoch Capabilities Index · composite",
+    "epoch-otis_mock_aime_2024_2025": "OTIS mock AIME 2024–2025 · public snapshot",
+    "epoch-proofbench_external": "ProofBench · public snapshot",
+    "epoch-simplebench_external": "SimpleBench · public snapshot",
+    "epoch-vending_bench_2_external": "Vending-Bench 2 · public snapshot",
+    "epoch-weirdml_external": "WeirdML · public snapshot",
+  };
+  function publicBenchmarkBaseId(value) {
+    return text(value, "").split("--", 1)[0].toLowerCase();
+  }
+  function publicBenchmarkInPrimaryMatrix(value) {
+    const id = publicBenchmarkBaseId(value);
+    // Non-Epoch sources (HELM, LiveBench, Arena, official leaderboard
+    // adapters, etc.) already have a named producer and remain discoverable.
+    return !id.startsWith("epoch-") || PUBLIC_MATRIX_EPOCH_ALLOWLIST.has(id);
+  }
 
   const $ = (id) => document.getElementById(id);
   const els = {
@@ -629,6 +682,8 @@
     const id = text(first(item?.benchmarkId, item?.benchmark_id), "public-benchmark");
     const sourceName = text(first(item?.benchmarkName, item?.benchmark_name), id);
     const lower = id.toLowerCase();
+    const curated = publicBenchmarkInPrimaryMatrix(id);
+    const benchmarkLabel = PUBLIC_BENCHMARK_LABELS[lower] || sourceName;
     let family = "public / other";
     let familyLabel = "公开切片";
     if (lower.startsWith("livebench-")) { family = "coding / reasoning"; familyLabel = "LiveBench"; }
@@ -647,8 +702,8 @@
         : "";
     return normaliseBenchmark({
       id,
-      name: sourceName === id ? id.replace(/^(livebench|helm)-/i, "$1 · ").replace(/-/g, " ") : sourceName,
-      short: sourceName === id ? id.replace(/^(livebench|helm)-/i, "").replace(/-/g, " ") : sourceName,
+      name: benchmarkLabel === id ? id.replace(/^(livebench|helm)-/i, "$1 · ").replace(/-/g, " ") : benchmarkLabel,
+      short: benchmarkLabel === id ? id.replace(/^(livebench|helm)-/i, "").replace(/-/g, " ") : benchmarkLabel,
       family,
       familyLabel,
       metric: first(item?.metricId, item?.metric_id, "score"),
@@ -659,10 +714,14 @@
       version: first(item?.benchmarkVersionId, item?.benchmarkVersion, item?.benchmark_version),
       evaluationMode: subjectType.toLowerCase() === "system" ? "system" : "direct",
       publicOnly: true,
+      primaryMatrix: curated,
+      primaryMatrixReason: curated ? "curated_public_source" : PUBLIC_MATRIX_EXCLUSION_REASON,
       // Dynamically observed source slices must not masquerade as curator-pinned
       // columns even if a future source row happens to carry UI-like metadata.
       displayPriority: null,
       sourceId: item?.sourceId,
+      source: firstSafeUrl(item?.evidenceUrl, item?.evidence_url, item?.sourceUrl, item?.source_url),
+      sourceLabel: first(item?.sourceLabel, item?.source_label, item?.sourceName, "公开来源快照"),
       description: `来自公开榜单或模型卡的切片；本站未独立复现。${aleNote ? ` ${aleNote}` : ""}`,
     });
   }
@@ -797,6 +856,8 @@
             scale: publicMetricScale(item, base),
             direction: publicMetricDirection(rawMetric, base, item),
             publicOnly: true,
+            primaryMatrix: base.primaryMatrix !== false,
+            primaryMatrixReason: base.primaryMatrixReason || (base.primaryMatrix === false ? PUBLIC_MATRIX_EXCLUSION_REASON : "curated_public_source"),
             publicMetricSlice: true,
             // Do not inherit the base benchmark's curated position. Secondary
             // metrics stay inspectable but follow canonical/base columns.
@@ -990,14 +1051,29 @@
       }
     });
     const presets = list(source.presets).map(normalisePreset);
-    if (publicEvidence.length && !presets.some((preset) => preset.id === "public-coverage")) {
+    /*
+     * `public-coverage` is the landing view, so it must be useful to read:
+     * canonical catalog rows plus curated public slices only.  The complete
+     * Epoch discovery feed remains available through the evidence JSONL and
+     * the explicit "所有模型 / benchmark" view; it is never silently deleted.
+     */
+    const primaryMatrixBenchmarkIds = benchmarks
+      .filter((benchmark) => !benchmark.publicOnly || publicBenchmarkInPrimaryMatrix(benchmark.id))
+      .map((benchmark) => benchmark.id);
+    const publicCoverage = presets.find((preset) => preset.id === "public-coverage");
+    if (publicEvidence.length && !publicCoverage) {
       presets.unshift(normalisePreset({
         id: "public-coverage",
-        label: "公开覆盖 / 全量切片",
-        description: "展示目录与公开榜单已报告的全部 benchmark 切片；每个披露值均标记为本站未复现。",
+        label: "公开覆盖 / 已筛选",
+        benchmarkIds: primaryMatrixBenchmarkIds,
+        description: "默认只展示 canonical 目录与有明确出处的公开 benchmark；Epoch 的未核验快照仍保留在下方证据审计，不占用主矩阵列。",
         model_filter: { status: ["active", "preview", "restricted", "previous"] },
         mode: "atlas",
       }));
+    } else if (publicCoverage) {
+      publicCoverage.benchmarkIds = primaryMatrixBenchmarkIds;
+      publicCoverage.description = "默认只展示 canonical 目录与有明确出处的公开 benchmark；Epoch 的未核验快照仍保留在下方证据审计，不占用主矩阵列。";
+      publicCoverage.label = first(publicCoverage.label, "公开覆盖 / 已筛选");
     }
     return {
       ...source,
@@ -1628,6 +1704,8 @@
       const mappedCells = publicStats.mappedCells || 0;
       const publicMetricCells = publicStats.mappedMetricCells || 0;
       const publicRows = Array.isArray(state.data?.publicEvidence) ? state.data.publicEvidence : [];
+      const hiddenPublicBenchmarks = (state.data?.benchmarks || [])
+        .filter((benchmark) => benchmark.publicOnly && benchmark.primaryMatrix === false).length;
       const telemetryCells = new Set(publicRows
         .filter((item) => item.matrixExcluded)
         .map((item) => [item.canonicalModelId || item.modelRef || "", item.displayBenchmarkId || item.benchmarkId || "", item.metricId || ""].join("|"))
@@ -1640,7 +1718,10 @@
         ? `；公开层已载入 ${fmt(publicStats.rows, 0)} 条已映射披露（${fmt(mappedCells, 0)} 个 model × benchmark 单元、${metricNote}；原始去重 ${fmt(publicStats.deduplicatedRows || 0, 0)} 条；${fmt(publicStats.unmappedRows || 0, 0)} 条未安全归一化，${fmt(unmappedGroups, 0)} 个来源原名见 aliases）`
         : "；公开榜单候选由日常维护任务另行审阅";
       const canonicalHint = stats.observedCells !== undefined ? `；canonical 已整理 ${fmt(stats.observedCells, 0)} 个单元格` : "";
-      els.coverageNote.innerHTML = `矩阵数值包含公开来源报告值；“披露 · 未复现”不代表本站复现，空白也不代表没人测试${canonicalHint}${publicHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
+      const curationHint = hiddenPublicBenchmarks
+        ? `；另有 ${fmt(hiddenPublicBenchmarks, 0)} 个未核验公开快照仅保留在证据审计，不进入默认矩阵`
+        : "";
+      els.coverageNote.innerHTML = `矩阵数值包含公开来源报告值；“披露 · 未复现”不代表本站复现，空白也不代表没人测试${canonicalHint}${publicHint}${curationHint}。<a href="docs/benchmark-coverage.md">查看覆盖审计 ↗</a>`;
     }
     const status = String(state.data?.meta?.status || "curated").toLowerCase();
     const isDemo = ["demo", "illustrative", "seed"].includes(status);
@@ -1764,8 +1845,10 @@
       const unmapped = stats.unmappedRows || 0;
       const mappedCells = stats.mappedCells || 0;
       const sources = stats.sources || Object.keys(stats.sourceCounts || {}).length;
+      const hidden = records.filter((item) => benchmarkFor(first(item.displayBenchmarkId, item.benchmarkId))?.primaryMatrix === false).length;
       const filterPrefix = query ? `${fmt(filtered.length, 0)} / ` : "";
-      els.publicEvidenceCount.textContent = `${filterPrefix}${fmt(mapped, 0)} 条披露 · ${fmt(sources, 0)} 个来源 · ${fmt(mappedCells, 0)} 个单元 · ${fmt(unmapped, 0)} 条待归一化`;
+      const hiddenNote = hidden ? ` · ${fmt(hidden, 0)} 条仅证据` : "";
+      els.publicEvidenceCount.textContent = `${filterPrefix}${fmt(mapped, 0)} 条披露 · ${fmt(sources, 0)} 个来源 · ${fmt(mappedCells, 0)} 个单元 · ${fmt(unmapped, 0)} 条待归一化${hiddenNote}`;
     }
     // The evidence ledger is an audit surface, not primary page content. Keep
     // the collapsed state truly light by releasing its representative rows
@@ -1778,6 +1861,7 @@
     const visible = filtered.slice(0, 60);
     els.publicEvidenceList.innerHTML = visible.map((item) => {
       const source = sourceFor(first(item.sourceId, item.sourceUrl));
+      const benchmark = benchmarkFor(first(item.displayBenchmarkId, item.benchmarkId));
       const status = evidenceStatus(item, "reported");
       const sourceName = first(item.sourceModel, item.modelName, item.modelRef, item.modelId, "unmapped model");
       const benchmarkName = first(item.sourceBenchmark, item.benchmarkName, item.benchmarkId, "unmapped benchmark");
@@ -1789,7 +1873,10 @@
       const mappingClass = slug(mappingStatus);
       const subject = String(first(item.subjectType, "model")).toLowerCase() === "system" ? "system" : "model";
       const metric = item.metricSliceLabel || item.metricId || "score";
-      const matrixNote = item.matrixExcluded ? "telemetry · 仅证据" : (item.metricSlice ? `matrix · ${metric}` : "matrix");
+      const defaultHidden = benchmark?.primaryMatrix === false;
+      const matrixNote = item.matrixExcluded
+        ? "telemetry · 仅证据"
+        : (defaultHidden ? "仅证据 · 默认隐藏" : (item.metricSlice ? `matrix · ${metric}` : "matrix"));
       return `<article class="public-evidence-row" data-public-evidence="${esc(item.id || "")}" tabindex="0" role="button" aria-label="查看 ${esc(sourceName)} 的公开 ${esc(benchmarkName)} 证据"><div class="public-evidence-main"><div class="public-evidence-title"><strong>${esc(sourceName)}</strong><span>×</span><strong>${esc(benchmarkName)}</strong></div><div class="public-evidence-meta"><span class="score-evidence evidence-${slug(status)} evidence-public${subject === "system" ? " evidence-system" : ""}">${esc(status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")}</span><span class="model-badge mapping-badge mapping-${mappingClass}">${esc(mappingStatusLabel(mappingStatus))}</span><span class="model-badge">${esc(subject)}</span><span class="model-badge public-metric-badge">${esc(matrixNote)}</span><strong class="public-evidence-score">${esc(score)}${item.unit && score !== "—" ? esc(item.unit) : ""}</strong><span>${esc(item.rawValue && item.rawValue !== item.value ? item.rawValue : "")}</span><span>${esc(protocol)}</span></div></div><div class="public-evidence-source">${sourceLink ? `<a href="${esc(sourceLink)}" target="_blank" rel="noreferrer">↗ ${esc(item.sourceLabel || source?.label || sourceLink)}</a>` : "<span>来源未注明</span>"}<small>${esc(item.locator || item.sourceLocator || "locator 未注明")}</small><small>${esc(item.fetchedAt || item.retrievedAt || item.observedAt || "retrieved 未注明")}${item.snapshotHash || item.payloadSha256 ? ` · hash ${esc(String(item.snapshotHash || item.payloadSha256).slice(0, 12))}…` : ""}</small></div></article>`;
     }).join("");
     renderPublicAliasLedger();
@@ -2072,7 +2159,9 @@
     const benchmarkVersion = first(item.benchmarkVersionId, item.benchmarkVersion, item.benchmarkVersionHint, "version 未注明");
     const matrixStatus = item.matrixExcluded
       ? `仅证据（${item.matrixExcludedReason || "telemetry metric"}，未进入矩阵）`
-      : `已进入矩阵${item.metricSlice ? ` · ${item.metricSliceLabel || item.metricId || "metric slice"}` : ""}`;
+      : (benchmark?.primaryMatrix === false
+        ? `仅证据（${PUBLIC_MATRIX_EXCLUSION_REASON}，默认不进入矩阵）`
+        : `已进入矩阵${item.metricSlice ? ` · ${item.metricSliceLabel || item.metricId || "metric slice"}` : ""}`);
     const rawBenchmark = first(item.sourceBenchmark, item.source_benchmark, item.benchmarkName, item.benchmarkId, "公开 benchmark");
     els.drawerContent.innerHTML = `<div class="drawer-model-head"><span class="model-mark">E</span><div><h3 id="drawerTitle">${esc(first(item.sourceModel, item.modelName, item.modelRef, "公开模型行"))}</h3><p>${esc(rawBenchmark)} · ${esc(item.sourceLabel || source?.label || item.sourceId || "source 未注明")}</p></div></div><div class="drawer-score"><span class="status-badge conditional">披露 · 未复现</span><div class="big-score">${item.value === null || item.value === undefined ? "—" : `${fmt(item.value)}<small>${esc(item.unit || "")}</small>`}</div><p>${esc(item.metricId || "score")} · ${esc(benchmarkVersion)}</p></div><section class="detail-section"><h4>Mapping</h4>${detailGrid([["Source model", item.modelRef || item.sourceModel || item.modelName], ["Canonical release", item.canonicalModelId || item.mappedModelId || "未安全映射"], ["Source benchmark", rawBenchmark], ["Display column", displayBenchmarkId], ["Base benchmark", baseBenchmarkId], ["Mapping status", item.mappingStatus || "unmatched"], ["Matrix status", matrixStatus], ["Subject", subject], ["Harness", item.harnessId || item.harness]])}</section>${benchmark?.description ? `<section class="detail-section"><h4>What this measures</h4><p class="detail-note">${esc(benchmark.description)}</p></section>` : ""}${evidenceDetails(item, "Public evidence")}${link ? `<section class="detail-section"><h4>Snapshot / API</h4><a class="source-link" href="${esc(link)}" target="_blank" rel="noreferrer">↗ ${esc(link)}</a>${sourcePage && sourcePage !== link ? `<p class="detail-note"><a href="${esc(sourcePage)}" target="_blank" rel="noreferrer">打开来源说明页 ↗</a></p>` : ""}</section>` : (sourcePage ? `<section class="detail-section"><h4>Source page</h4><a class="source-link" href="${esc(sourcePage)}" target="_blank" rel="noreferrer">↗ ${esc(sourcePage)}</a></section>` : "")}${protocol ? `<section class="detail-section"><h4>Protocol</h4><p class="detail-note">${esc(protocol)}</p></section>` : ""}<button class="copy-json" type="button" id="copyObservation">复制公开证据 JSON</button>`;
     showDrawer();

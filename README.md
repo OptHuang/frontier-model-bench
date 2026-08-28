@@ -71,7 +71,7 @@ canonical 排名；点击单元格或公开披露索引，可以查看来源 URL
 快照 hash、harness/protocol 和原始 JSON。未安全映射的来源原名不猜测成 canonical
 release，而保留在维护 artifact/`unmapped.jsonl` 中供后验处理。
 
-预设由 `data/catalog/presets.json` 驱动，可切换 Frontier、Flash/Fast、小模型、数学、代码 Agent、工具、多模态、长上下文、中文/多语、开放权重、可靠性和参数规模等比较维度。默认 `public-coverage` 预设会把目录与公开报告的覆盖地图一起展示；窄预设仍可隐藏 `catalog-only`，缺失始终表示 `—`，不是 0。
+预设由 `data/catalog/presets.json` 驱动，可切换 Frontier、Flash/Fast、小模型、数学、代码 Agent、工具、多模态、长上下文、中文/多语、开放权重、可靠性和参数规模等比较维度。默认 `public-coverage` 预设会把目录与**经过来源初筛的**公开报告覆盖地图一起展示；Epoch Hub 的未核验 probe、内部别名和 composite index 仍留在证据审计，不会铺满主矩阵。窄预设仍可隐藏 `catalog-only`，缺失始终表示 `—`，不是 0。
 
 ## 更新数据
 

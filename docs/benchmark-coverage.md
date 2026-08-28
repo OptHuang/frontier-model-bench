@@ -9,7 +9,7 @@
 模型卡和 provider 披露值，并在单元格与详情中标记 `披露 · 未复现`。后者可以帮助快速
 填满信息地图，但不参与 canonical 排名，也不被描述成本站实测。
 
-因此，一个空单元可能属于以下四种状态；公开层还有一条独立的“已报告但未映射”队列：
+因此，一个空单元可能属于以下四种状态；公开层还有一条独立的“已报告但未映射”队列。需要特别区分 **raw snapshot** 与 **primary matrix**：Epoch AI 的下载 Hub 是跨来源发现 feed，不是一个由同一评测方维护的总榜。主矩阵只保留 canonical 目录和经过来源/协议初筛的公开 benchmark；未核验的短期 probe、内部别名、composite index 仍保留在 `evidence JSONL`，标记为“仅证据 · 默认隐藏”，不会被删除或当作 0。
 
 | 状态 | 含义 | 页面/维护动作 |
 | --- | --- | --- |
@@ -18,6 +18,21 @@
 | `candidate` | 已从公开来源发现结果，但缺值或仍需身份、版本、协议、指标审核 | 进入公开索引/Actions review packet，显示候选标记 |
 | `approved` | 已核对并追加到 canonical observation 长表 | 进入对应 Model Atlas 或 System Runs |
 | `no-public-result` | 截至检索日没有找到可核验的公开结果，或官方明确限制公开 | 记录检索日期和原因，不能推断为未测试 |
+
+### 截图中的 `epoch_*` 列怎么读
+
+这些列不是同一个新 benchmark 的不同赛道，而是 Epoch AI Hub 导出的 **benchmark-name / metric 快照键**。`epoch-` 前缀表示“来自 Hub 的外部聚合记录”，不表示 Epoch 是原 benchmark 的出题方或 checker 维护者。默认主矩阵只准入少量能回到清晰 owner、任务说明和原始地址的系列：
+
+| 主矩阵准入 | 原始 benchmark | 说明 |
+| --- | --- | --- |
+| `epoch-arc_agi_external` / `epoch-arc_agi_2_external` | [ARC-AGI](https://arcprize.org/arc-agi) / [ARC-AGI-2](https://arcprize.org/arc-agi/2) | ARC Prize 的抽象推理任务；Hub 数值仍是外部聚合，不等于官方提交成绩 |
+| `epoch-ale_bench_external` | [ALE-Bench](https://github.com/SakanaAI/ALE-Bench) | SakanaAI 的算法工程/AtCoder heuristic track；不要和 Agents’ Last Exam 或 Atari ALE 混名 |
+| `epoch-bbh_external` | [BIG-Bench Hard](https://github.com/suzgunmirac/BIG-Bench-Hard) | Google BIG-bench 的高难子集；需区分 CoT、few-shot 和聚合口径 |
+| `epoch-frontiermath_tier_4` | [FrontierMath](https://epoch.ai/benchmarks/frontiermath) Tier 4 | Epoch 的 Tier 4 报告快照；官方题集、grader 和工具限制仍以 FrontierMath 页面为准 |
+| `epoch-deepswe_external` / `epoch-terminalbench_external` / `epoch-osworld_2_external` | [DeepSWE](https://github.com/agentica-project/deepswe) / [Terminal-Bench](https://github.com/harbor-framework/terminal-bench) / [OSWorld](https://github.com/xlang-ai/OSWorld) | 真实代码或电脑环境任务；必须回到 harness、环境和预算，不当作裸模型分 |
+| `epoch-gdpval_external` / `epoch-scicode_external` | [GDPval](https://openai.com/index/gdpval/) / [SciCode](https://github.com/scicode-bench/SciCode) | 有明确项目入口的专业工作/科学代码任务；仍保留 Hub 快照与原始项目链接的区别 |
+
+像截图里的 `epoch-chess_puzzles`、`epoch-critpt_external`、`epoch-weirdml_external`、`epoch-vending_bench_2_external`、`epoch-simplebench_external`、`epoch-proofbench_external`、`epoch-otis_mock_aime_2024_2025` 和 `epoch-epoch_capabilities_index`，目前只有 Hub 快照键或二手页面证据，缺少足够稳定的 owner/protocol/版本链，因此只出现在下方证据审计，不占用默认矩阵列。以后若要升级，必须先补 benchmark profile 和原始地址；不会按“有数字”自动晋升。
 
 公开来源的 model alias 无法安全映射时，原始名称仍保留在 `data/public/unmapped.jsonl`
 及其 `unmapped-summary.json` 审计索引和维护 artifact，但不会被猜测成另一个
@@ -33,8 +48,8 @@ canonical release。
 2. 同一 benchmark 的 `score`、`mean_score`、版本和 subtask 被建成子切片，并被排到后面；
 3. source-specific 版本（例如 Epoch、HELM、不同 SWE scaffold）也被平铺成独立列。
 
-页面现已默认改为 **92 个语义分组**，按重要度层级、再按组内去重覆盖排序，并且每次只
-渲染 24 列。当前前 20 组有 **543 / 2,000 = 27.15%** 模型存在主口径或相关切片；若
+页面现在先按 **curated primary matrix** 筛掉未核验 public snapshot，再按语义分组、重要度层级和组内去重覆盖排序；每次只
+渲染 24 列。raw evidence 仍可通过“全部切片”和下方审计层查看。若
 主口径为空但子切片有数据，单元格显示 `N variants`，点击后逐条查看。不同 benchmark
 版本、metric 或 harness **不会被合并成一个数值**。需要审计原始结构时仍可切换到
 “全部切片”。纯空白现在写作“本站未收录”，不再暗示“外界没有测试”。
@@ -66,7 +81,7 @@ BrowseComp、OSWorld 等 system benchmark，因此修复必须是通用的 group
 
 统计对象不同，数字会不同，不能把它们混为“已经收录的成绩数”：
 
-- 目录有 **100 个模型 / 配置条目、53 个 canonical benchmark 定义、110 个来源、15 个 harness**（另有 19 个比较预设）；Evaluation 前端从公开证据再生成 **73 个 public source/version slices** 与 **21 个 metric slices**，共 147 个严格切片，并折叠为 92 个默认语义分组。
+- 目录有 **100 个模型 / 配置条目、53 个 canonical benchmark 定义、110 个来源、15 个 harness**（另有 19 个比较预设）；Evaluation 前端从公开证据再生成 raw public source/version 与 metric slices（当前约 147 个严格切片）。默认 `public-coverage` 只把 canonical 与已列入准入表的公开切片折叠进主矩阵；其余 raw slice 仍可从“全部切片”、`evidence.jsonl` 和详情抽屉审计。
 - canonical 文件当前有 **15 行**；构建后的站点索引包含 **47 个 runs/observations**（其中 **32 行**是兼容旧 schema 的 legacy 记录）。
 - 有数值的 canonical 已观察模型为 **9 个**，仅目录模型为 **91 个**；已观察的模型×benchmark 单元为 **29 个**，按全目录口径覆盖率为 **0.5%**。维护报告按 active 集合和 freshness 口径计算时可能显示不同百分比，这是分母不同，不是数据丢失。
 - 公开层本次 union 合并 **21,227 条去重报告行**（18 个来源、128 个 raw benchmark 切片；其中 99 个切片出现在 mapped rows、724 个 source×原始模型名键）；其中 **21,129 条**带数值，**6,461 条**能以 exact/heuristic/curated alias 映射到目录（alias registry 当前 **129 条**显式 source-scoped 规则，产生 **2,830 条**curated rows）。这些 mapped rows 以本地默认 `--max-per-key 0` **全部载入** `public.json`/`evidence.jsonl`，覆盖 **2,750 个** mapped model×benchmark 单元（细分为 **3,064 个** model×benchmark×metric slices；270 条 telemetry 原始行对应 **240 个**仅证据 metric 单元，实际 performance slices 为 **2,824**）；**14,766 条**未安全映射行完整保存在 gitignored `data/public/unmapped.jsonl`，并由 `data/public/unmapped-summary.json` 按来源原名聚合索引（**1,591 个**原名组）。因默认不设上限，`alternatives.jsonl` 当前为空；需要轻量预览时可显式传入正数 cap。这不是删除，而是把无法安全归属的记录与可展示记录分层。
