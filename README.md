@@ -16,10 +16,9 @@ python3 -m http.server 8765
 ## 页面和目录
 
 ```text
-index.html                 # Evaluations / Matrix + System Runs
-benchmarks.html            # benchmark 目录与逐项 profile
-models.html                # model / config entry 目录与逐项 profile
-styles.css / app.js        # 无构建依赖的静态前端
+index.html / styles.css / app.js                 # Evaluations / Matrix + System Runs
+benchmarks.html / benchmarks.css / benchmarks.js # benchmark 目录与逐项 profile
+models.html / models.css / models.js             # model / config entry 目录与逐项 profile
 data/catalog/               # models / model_profiles / benchmarks / sources / harnesses / presets 注册表
 data/observations/results.jsonl # 追加式 canonical observation 长表
 data/derived/site.json      # 由脚本生成，供静态前端读取
@@ -42,6 +41,13 @@ skills/frontier-model-bench-maintenance/ # 可复用维护 skill
 .github/workflows/maintenance.yml # 定时 source health + candidate artifact
 ```
 
+根目录的三套页面资源是有意保留的 GitHub Pages 相对路径契约，不要只为外观整齐而把
+HTML、CSS 或 JS 单独搬进子目录。本地缓存和维护产物不属于发布源码：Ruff/Python 缓存、
+`artifacts/fetch/`、`artifacts/maintenance/`、`artifacts/review/` 均被忽略，可以在对应
+任务结束后删除；`data/public/unmapped.jsonl` 虽然也被忽略，但它保存当前来源快照中
+尚未安全映射的完整证据队列，活跃审阅期间应保留，完成后再交给 Actions artifact 的
+retention 管理。
+
 站点有三个并列入口：`Evaluations` 看模型 / system 的成绩，`Benchmarks` 先解释每把“尺子”，`Models` 先解释每个 release 的身份与能力边界。三个页面共享同一份 `site.json`，目录页不会复制或另行维护分数。
 
 数据层的形态是：
@@ -54,7 +60,7 @@ source snapshots → canonical observations → derived indexes → static UI
 
 ## 两种比较主体
 
-- **Model Atlas**：每行一个 model release/config。适合 GPQA、MMLU-Pro、AIME、MMMU、LiveCodeBench 等直接评测；单元格仍显示 shots、effort、tools、evidence 与可比性。为尽量呈现公开覆盖，若某列只有 system 结果，矩阵会保留带 `system` 徽标的 fallback；严谨的 harness 间比较仍以 System Runs 为准。
+- **Model Atlas**：每行一个 model release/config。适合 GPQA、MMLU-Pro、AIME、MMMU、LiveCodeBench 等直接评测；单元格仍显示 shots、effort、tools、evidence 与可比性。若某列只有 system 结果，矩阵只显示可跳转的 run 数量，不把 system 分数提升成裸模型分数；harness 间比较以 System Runs 为准。
 - **System Runs**：每行一个精确的 `model × endpoint × harness × protocol × benchmark version`。SWE-bench、Terminal-Bench、BFCL、τ-bench、OSWorld 等必须在这个视图中比较；不跨 harness 取最高值或平均值。
 
 页面默认还会叠加一个 **Public reported** 层：公开 leaderboard、模型卡和 provider

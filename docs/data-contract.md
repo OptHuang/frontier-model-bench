@@ -4,6 +4,8 @@
 
 ## 1. 数据分层与目录
 
+### 1.1 当前可执行目录
+
 ```text
 data/
   catalog/
@@ -12,9 +14,34 @@ data/
     benchmarks.json          # benchmark/version/metric registry
     benchmark_profiles.json  # 逐项任务、数据、协议与比较说明（非成绩）
     sources.json             # 来源 registry
-    aliases.json             # source model name -> canonical model id (legacy/approved layer)
+    harnesses.json           # system/agent harness registry
+    presets.json             # 页面比较预设
   observations/
-    results.jsonl            # 规范化长表：每行一个 observation
+    results.jsonl            # 规范化长表：每行一个 canonical observation
+  derived/
+    site.json                # 三个静态页面读取的运行时索引
+    public.json              # 公开披露层的完整 JSON 索引
+  public/
+    evidence.jsonl           # 公开榜单 reported/unverified 长表
+    model_aliases.json       # source-scoped 显式 model alias registry
+    unmapped.jsonl           # 尚未安全映射的完整候选（本地 ignored artifact）
+    unmapped-summary.json     # 按 source modelRef 聚合的 alias 审计索引
+    alternatives.jsonl       # 已映射但超过页面限额的候选
+  models.json                # legacy seed 与浏览器 fallback；尚未退役
+
+artifacts/                   # gitignored，本地/Actions 的 fetch、review、maintenance 产物
+```
+
+`observations` 是可审计的 canonical 事实层；`public` 保存“披露但本站未复现”的平行证据；
+`derived` 是页面索引。当前静态快照会版本化部分 derived/public 文件，以便 GitHub Pages
+无需联网抓取即可发布。页面不应直接解析来源网页，也不应把 UI 排名写回事实层。
+
+### 1.2 尚未落地的目标目录
+
+以下结构是后续规模化时的目标，不是当前已经存在的路径：
+
+```text
+data/
   raw/<source_id>/<date>/
     manifest.json            # URL、抓取时间、状态、哈希、parser 版本
     payload.*                # 允许再分发时才保存原始 payload
@@ -23,16 +50,13 @@ data/
     exclusions.yaml          # 撤回/排除规则，必须带理由
   derived/
     latest.json              # 最新已批准快照指针
-    matrix.json              # 页面读取的宽表索引
+    matrix.json              # 可选的独立宽表索引
     health.json              # 新鲜度、冲突、覆盖率
-  public/
-    evidence.jsonl           # 公开榜单 reported/unverified 长表
-    unmapped.jsonl           # 尚未安全映射的完整候选
-    unmapped-summary.json     # 按 source modelRef 聚合的 alias 审计索引
-    alternatives.jsonl       # 已映射但超过页面限额的候选
 ```
 
-`raw` 是不可变证据层，`observations` 是可审计事实层，`derived` 是可丢弃的构建产物。页面不应直接解析来源网页，也不应把 UI 排名写回事实层。
+目标形态中的 `raw` 是不可变证据层；在它落地前，来源候选由 gitignored
+`artifacts/fetch/` 和 Actions artifacts 承担。不要因为本文列出目标路径，就在脚本外手工
+创建半套 `raw/` 或 `overrides/` 结构。
 
 公开榜单结果另有一个平行的 `public/reported evidence` 层（由
 `scripts/build_public_evidence.py` 生成）。它可以直接供页面展示大量来源报告值，但每行

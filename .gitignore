@@ -1,6 +1,17 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+node_modules/
+*.log
+*.tmp
+_site/
 .preview.png
 artifacts/maintenance/
 artifacts/fetch/
