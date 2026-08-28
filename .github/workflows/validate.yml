@@ -57,3 +57,4 @@ jobs:
           node --check app.js
           node --check benchmarks.js
           node --check models.js
+          node --check long-horizon.js

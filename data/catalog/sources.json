@@ -1130,5 +1130,87 @@
     "url": "https://docs.x.ai/developers/grok-4-6",
     "default_evidence_level": "A",
     "staleness_after_days": 30
+  },
+  {
+    "id": "src-swebench-repo",
+    "label": "SWE-bench · official evaluator repository",
+    "kind": "official_repository",
+    "publisher": "SWE-bench",
+    "url": "https://github.com/SWE-bench/SWE-bench",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "First-party benchmark and evaluator code. Keep the benchmark leaderboard source separate from the harness/repository provenance."
+  },
+  {
+    "id": "src-swe-agent",
+    "label": "SWE-agent · official repository",
+    "kind": "official_repository",
+    "publisher": "SWE-agent",
+    "url": "https://github.com/SWE-agent/SWE-agent",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "First-party coding-agent implementation; pin release or commit, model, tools, timeout and benchmark checker for each run."
+  },
+  {
+    "id": "src-mini-swe-agent",
+    "label": "mini-SWE-agent · official repository",
+    "kind": "official_repository",
+    "publisher": "SWE-agent",
+    "url": "https://github.com/SWE-agent/mini-swe-agent",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "First-party lightweight coding-agent implementation; do not use the DeepSWE leaderboard as its harness source."
+  },
+  {
+    "id": "src-harbor",
+    "label": "Harbor · Terminus-2 agent harness",
+    "kind": "official_repository",
+    "publisher": "Harbor",
+    "url": "https://github.com/harbor-framework/harbor",
+    "web_url": "https://github.com/harbor-framework/harbor/blob/main/docs/content/docs/agents/terminus-2.mdx",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "First-party Harbor repository and Terminus-2 agent documentation; keep Terminal-Bench as the benchmark source, not the harness origin."
+  },
+  {
+    "id": "src-claude-code",
+    "label": "Anthropic · Claude Code documentation",
+    "kind": "official_documentation",
+    "publisher": "Anthropic",
+    "url": "https://code.claude.com/docs/en/overview",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30,
+    "notes": "First-party Claude Code product and CLI documentation; system cards remain a separate model-safety context source."
+  },
+  {
+    "id": "src-openai-codex",
+    "label": "OpenAI · Codex CLI official repository",
+    "kind": "official_repository",
+    "publisher": "OpenAI",
+    "url": "https://github.com/openai/codex",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "First-party Codex CLI/agent implementation; retain sandbox, approval policy, model, effort and commit in run protocol."
+  },
+  {
+    "id": "src-deepseek-harness",
+    "label": "DeepSeek Harness · official repository",
+    "kind": "official_repository",
+    "publisher": "DeepSeek",
+    "url": "https://github.com/deepseek-ai/deepseek-harness",
+    "web_url": "https://www.deepseek.com/harness/en/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "First-party harness repository and product documentation; API updates remain a release/protocol context source only."
+  },
+  {
+    "id": "src-lm-eval",
+    "label": "EleutherAI · lm-evaluation-harness repository",
+    "kind": "official_repository",
+    "publisher": "EleutherAI",
+    "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+    "default_evidence_level": "A",
+    "staleness_after_days": 180,
+    "notes": "First-party static-evaluation runner; Stanford HELM is a distinct benchmark/evaluation framework and remains a separate context source."
   }
 ]

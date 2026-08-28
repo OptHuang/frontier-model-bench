@@ -18,8 +18,10 @@ python3 -m http.server 8765
 ```text
 index.html / styles.css / app.js                 # Evaluations / Matrix + System Runs
 benchmarks.html / benchmarks.css / benchmarks.js # benchmark 目录与逐项 profile
+long-horizon.html / long-horizon.css / long-horizon.js # 长程 Agent benchmark crosswalk 与一手来源
 models.html / models.css / models.js             # model / config entry 目录与逐项 profile
 data/catalog/               # models / model_profiles / benchmarks / sources / harnesses / presets 注册表
+data/catalog/long_horizon.json # 长程 benchmark 与 agent 原始地址登记（独立于成绩层）
 data/observations/results.jsonl # 追加式 canonical observation 长表
 data/derived/site.json      # 由脚本生成，供静态前端读取
 data/derived/public.json    # 公开榜单披露层索引（当前 union 快照 6,461 条已映射行）
@@ -48,7 +50,7 @@ HTML、CSS 或 JS 单独搬进子目录。本地缓存和维护产物不属于�
 尚未安全映射的完整证据队列，活跃审阅期间应保留，完成后再交给 Actions artifact 的
 retention 管理。
 
-站点有三个并列入口：`Evaluations` 看模型 / system 的成绩，`Benchmarks` 先解释每把“尺子”，`Models` 先解释每个 release 的身份与能力边界。三个页面共享同一份 `site.json`，目录页不会复制或另行维护分数。
+站点有四个并列入口：`Evaluations` 看模型 / system 的成绩，`Benchmarks` 先解释每把“尺子”，`Long Horizon` 交叉核对长程任务及其一手原始地址，`Models` 先解释每个 release 的身份与能力边界。长程页的 `canonical / external / 待收录` 只描述本站登记状态，不是分数排名；成绩仍回到固定 campaign 和 `site.json`。
 
 数据层的形态是：
 

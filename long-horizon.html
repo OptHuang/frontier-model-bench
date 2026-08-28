@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Long Horizon Agent benchmark crosswalk：独立整理长程、状态化、科学研究与工具工作流 benchmark，并保留每个项目的一手原始地址。" />
+    <meta name="theme-color" content="#0c111d" />
+    <title>Long Horizon · Frontier Model Bench</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css?v=20260828-ui2" />
+    <link rel="stylesheet" href="long-horizon.css?v=20260828-v1" />
+  </head>
+  <body class="long-horizon-page">
+    <div class="app-shell long-app-shell">
+      <header class="topbar long-topbar">
+        <a class="brand" href="index.html" aria-label="Frontier Model Bench 首页">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>
+            <span class="brand-name">Frontier Model Bench</span>
+            <span class="brand-caption">一个可追溯的模型评测索引</span>
+          </span>
+        </a>
+        <nav class="topnav long-nav" aria-label="主导航">
+          <a href="index.html#matrix">Evaluations</a>
+          <a href="benchmarks.html">Benchmarks</a>
+          <a class="active" href="long-horizon.html" aria-current="page">Long Horizon</a>
+          <a href="models.html">Models</a>
+          <a href="data/derived/site.json" target="_blank" rel="noreferrer">Data ↗</a>
+        </nav>
+        <div class="top-actions">
+          <span class="freshness-pill"><span class="status-dot"></span><span>curated snapshot</span></span>
+          <button id="themeToggle" class="icon-button" type="button" aria-label="切换颜色主题" title="切换颜色主题">☼</button>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="long-hero" aria-labelledby="longPageTitle">
+          <div class="long-hero-copy">
+            <p class="eyebrow"><span class="eyebrow-line"></span>LONG-HORIZON AGENTS / 004</p>
+            <h1 id="longPageTitle">任务要走得远，<br /><em>尺子也要有出处。</em></h1>
+            <p class="long-hero-lede">这是一个独立的一手来源 crosswalk：把科学研究、代码工程、终端、浏览器、电脑操作和工具工作流里的长程 benchmark 放在一起查。这里回答“我们覆盖了哪些尺子”，不把不同题集拼成一个总榜。</p>
+            <div class="long-hero-actions">
+              <a class="accent-button" href="#directory">浏览长程目录 <span>↓</span></a>
+              <a class="quiet-link" href="benchmarks.html">查看完整 benchmark catalog <span>↗</span></a>
+            </div>
+          </div>
+          <div class="long-hero-aside">
+            <div class="long-signal-card">
+              <div class="long-signal-top"><span class="signal-label">READING RULE</span><span class="long-signal-mark">ORIGIN FIRST</span></div>
+              <strong>coverage ≠ score</strong>
+              <p>“已覆盖”只表示本站已有 canonical 条目；“外部快照”表示有公开记录但尚未形成本站 campaign。每张卡都列出项目方原始仓库、论文、数据集或官方榜单。</p>
+            </div>
+            <div class="long-mini-note"><span class="mini-rule"></span><span>NatureBench、LHTB、TB-Science 等研究与长程条目独立登记。</span></div>
+          </div>
+        </section>
+
+        <section class="long-stat-grid" aria-label="长程 benchmark 目录摘要">
+          <article class="long-stat-card long-stat-primary"><span class="stat-kicker">TRACKED BENCHMARKS</span><strong id="totalCount">—</strong><span>独立登记的 benchmark / family</span></article>
+          <article class="long-stat-card"><span class="stat-kicker">CANONICAL</span><strong id="canonicalCount">—</strong><span>本站已有定义，可继续查成绩</span></article>
+          <article class="long-stat-card"><span class="stat-kicker">EXTERNAL SNAPSHOT</span><strong id="externalCount">—</strong><span>有公开切片，尚未 canonicalize</span></article>
+          <article class="long-stat-card"><span class="stat-kicker">TO ADD</span><strong id="missingCount">—</strong><span>已找到一手定义，本站尚未收录</span></article>
+          <article class="long-stat-card"><span class="stat-kicker">SCIENTIFIC / RESEARCH</span><strong id="scienceCount">—</strong><span>研究、复现与科学编程</span></article>
+        </section>
+
+        <section class="long-coverage-strip" aria-label="覆盖状态说明">
+          <div class="long-coverage-copy">
+            <p class="section-index">01 / COVERAGE MAP</p>
+            <h2>先看覆盖边界，<br /><em>再看分数。</em></h2>
+            <p>目录把 benchmark 定义、运行结果和 agent 实现拆开。一个项目可以有原始论文和代码，但仍然是本站的“待收录”；反过来，canonical 也不代表当前有成绩。</p>
+          </div>
+          <div class="long-coverage-legend" role="list" aria-label="覆盖状态图例">
+            <div class="long-legend-item" role="listitem"><span class="long-status-dot canonical"></span><div><strong>CANONICAL</strong><small>已有本站 canonical profile</small></div></div>
+            <div class="long-legend-item" role="listitem"><span class="long-status-dot external"></span><div><strong>EXTERNAL</strong><small>只有公开 snapshot / 聚合记录</small></div></div>
+            <div class="long-legend-item" role="listitem"><span class="long-status-dot missing"></span><div><strong>TO ADD</strong><small>一手定义已找到，尚未登记</small></div></div>
+          </div>
+        </section>
+
+        <section id="directory" class="long-directory" aria-labelledby="directoryTitle">
+          <div class="section-heading long-section-heading">
+            <div>
+              <p class="section-index">02 / DIRECTORY</p>
+              <h2 id="directoryTitle">Long-horizon benchmark crosswalk</h2>
+              <p class="section-subtitle">按领域、覆盖状态、任务跨度和影响力筛选。所有原始链接直接指向项目方或论文，不用二手榜单替代 owner。</p>
+            </div>
+            <div class="long-count-wrap"><strong id="visibleCount">—</strong><span> / <span id="directoryCount">—</span> entries</span></div>
+          </div>
+
+          <div class="long-toolbar" aria-label="长程 benchmark 筛选与排序">
+            <label class="long-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="搜索名称、领域、协议或描述…" autocomplete="off" /><kbd>/</kbd></label>
+            <label class="select-wrap"><span class="sr-only">领域</span><select id="domainFilter"><option value="all">所有领域</option></select></label>
+            <label class="select-wrap"><span class="sr-only">覆盖状态</span><select id="coverageFilter"><option value="all">所有覆盖状态</option><option value="canonical">本站 canonical</option><option value="external">外部快照</option><option value="missing">待收录</option></select></label>
+            <label class="select-wrap"><span class="sr-only">Tier</span><select id="tierFilter"><option value="all">所有 tier</option><option value="A">Tier A</option><option value="B">Tier B</option><option value="C">Tier C</option></select></label>
+            <label class="select-wrap"><span class="sr-only">跨度</span><select id="horizonFilter"><option value="all">所有时间跨度</option></select></label>
+            <label class="select-wrap"><span class="sr-only">排序</span><select id="sortFilter"><option value="tier">先看影响力</option><option value="coverage">先看已覆盖</option><option value="name">按名称</option><option value="tasks">按任务规模</option><option value="sources">按原始来源数</option></select></label>
+            <button id="resetFilters" class="text-button" type="button">重置</button>
+          </div>
+          <div id="activeFilters" class="long-active-filters" aria-live="polite"></div>
+
+          <div class="long-directory-layout">
+            <aside class="long-domain-rail" aria-label="领域快速筛选">
+              <div class="long-rail-label">DOMAIN MAP</div>
+              <button class="long-domain-chip active" type="button" data-domain="all"><span>全部</span><b id="domainAllCount">—</b></button>
+              <div id="domainRail"></div>
+              <div class="long-rail-note"><span class="rail-dot"></span><span>研究 benchmark、电脑操作和终端任务的 checker 与预算不可互换。</span></div>
+            </aside>
+            <div class="long-results">
+              <div id="benchmarkGrid" class="long-benchmark-grid" aria-live="polite"></div>
+              <div id="emptyState" class="long-empty" hidden><span class="empty-icon">∅</span><h3>没有匹配的条目</h3><p>试试清空搜索词或放宽筛选条件。</p><button id="emptyReset" class="outline-button" type="button">清空筛选</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="agents" class="long-agents-section" aria-labelledby="agentsTitle">
+          <div class="section-heading long-section-heading">
+            <div>
+              <p class="section-index">03 / AGENT SOURCES</p>
+              <h2 id="agentsTitle">Agent / harness 原始地址</h2>
+              <p class="section-subtitle">这些是执行 benchmark 的 agent runtime 或 harness，不是 benchmark 本身。模型（例如腾讯混元 Hy3 / Hy4）另在 <a class="inline-link" href="models.html">Models</a> 记录；成绩仍要绑定具体 release、配置、预算和环境。</p>
+            </div>
+            <span class="long-count-wrap"><strong id="agentCount">—</strong><span> first-party agents</span></span>
+          </div>
+          <div id="agentGrid" class="long-agent-grid" aria-live="polite"></div>
+        </section>
+
+        <section class="long-method-section" aria-labelledby="longMethodTitle">
+          <div class="long-method-copy">
+            <p class="section-index">04 / METHOD</p>
+            <h2 id="longMethodTitle">把长程拆成可审计的链条。</h2>
+            <p>长程不是“上下文更长”这么简单。真正影响结果的是状态是否持久、工具是否可用、checker 是否隐藏、预算如何消耗，以及失败后能否恢复。本站暂不把不同 benchmark 的 solved rate、Elo 或 research score 合成一条排名。</p>
+            <div class="method-tags"><span>origin-linked</span><span>version-aware</span><span>stateful</span><span>missing ≠ zero</span></div>
+          </div>
+          <div class="long-method-flow" aria-label="长程 benchmark 证据链">
+            <div class="long-flow-step"><span>01</span><strong>Define</strong><small>任务 / 版本 / owner</small></div><div class="flow-arrow">→</div>
+            <div class="long-flow-step"><span>02</span><strong>Run</strong><small>agent / tools / budget</small></div><div class="flow-arrow">→</div>
+            <div class="long-flow-step"><span>03</span><strong>Verify</strong><small>checker / artifact / status</small></div>
+          </div>
+        </section>
+
+        <footer class="footer long-footer">
+          <span>Frontier Model Bench <span class="muted">· long-horizon crosswalk</span></span>
+          <span id="footerStatus">一手来源优先；公开快照与本站复现分开。</span>
+          <a href="README.md">Update guide ↗</a>
+        </footer>
+      </main>
+    </div>
+
+    <div id="drawerBackdrop" class="long-drawer-backdrop" hidden></div>
+    <aside id="detailDrawer" class="long-detail-drawer" aria-labelledby="drawerTitle" aria-hidden="true">
+      <div class="long-drawer-head"><span class="drawer-kicker">LONG-HORIZON PROFILE</span><button id="closeDrawer" class="close-button" type="button" aria-label="关闭详情">×</button></div>
+      <div id="drawerContent" class="long-drawer-content"></div>
+    </aside>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="long-horizon.js?v=20260828-v1" defer></script>
+  </body>
+</html>

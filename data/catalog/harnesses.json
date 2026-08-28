@@ -30,7 +30,7 @@
     "owner": "SWE-bench",
     "description": "官方 SWE-bench evaluator；实例、补丁应用和测试环境按 benchmark 版本固定。",
     "tools": ["repository", "shell", "patch"],
-    "source_ids": ["swebench"]
+    "source_ids": ["src-swebench-repo", "swebench"]
   },
   {
     "id": "swe-agent",
@@ -41,7 +41,7 @@
     "owner": "SWE-agent / SWE-bench community",
     "description": "Repository-level coding-agent scaffold; version, tool policy, timeout and benchmark checker remain part of each protocol.",
     "tools": ["repository", "shell", "editor"],
-    "source_ids": ["swebench"]
+    "source_ids": ["src-swe-agent", "swebench"]
   },
   {
     "id": "mini-swe-agent",
@@ -52,7 +52,7 @@
     "owner": "SWE-bench community",
     "description": "轻量 coding agent scaffold；记录版本、timeout、temperature 和 rollout 聚合。",
     "tools": ["shell", "editor"],
-    "source_ids": ["src-deepswe"]
+    "source_ids": ["src-mini-swe-agent", "src-deepswe"]
   },
   {
     "id": "terminus-2",
@@ -63,7 +63,7 @@
     "owner": "Terminal-Bench",
     "description": "Terminal-Bench 常见终端 agent；不同版本和 effort 是不同 protocol。",
     "tools": ["terminal", "filesystem"],
-    "source_ids": ["terminal-bench"]
+    "source_ids": ["src-harbor", "terminal-bench"]
   },
   {
     "id": "claude-code",
@@ -74,7 +74,7 @@
     "owner": "Anthropic",
     "description": "Claude Code CLI/agent scaffold；记录版本、权限、工具和上下文管理。",
     "tools": ["shell", "filesystem", "editor"],
-    "source_ids": ["src-anthropic-system-cards"]
+    "source_ids": ["src-claude-code", "src-anthropic-system-cards"]
   },
   {
     "id": "codex",
@@ -85,7 +85,7 @@
     "owner": "OpenAI",
     "description": "Codex/Responses coding agent scaffold；应记录 effort、sandbox、tools 和 timeout。",
     "tools": ["shell", "filesystem", "editor"],
-    "source_ids": ["src-openai-gpt56"]
+    "source_ids": ["src-openai-codex", "src-openai-gpt56"]
   },
   {
     "id": "kimi-code",
@@ -107,7 +107,7 @@
     "owner": "DeepSeek",
     "description": "DeepSeek V4 Flash 官方 agent 评测 harness；官方更新注明 minimal mode/max effort。",
     "tools": ["shell", "filesystem", "editor"],
-    "source_ids": ["src-deepseek-updates"]
+    "source_ids": ["src-deepseek-harness", "src-deepseek-updates"]
   },
   {
     "id": "lm-eval",
@@ -118,7 +118,7 @@
     "owner": "EleutherAI",
     "description": "静态 benchmark runner；记录 commit、task config、shots 和 generation 参数。",
     "tools": [],
-    "source_ids": ["src-helm"]
+    "source_ids": ["src-lm-eval", "src-helm"]
   },
   {
     "id": "vendor-default",

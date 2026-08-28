@@ -25,6 +25,8 @@ jobs:
         run: |
           python3 scripts/build_derived.py
           python3 scripts/validate_data.py --strict
+          python3 -m unittest tests.test_long_horizon_registry
+          node --check long-horizon.js
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
