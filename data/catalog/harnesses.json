@@ -33,6 +33,17 @@
     "source_ids": ["swebench"]
   },
   {
+    "id": "swe-agent",
+    "name": "SWE-agent",
+    "label": "SWE-agent",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "SWE-agent / SWE-bench community",
+    "description": "Repository-level coding-agent scaffold; version, tool policy, timeout and benchmark checker remain part of each protocol.",
+    "tools": ["repository", "shell", "editor"],
+    "source_ids": ["swebench"]
+  },
+  {
     "id": "mini-swe-agent",
     "name": "mini-SWE-agent",
     "label": "mini-SWE-agent",

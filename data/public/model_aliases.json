@@ -195,6 +195,32 @@
       "note": "Epoch setting suffix only on Kimi K3."
     },
     {
+      "canonicalModelId": "tencent/hy3@2026-07-06",
+      "sourceIds": [
+        "hf-gpqa",
+        "hf-hle",
+        "hf-swebench-pro",
+        "hf-swebench-verified"
+      ],
+      "values": [
+        "tencent/Hy3"
+      ],
+      "confidence": "high",
+      "note": "Official Tencent Hy repository name for the 2026-07-06 formal Hy3 release. The distinct tencent/Hy3-preview checkpoint is intentionally not mapped."
+    },
+    {
+      "canonicalModelId": "tencent/hy3@2026-07-06",
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "Hy3",
+        "hy3"
+      ],
+      "confidence": "high",
+      "note": "Arena spellings for the formal Hy3 release. hunyuan-hy3-preview remains a separate, unmapped earlier checkpoint."
+    },
+    {
       "canonicalModelId": "qwen/qwen3.8-max@2026-08-02",
       "sourceIds": [
         "src-epoch-benchmark-hub"

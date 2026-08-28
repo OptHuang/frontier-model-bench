@@ -55,7 +55,7 @@
     "description": "固定 harness 后比较端到端软件工程结果。",
     "mode": "runs",
     "benchmark_ids": ["swebench-verified", "swebench-pro", "deepswe", "nl2repo", "terminal-bench"],
-    "harness_ids": ["swebench-official", "mini-swe-agent", "terminus-2", "claude-code", "codex", "kimi-code", "deepseek-harness"],
+    "harness_ids": ["swebench-official", "swe-agent", "mini-swe-agent", "terminus-2", "claude-code", "codex", "kimi-code", "deepseek-harness"],
     "sort": "benchmark_column"
   },
   {

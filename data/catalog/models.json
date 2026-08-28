@@ -569,6 +569,83 @@
       ]
     },
     {
+      "id": "tencent/hy4-preview@2026-08-28",
+      "family_id": "tencent/hy4",
+      "name": "Hy4 preview",
+      "provider": "Tencent Hy",
+      "mark": "T",
+      "release_date": "2026-08-28",
+      "status": "preview",
+      "access": "open_weights",
+      "aliases": [
+        "tencent/Hy4-preview",
+        "Hy4 preview",
+        "hy4-preview"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": 1048576,
+      "params_total": 770000000000,
+      "params_active": 49000000000,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": true
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "推理",
+        "Agent",
+        "1M 上下文"
+      ],
+      "summary": "腾讯混元新一代 MoE 旗舰预览版：770B 总参数、49B 每 token 激活，1M context；采用 Gated DSA、IndexCache 与 iHC。",
+      "source_ids": [
+        "src-tencent-hy4-repo",
+        "src-tencent-hy4-hf"
+      ]
+    },
+    {
+      "id": "tencent/hy3@2026-07-06",
+      "family_id": "tencent/hy3",
+      "name": "Hy3",
+      "provider": "Tencent Hy",
+      "mark": "T",
+      "release_date": "2026-07-06",
+      "status": "active",
+      "access": "open_weights",
+      "aliases": [
+        "tencent/Hy3",
+        "Hy3",
+        "hy3"
+      ],
+      "modalities": [
+        "text"
+      ],
+      "context_window": 262144,
+      "params_total": 295000000000,
+      "params_active": 21000000000,
+      "open_weights": true,
+      "variant": {
+        "reasoning": true,
+        "preview": false
+      },
+      "tags": [
+        "旗舰",
+        "开放权重",
+        "推理",
+        "Agent",
+        "效率"
+      ],
+      "summary": "腾讯混元正式版开放权重 MoE：295B 总参数、21B 每 token 激活，面向推理、代码与 Agent 工作负载。",
+      "source_ids": [
+        "src-tencent-hy3-launch",
+        "src-tencent-hy3-repo",
+        "src-tencent-hy3-hf"
+      ]
+    },
+    {
       "id": "qwen/qwen3.8-max@2026-08-02",
       "family_id": "qwen/qwen3.8",
       "name": "Qwen3.8 Max",

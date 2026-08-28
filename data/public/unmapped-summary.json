@@ -42946,113 +42946,6 @@
           "benchmarkId": "arena-text",
           "benchmarkName": "Arena Text",
           "evidenceUrl": "https://datasets-server.huggingface.co/rows",
-          "line": 426,
-          "metricId": "arena_score_bt",
-          "observedAt": "2026-08-21",
-          "protocol": {
-            "arena_config": "text",
-            "category": "chinese",
-            "harness": "arena-human-preference",
-            "rating_method": "bradley-terry",
-            "split": "latest",
-            "subject_type": "model"
-          },
-          "rawValue": 1511.3938042848351,
-          "sourceId": "lmarena-hf-dataset",
-          "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
-          "sourceLocator": "dataset=lmarena-ai/leaderboard-dataset;config=text;split=latest;row_idx=425",
-          "sourceUrl": "https://datasets-server.huggingface.co/rows",
-          "unit": "rating",
-          "value": 1511.3938042848351
-        },
-        {
-          "artifact": "lmarena-hf-dataset/candidates.jsonl",
-          "benchmarkId": "arena-text",
-          "benchmarkName": "Arena Text",
-          "evidenceUrl": "https://datasets-server.huggingface.co/rows",
-          "line": 60,
-          "metricId": "arena_score_bt",
-          "observedAt": "2026-08-21",
-          "protocol": {
-            "arena_config": "text",
-            "category": "overall",
-            "harness": "arena-human-preference",
-            "rating_method": "bradley-terry",
-            "split": "latest",
-            "subject_type": "model"
-          },
-          "rawValue": 1441.1730149730124,
-          "sourceId": "lmarena-hf-dataset",
-          "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
-          "sourceLocator": "dataset=lmarena-ai/leaderboard-dataset;config=text;split=latest;row_idx=59",
-          "sourceUrl": "https://datasets-server.huggingface.co/rows",
-          "unit": "rating",
-          "value": 1441.1730149730124
-        },
-        {
-          "artifact": "lmarena-hf-dataset/candidates.jsonl",
-          "benchmarkId": "arena-text",
-          "benchmarkName": "Arena Text",
-          "evidenceUrl": "https://datasets-server.huggingface.co/rows",
-          "line": 819,
-          "metricId": "arena_score_bt",
-          "observedAt": "2026-08-21",
-          "protocol": {
-            "arena_config": "text",
-            "category": "coding",
-            "harness": "arena-human-preference",
-            "rating_method": "bradley-terry",
-            "split": "latest",
-            "subject_type": "model"
-          },
-          "rawValue": 1466.8554610217427,
-          "sourceId": "lmarena-hf-dataset",
-          "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
-          "sourceLocator": "dataset=lmarena-ai/leaderboard-dataset;config=text;split=latest;row_idx=818",
-          "sourceUrl": "https://datasets-server.huggingface.co/rows",
-          "unit": "rating",
-          "value": 1466.8554610217427
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 7
-      },
-      "metricIds": [
-        "arena_score_bt"
-      ],
-      "modelRef": "hy3",
-      "numericRowCount": 7,
-      "observedAtMax": "2026-08-21",
-      "observedAtMin": "2026-08-21",
-      "rowCount": 7,
-      "sourceId": "lmarena-hf-dataset",
-      "sourceIds": [
-        "lmarena-hf-dataset"
-      ],
-      "sourceLabels": [
-        "Arena · official Hugging Face leaderboard dataset"
-      ],
-      "sourceUrls": [
-        "https://datasets-server.huggingface.co/rows"
-      ],
-      "statusCounts": {
-        "reported": 7
-      }
-    },
-    {
-      "benchmarkCount": 2,
-      "benchmarkIds": [
-        "arena-text",
-        "arena-webdev"
-      ],
-      "examples": [
-        {
-          "artifact": "lmarena-hf-dataset/candidates.jsonl",
-          "benchmarkId": "arena-text",
-          "benchmarkName": "Arena Text",
-          "evidenceUrl": "https://datasets-server.huggingface.co/rows",
           "line": 442,
           "metricId": "arena_score_bt",
           "observedAt": "2026-08-21",
@@ -104571,61 +104464,6 @@
           "artifact": "hf-gpqa/candidates.jsonl",
           "benchmarkId": "gpqa-diamond",
           "benchmarkName": "GPQA Diamond",
-          "evidenceUrl": "https://huggingface.co/tencent/Hy3",
-          "line": 9,
-          "metricId": "score",
-          "observedAt": null,
-          "protocol": {
-            "filename": ".eval_results/gpqa.yaml",
-            "harness": "huggingface-eval-results",
-            "verified": false
-          },
-          "rawValue": 90.4,
-          "sourceId": "hf-gpqa",
-          "sourceLabel": "Hugging Face · GPQA leaderboard API",
-          "sourceLocator": "rank=9;row=8",
-          "sourceUrl": "https://huggingface.co/api/datasets/Idavidrein/gpqa/leaderboard",
-          "unit": "percent",
-          "value": 90.4
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 1
-      },
-      "metricIds": [
-        "score"
-      ],
-      "modelRef": "tencent/Hy3",
-      "numericRowCount": 1,
-      "observedAtMax": null,
-      "observedAtMin": null,
-      "rowCount": 1,
-      "sourceId": "hf-gpqa",
-      "sourceIds": [
-        "hf-gpqa"
-      ],
-      "sourceLabels": [
-        "Hugging Face · GPQA leaderboard API"
-      ],
-      "sourceUrls": [
-        "https://huggingface.co/api/datasets/Idavidrein/gpqa/leaderboard"
-      ],
-      "statusCounts": {
-        "reported": 1
-      }
-    },
-    {
-      "benchmarkCount": 1,
-      "benchmarkIds": [
-        "gpqa-diamond"
-      ],
-      "examples": [
-        {
-          "artifact": "hf-gpqa/candidates.jsonl",
-          "benchmarkId": "gpqa-diamond",
-          "benchmarkName": "GPQA Diamond",
           "evidenceUrl": "https://huggingface.co/tencent/Hy3-preview",
           "line": 25,
           "metricId": "score",
@@ -105753,61 +105591,6 @@
         "score"
       ],
       "modelRef": "stepfun-ai/Step-3.7-Flash",
-      "numericRowCount": 1,
-      "observedAtMax": null,
-      "observedAtMin": null,
-      "rowCount": 1,
-      "sourceId": "hf-hle",
-      "sourceIds": [
-        "hf-hle"
-      ],
-      "sourceLabels": [
-        "Hugging Face · Humanity's Last Exam leaderboard API"
-      ],
-      "sourceUrls": [
-        "https://huggingface.co/api/datasets/cais/hle/leaderboard"
-      ],
-      "statusCounts": {
-        "reported": 1
-      }
-    },
-    {
-      "benchmarkCount": 1,
-      "benchmarkIds": [
-        "hle"
-      ],
-      "examples": [
-        {
-          "artifact": "hf-hle/candidates.jsonl",
-          "benchmarkId": "hle",
-          "benchmarkName": "Humanity's Last Exam",
-          "evidenceUrl": "https://huggingface.co/tencent/Hy3",
-          "line": 7,
-          "metricId": "score",
-          "observedAt": null,
-          "protocol": {
-            "filename": ".eval_results/hle.yaml",
-            "harness": "huggingface-eval-results",
-            "verified": false
-          },
-          "rawValue": 53.2,
-          "sourceId": "hf-hle",
-          "sourceLabel": "Hugging Face · Humanity's Last Exam leaderboard API",
-          "sourceLocator": "rank=7;row=6",
-          "sourceUrl": "https://huggingface.co/api/datasets/cais/hle/leaderboard",
-          "unit": "percent",
-          "value": 53.2
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 1
-      },
-      "metricIds": [
-        "score"
-      ],
-      "modelRef": "tencent/Hy3",
       "numericRowCount": 1,
       "observedAtMax": null,
       "observedAtMin": null,
@@ -114911,61 +114694,6 @@
           "artifact": "hf-swebench-pro/candidates.jsonl",
           "benchmarkId": "swebench-pro",
           "benchmarkName": "SWE-bench Pro",
-          "evidenceUrl": "https://huggingface.co/tencent/Hy3",
-          "line": 14,
-          "metricId": "score",
-          "observedAt": null,
-          "protocol": {
-            "filename": ".eval_results/swe-bench_pro.yaml",
-            "harness": "huggingface-eval-results",
-            "verified": false
-          },
-          "rawValue": 57.9,
-          "sourceId": "hf-swebench-pro",
-          "sourceLabel": "Hugging Face · SWE-bench Pro leaderboard API",
-          "sourceLocator": "rank=14;row=13",
-          "sourceUrl": "https://huggingface.co/api/datasets/ScaleAI/SWE-bench_Pro/leaderboard",
-          "unit": "percent",
-          "value": 57.9
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 1
-      },
-      "metricIds": [
-        "score"
-      ],
-      "modelRef": "tencent/Hy3",
-      "numericRowCount": 1,
-      "observedAtMax": null,
-      "observedAtMin": null,
-      "rowCount": 1,
-      "sourceId": "hf-swebench-pro",
-      "sourceIds": [
-        "hf-swebench-pro"
-      ],
-      "sourceLabels": [
-        "Hugging Face · SWE-bench Pro leaderboard API"
-      ],
-      "sourceUrls": [
-        "https://huggingface.co/api/datasets/ScaleAI/SWE-bench_Pro/leaderboard"
-      ],
-      "statusCounts": {
-        "reported": 1
-      }
-    },
-    {
-      "benchmarkCount": 1,
-      "benchmarkIds": [
-        "swebench-pro"
-      ],
-      "examples": [
-        {
-          "artifact": "hf-swebench-pro/candidates.jsonl",
-          "benchmarkId": "swebench-pro",
-          "benchmarkName": "SWE-bench Pro",
           "evidenceUrl": "https://huggingface.co/thinkingmachines/Inkling",
           "line": 23,
           "metricId": "score",
@@ -116836,61 +116564,6 @@
           "artifact": "hf-swebench-verified/candidates.jsonl",
           "benchmarkId": "swebench-verified",
           "benchmarkName": "SWE-bench Verified",
-          "evidenceUrl": "https://huggingface.co/tencent/Hy3",
-          "line": 14,
-          "metricId": "score",
-          "observedAt": null,
-          "protocol": {
-            "filename": ".eval_results/swe-bench_verified.yaml",
-            "harness": "huggingface-eval-results",
-            "verified": false
-          },
-          "rawValue": 78,
-          "sourceId": "hf-swebench-verified",
-          "sourceLabel": "Hugging Face · SWE-bench Verified leaderboard API",
-          "sourceLocator": "rank=14;row=13",
-          "sourceUrl": "https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Verified/leaderboard",
-          "unit": "percent",
-          "value": 78.0
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 1
-      },
-      "metricIds": [
-        "score"
-      ],
-      "modelRef": "tencent/Hy3",
-      "numericRowCount": 1,
-      "observedAtMax": null,
-      "observedAtMin": null,
-      "rowCount": 1,
-      "sourceId": "hf-swebench-verified",
-      "sourceIds": [
-        "hf-swebench-verified"
-      ],
-      "sourceLabels": [
-        "Hugging Face · SWE-bench Verified leaderboard API"
-      ],
-      "sourceUrls": [
-        "https://huggingface.co/api/datasets/SWE-bench/SWE-bench_Verified/leaderboard"
-      ],
-      "statusCounts": {
-        "reported": 1
-      }
-    },
-    {
-      "benchmarkCount": 1,
-      "benchmarkIds": [
-        "swebench-verified"
-      ],
-      "examples": [
-        {
-          "artifact": "hf-swebench-verified/candidates.jsonl",
-          "benchmarkId": "swebench-verified",
-          "benchmarkName": "SWE-bench Verified",
           "evidenceUrl": "https://huggingface.co/tencent/Hy3-preview",
           "line": 27,
           "metricId": "score",
@@ -118528,64 +118201,6 @@
         "ips"
       ],
       "modelRef": "Grok Build 0.1",
-      "numericRowCount": 1,
-      "observedAtMax": "2026-08-24",
-      "observedAtMin": "2026-08-24",
-      "rowCount": 1,
-      "sourceId": "lmarena-hf-dataset",
-      "sourceIds": [
-        "lmarena-hf-dataset"
-      ],
-      "sourceLabels": [
-        "Arena · official Hugging Face leaderboard dataset"
-      ],
-      "sourceUrls": [
-        "https://datasets-server.huggingface.co/rows"
-      ],
-      "statusCounts": {
-        "reported": 1
-      }
-    },
-    {
-      "benchmarkCount": 1,
-      "benchmarkIds": [
-        "arena-agent"
-      ],
-      "examples": [
-        {
-          "artifact": "lmarena-hf-dataset/candidates.jsonl",
-          "benchmarkId": "arena-agent",
-          "benchmarkName": "Agent Arena",
-          "evidenceUrl": "https://datasets-server.huggingface.co/rows",
-          "line": 2589,
-          "metricId": "ips",
-          "observedAt": "2026-08-24",
-          "protocol": {
-            "arena_config": "agent",
-            "category": "overall",
-            "harness": "arena-agent",
-            "rating_method": "ips",
-            "split": "latest",
-            "subject_type": "system"
-          },
-          "rawValue": -0.004218449993691898,
-          "sourceId": "lmarena-hf-dataset",
-          "sourceLabel": "Arena · official Hugging Face leaderboard dataset",
-          "sourceLocator": "dataset=lmarena-ai/leaderboard-dataset;config=agent;split=latest;row_idx=30",
-          "sourceUrl": "https://datasets-server.huggingface.co/rows",
-          "unit": "fraction",
-          "value": -0.004218449993691898
-        }
-      ],
-      "latestRetrievedAt": "2026-08-27T06:23:04Z",
-      "mappingCandidates": [],
-      "mappingStatusCounts": {
-        "unmatched": 1
-      },
-      "metricIds": [
-        "ips"
-      ],
-      "modelRef": "Hy3",
       "numericRowCount": 1,
       "observedAtMax": "2026-08-24",
       "observedAtMin": "2026-08-24",
@@ -134409,12 +134024,12 @@
       "agents-last-exam": 144,
       "aider-polyglot": 123,
       "aime-2026": 16,
-      "arena-agent": 13,
+      "arena-agent": 12,
       "arena-document": 6,
       "arena-search": 15,
-      "arena-text": 721,
+      "arena-text": 718,
       "arena-vision": 561,
-      "arena-webdev": 137,
+      "arena-webdev": 133,
       "bfcl": 93,
       "epoch-adversarial_nli_external": 15,
       "epoch-ale_bench_external": 35,
@@ -134475,7 +134090,7 @@
       "epoch-weirdml_external": 86,
       "epoch-wino_grande_external": 137,
       "frontiermath": 51,
-      "gpqa-diamond": 225,
+      "gpqa-diamond": 224,
       "helm-gpqa": 413,
       "helm-gsm8k": 637,
       "helm-ifeval": 413,
@@ -134493,7 +134108,7 @@
       "helm-openbookqa": 637,
       "helm-wildbench": 413,
       "helm-wmt-2014": 637,
-      "hle": 90,
+      "hle": 89,
       "hmmt": 9,
       "livebench": 53,
       "livebench-amps-hard": 7,
@@ -134527,31 +134142,31 @@
       "swebench-lite": 84,
       "swebench-multilingual": 2,
       "swebench-multimodal": 22,
-      "swebench-pro": 24,
+      "swebench-pro": 23,
       "swebench-test": 23,
-      "swebench-verified": 215,
+      "swebench-verified": 214,
       "terminal-bench": 21
     },
     "mappingCounts": {
-      "unmatched": 14766
+      "unmatched": 14754
     },
-    "numericRows": 14668,
+    "numericRows": 14656,
     "publicDeduplicatedRows": 21227,
-    "rows": 14766,
+    "rows": 14754,
     "sourceCounts": {
       "agents-last-exam": 144,
       "helm-capabilities": 2183,
       "helm-lite": 6643,
       "hf-aime-2026": 16,
-      "hf-gpqa": 86,
-      "hf-hle": 58,
+      "hf-gpqa": 85,
+      "hf-hle": 57,
       "hf-hmmt-2026": 9,
       "hf-mmlu-pro": 130,
-      "hf-swebench-pro": 24,
-      "hf-swebench-verified": 59,
+      "hf-swebench-pro": 23,
+      "hf-swebench-verified": 58,
       "hf-terminal-bench": 21,
       "livebench-official": 161,
-      "lmarena-hf-dataset": 1453,
+      "lmarena-hf-dataset": 1445,
       "src-aider-polyglot": 60,
       "src-bfcl": 93,
       "src-epoch-benchmark-hub": 3242,
@@ -134560,9 +134175,9 @@
     },
     "statusCounts": {
       "candidate": 98,
-      "reported": 14668
+      "reported": 14656
     },
-    "uniqueAliases": 1591,
+    "uniqueAliases": 1585,
     "uniqueBenchmarks": 125,
     "uniqueSources": 18
   }

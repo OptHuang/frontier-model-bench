@@ -126,6 +126,67 @@
     "staleness_after_days": 90
   },
   {
+    "id": "src-tencent-hy4-repo",
+    "label": "Tencent Hy · Hy4 preview official repository",
+    "kind": "primary",
+    "publisher": "Tencent Hy",
+    "url": "https://github.com/Tencent-Hunyuan/Hy4-preview",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official release identity, architecture, deployment, reasoning modes, license and known-issues source for Hy4 preview. The 2026-08-28 release date follows the official repository/model publication timestamps; the README does not separately print a launch date."
+  },
+  {
+    "id": "src-tencent-hy4-hf",
+    "label": "Tencent Hy · Hy4 preview model card",
+    "kind": "primary",
+    "publisher": "Tencent Hy",
+    "url": "https://huggingface.co/tencent/Hy4-preview",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official BF16 model card; the FP8 checkpoint is a quantized deployment variant of the same release."
+  },
+  {
+    "id": "src-tencent-hy4-benchmark",
+    "label": "Tencent Hy · Hy4 preview benchmark appendix",
+    "kind": "official_artifact",
+    "publisher": "Tencent Hy",
+    "url": "https://raw.githubusercontent.com/Tencent-Hunyuan/Hy4-preview/bed25b03cf8b3d1a20afc3045c7364018fb2957d/assets/benchmark-appendix.jpg",
+    "web_url": "https://github.com/Tencent-Hunyuan/Hy4-preview/tree/bed25b03cf8b3d1a20afc3045c7364018fb2957d",
+    "default_evidence_level": "B",
+    "staleness_after_days": 90,
+    "notes": "Commit-pinned provider comparison table. Values are Tencent-reported, use the highest available reasoning setting and protocol-specific harnesses, and have not been independently reproduced by this project. The table does not identify BF16 versus FP8 or the exact deployment endpoint."
+  },
+  {
+    "id": "src-tencent-hy3-launch",
+    "label": "Tencent · Hy3 official release",
+    "kind": "primary",
+    "publisher": "Tencent",
+    "url": "https://www.tencent.com/zh-cn/tencent-hunyuan-officially-releases-hy3-advancing-agent-capabilities-and-deeper-product-integration/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 180,
+    "notes": "Official 2026-07-06 release announcement; distinguishes formal Hy3 from the earlier preview and documents product/API availability."
+  },
+  {
+    "id": "src-tencent-hy3-repo",
+    "label": "Tencent Hy · Hy3 official repository",
+    "kind": "primary",
+    "publisher": "Tencent Hy",
+    "url": "https://github.com/Tencent-Hunyuan/Hy3",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official formal-release architecture, deployment, reasoning-mode and Apache-2.0 license source."
+  },
+  {
+    "id": "src-tencent-hy3-hf",
+    "label": "Tencent Hy · Hy3 model card",
+    "kind": "primary",
+    "publisher": "Tencent Hy",
+    "url": "https://huggingface.co/tencent/Hy3",
+    "default_evidence_level": "A",
+    "staleness_after_days": 90,
+    "notes": "Official BF16 formal-release model card; Hy3-FP8 is a quantized checkpoint of the same release."
+  },
+  {
     "id": "src-qwen38-flash",
     "label": "Qwen · Qwen3.8-Flash-Next",
     "kind": "primary",

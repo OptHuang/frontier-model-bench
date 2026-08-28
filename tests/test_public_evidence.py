@@ -25,6 +25,12 @@ class PublicEvidenceTests(unittest.TestCase):
         # silently mapped to the current release.
         self.assertNotIn("deepseekv4flash", _model_alias_keys("DeepSeek V4 Flash (High) (20260731)"))
 
+    def test_preview_suffix_remains_part_of_release_identity(self) -> None:
+        self.assertEqual(_model_alias_keys("tencent/Hy3-preview"), ["hy3preview"])
+        self.assertEqual(_model_alias_keys("Hy3-preview"), ["hy3preview"])
+        self.assertNotIn("hy3", _model_alias_keys("tencent/Hy3-preview"))
+        self.assertIn("deepseekv4flashhigh", _model_alias_keys("deepseek-v4-flash-high-preview"))
+
     def make_fixture(self) -> tuple[Path, Path]:
         root = Path(tempfile.mkdtemp(prefix="fmb-public-evidence-"))
         self.addCleanup(shutil.rmtree, root, ignore_errors=True)

@@ -765,6 +765,91 @@
       ],
       "last_checked": "2026-08-27"
     },
+    "tencent/hy4-preview@2026-08-28": {
+      "positioning": "腾讯混元新一代开放权重 MoE 旗舰预览版，重点面向长上下文推理、代码与 Agent。",
+      "capabilities": [
+        "复杂推理",
+        "代码",
+        "工具调用",
+        "长上下文",
+        "多语言"
+      ],
+      "best_for": [
+        "开放权重的长上下文 Agent",
+        "复杂代码与终端任务",
+        "研究 Hy4 架构与部署效率"
+      ],
+      "endpoint_ids": [
+        "tencent/Hy4-preview"
+      ],
+      "availability": [
+        "open-weights"
+      ],
+      "reasoning_modes": [
+        "high",
+        "no_think"
+      ],
+      "architecture": "MoE Transformer；78 层 backbone（首层 dense FFN，其余 77 层 MoE），256 routed experts + 1 shared expert，每 token top-8 routed experts；Gated DSA、IndexCache、iHC，另含原生 MTP 模块。",
+      "context_note": "官方将 context 标为 1M；公开 config 的精确 max_position_embeddings 为 1,048,576。",
+      "parameter_note": "backbone 为 770B 总参数、49B 每 token 激活；原生 MTP 模块另为 10B 总参数、0.7B 激活。canonical 参数字段仅记录 backbone，避免把辅助模块混入同一口径。FP8 是同一 release 的量化 checkpoint，不新增 model id。",
+      "license": "Apache-2.0",
+      "caveats": [
+        "这是 early preview；官方已列出推理过长和过度验证等已知问题。",
+        "2026-08-28 release date 取自官方仓库与权重发布证据；README 未单独印出 launch date。",
+        "官方 benchmark 是腾讯自报结果，不是 Atlas 独立复现；必须保留 harness、资源与 reasoning 设置。",
+        "Hy4-preview-FP8 是量化部署变体，不应作为第二个模型参与计数。"
+      ],
+      "fact_source_ids": [
+        "src-tencent-hy4-repo",
+        "src-tencent-hy4-hf",
+        "src-tencent-hy4-benchmark"
+      ],
+      "last_checked": "2026-08-28"
+    },
+    "tencent/hy3@2026-07-06": {
+      "positioning": "腾讯混元正式版开放权重 MoE，面向推理、代码和 Agent 工作负载。",
+      "capabilities": [
+        "复杂推理",
+        "代码",
+        "工具调用",
+        "长上下文",
+        "多语言"
+      ],
+      "best_for": [
+        "开放权重 Agent 基线",
+        "中文与多语言推理",
+        "自托管代码工作流"
+      ],
+      "endpoint_ids": [
+        "tencent/Hy3",
+        "hy3"
+      ],
+      "availability": [
+        "open-weights",
+        "api"
+      ],
+      "reasoning_modes": [
+        "no_think",
+        "low",
+        "high"
+      ],
+      "architecture": "MoE Transformer；80 层 backbone、192 experts，每 token top-8 experts，另含原生 MTP 模块。",
+      "context_note": "官方仓库披露 256K context；canonical 字段按二进制 token 容量记为 262,144。",
+      "parameter_note": "backbone 为 295B 总参数、21B 每 token 激活；MTP 模块另为 3.8B。FP8 是同一 release 的量化 checkpoint，不新增 model id。",
+      "license": "Apache-2.0",
+      "caveats": [
+        "2026-07-06 正式版与更早的 Hy3 preview 是不同 release，不自动合并公开记录。",
+        "Hy4 发布附表中的 Hy3 数值是更新后的同表复测；本快照不混用早期发布表的旧方法数值。",
+        "官方 benchmark 是腾讯自报结果，不是 Atlas 独立复现。"
+      ],
+      "fact_source_ids": [
+        "src-tencent-hy3-launch",
+        "src-tencent-hy3-repo",
+        "src-tencent-hy3-hf",
+        "src-tencent-hy4-benchmark"
+      ],
+      "last_checked": "2026-08-28"
+    },
     "qwen/qwen3.8-max@2026-08-02": {
       "positioning": "Qwen3.8 Max 托管旗舰 endpoint；本目录将它与 Qwen3.8 2.4T A95B open-weight checkpoint 分开登记。",
       "capabilities": [

@@ -416,12 +416,18 @@ def _model_alias_keys(value: Any) -> list[str]:
     # Work on the punctuation-preserving spelling as well so e.g.
     # ``high-effort`` is removed as one suffix before punctuation is erased.
     text = (_nonempty(value) or "").casefold().strip()
+    repository_qualified = "/" in text
     if "/" in text:
         text = text.rsplit("/", 1)[-1]
     changed = True
     while changed:
         changed = False
         for suffix in _PRESENTATION_SUFFIXES:
+            # A repository-qualified ``provider/model-preview`` names an
+            # upstream checkpoint, not a display-only effort tier.  Keep the
+            # suffix so e.g. tencent/Hy3-preview cannot resolve to formal Hy3.
+            if suffix == "preview" and (repository_qualified or base == "hy3preview"):
+                continue
             # Leaderboards commonly put effort/speed variants in parentheses
             # (``GPT 5.5 (High)``) or append them with punctuation.  Strip
             # only these explicitly presentation-level suffixes; dates,

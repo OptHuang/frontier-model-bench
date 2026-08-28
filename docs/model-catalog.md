@@ -2,9 +2,9 @@
 
 > 目录快照：2026-08-28。本文只登记模型身份、版本、可用性和可核验的静态事实；不在这里填写 benchmark 分数。分数必须进入 observation 长表，并带有具体 protocol、harness 和 evidence。
 
-当前机器目录包含 **100 个 model / config entry**，并为每个条目提供 **100 个 profile**；其中少量显式 context/speed serving variant 为了覆盖地图单独展示，但不应被解读为新的基础模型 release。目录中的来源链接有时只代表 discovery/family scope 或公开榜单入口，未逐项完成官方型号确认；详情页会保留这一不确定性，不能把它当作本站独立核验。
+当前机器目录包含 **102 个 model / config entry**，并为每个条目提供 **102 个 profile**；其中少量显式 context/speed serving variant 为了覆盖地图单独展示，但不应被解读为新的基础模型 release。目录中的来源链接有时只代表 discovery/family scope 或公开榜单入口，未逐项完成官方型号确认；详情页会保留这一不确定性，不能把它当作本站独立核验。
 
-2026-08-28 roster 扩充新增 15 个明确 release/endpoint 条目：OpenAI 4 个（GPT-5.4 Pro/nano、GPT-5 mini/nano），Qwen 4 个（Qwen3.5 35B-A3B/9B/Max Preview、Qwen3-Coder-Next），Google 4 个（Gemini 3.7/3.6/3.5 Flash 与 3.5 Flash-Lite），xAI 2 个（Grok 4.6/4.5），Z.ai 1 个（GLM-5V-Turbo）。同时，既有 `qwen/qwen3-coder@current` 已具体化为 Qwen3-Coder 480B-A35B；其 canonical id 保持不变。所有新增公开榜单拼写均按 source scope 显式映射，reasoning effort 保留在 protocol，未引入 floating `latest` alias。
+2026-08-28 roster 扩充新增 17 个明确 release/endpoint 条目：OpenAI 4 个（GPT-5.4 Pro/nano、GPT-5 mini/nano），Tencent Hy 2 个（Hy4 preview、Hy3），Qwen 4 个（Qwen3.5 35B-A3B/9B/Max Preview、Qwen3-Coder-Next），Google 4 个（Gemini 3.7/3.6/3.5 Flash 与 3.5 Flash-Lite），xAI 2 个（Grok 4.6/4.5），Z.ai 1 个（GLM-5V-Turbo）。同时，既有 `qwen/qwen3-coder@current` 已具体化为 Qwen3-Coder 480B-A35B；其 canonical id 保持不变。所有新增公开榜单拼写均按 source scope 显式映射，reasoning effort 保留在 protocol，未引入 floating `latest` alias。
 
 ## 1. 目录的边界
 
@@ -155,6 +155,17 @@ GPT-5.6 Pro、Daybreak/Cyber 等产品层或专项安全模型，先作为 `vari
 | `anthropic/claude@opus-4.7` | Claude Opus 4.7 | `previous` | `api/hosted` | 保留历史代际比较 | [Anthropic system cards](https://www.anthropic.com/system-cards) |
 | `anthropic/claude@sonnet-4.6` | Claude Sonnet 4.6 | `previous` | `api/hosted` | Sonnet 5 的上一代 baseline | [Sonnet 4.6](https://www.anthropic.com/news/claude-sonnet-4-6) |
 
+### Tencent Hy / Hunyuan
+
+| canonical release | 展示名 | status | availability / endpoint | 已核验元数据 | 官方来源与备注 |
+| --- | --- | --- | --- | --- | --- |
+| `tencent/hy4-preview@2026-08-28` | Hy4 preview | `preview` | `open-weights`; `tencent/Hy4-preview` | 770B total / 49B active；1M context；text | [Hy4 official repository](https://github.com/Tencent-Hunyuan/Hy4-preview)；下一代预览旗舰，仍处于 early preview |
+| `↳ tencent/hy4-preview@2026-08-28` | Hy4 preview FP8 | `preview` | `open-weights`; checkpoint `tencent/Hy4-preview-FP8` | 同一 release 的量化部署变体 | [Hy4 model card](https://huggingface.co/tencent/Hy4-preview)；不新增 model id，也不继承 benchmark 分数 |
+| `tencent/hy3@2026-07-06` | Hy3 | `active` | `open-weights/api`; `tencent/Hy3` / `hy3` | 295B total / 21B active；256K context；text | [Tencent release](https://www.tencent.com/zh-cn/tencent-hunyuan-officially-releases-hy3-advancing-agent-capabilities-and-deeper-product-integration/)；[Hy3 official repository](https://github.com/Tencent-Hunyuan/Hy3) |
+| `↳ tencent/hy3@2026-07-06` | Hy3 FP8 | `active` | `open-weights`; checkpoint `tencent/Hy3-FP8` | 同一 release 的量化部署变体 | [Hy3 model card](https://huggingface.co/tencent/Hy3)；不新增 model id，也不继承 benchmark 分数 |
+
+Hy4 preview 是当前“下一代预览旗舰”，Hy3 则仍是正式、稳定的同品牌 release；在 Hy4 正式版发布前，不能把 Hy3 标成 legacy。更早的 `Hy3-preview` 是独立 checkpoint，公开表中的 `tencent/Hy3-preview` / `hunyuan-hy3-preview` 不会自动映射到正式 Hy3。Hy4 官方附表中的成绩保留为 `reported / conditional`：它们是厂商报告值，必须携带 reasoning、harness、资源限制和原始附表，不能当作本站复现结果。
+
 ### Qwen
 
 | canonical release | 展示名 | status | availability / endpoint | 已核验元数据 | 官方来源与备注 |
@@ -232,7 +243,7 @@ Kimi 文档要求调用时填写 model ID 而不是展示名；因此 `k3`/`k3-2
 
 ### 已有 seed 与下一批
 
-Gemini 3.7 Flash（latest）、Gemini 3.6 Flash（previous-generation）、Gemini 3.5 Flash / Flash-Lite（legacy/efficiency）以及 Grok 4.6 / 4.5 已进入 canonical roster；Gemini 3.1 Pro、Gemini 2.5 Pro、Grok 4 Fast 继续保留作历史对照。Llama、Mistral、Cohere、Amazon Nova、Doubao、ERNIE、Hunyuan、StepFun 等仍属于后续批次，前提是逐条取得官方 model card/API 目录和可复现 endpoint 信息。聚合站（Arena、Artificial Analysis、OpenRouter）可作为发现入口，不能单独证明 release 身份。
+Gemini 3.7 Flash（latest）、Gemini 3.6 Flash（previous-generation）、Gemini 3.5 Flash / Flash-Lite（legacy/efficiency）、Grok 4.6 / 4.5，以及腾讯 Hy4 preview / Hy3 已进入 canonical roster；Gemini 3.1 Pro、Gemini 2.5 Pro、Grok 4 Fast 继续保留作历史对照。Llama、Mistral、Cohere、Amazon Nova、Doubao、ERNIE、StepFun 等仍属于后续批次，前提是逐条取得官方 model card/API 目录和可复现 endpoint 信息。聚合站（Arena、Artificial Analysis、OpenRouter）可作为发现入口，不能单独证明 release 身份。
 
 ## 6. 更新和淘汰策略
 
