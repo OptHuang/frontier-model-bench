@@ -1997,9 +1997,9 @@
     const benchmark = benchmarkFor(run.benchmarkId) || { id: run.benchmarkId, name: run.benchmarkId, short: run.benchmarkId, scale: 100, unit: run.unit || "%" };
     const entry = runScoreEntry(run);
     const source = sourceFor(first(run.sourceId, run.sourceUrl, chooseEvidence(evidenceItems(run))?.sourceId, chooseEvidence(evidenceItems(run))?.sourceUrl));
-    const evidence = statusLabel(entry);
-    const badges = `${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}${evidenceBadge(entry)}`;
-    return `<tr class="run-row" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 的 ${esc(benchmark.name)} system run"><td class="run-model-cell">${modelMarkup(model)}</td><td><span class="run-benchmark-name">${esc(benchmark.short || benchmark.name)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></td><td class="run-score-cell ${scoreClass(entry, benchmark)}"><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${run.value !== null && run.value !== undefined ? esc(run.unit || benchmark.unit || "") : ""}</strong><small>${esc(run.metric || benchmark.metric || "score")}</small></td><td><div class="run-badges">${badges}</div></td><td><span class="status-badge ${statusClass(entry)}">${esc(evidence)}</span><small class="run-date">${esc(run.observedAt || "未注明")}</small></td><td class="run-source-cell">${source ? '<span class="source-chip">S</span>' : "—"}</td></tr>`;
+    const setup = `${badge(harnessLabel(run), "harness-badge")}${badge(protocolLabel(run), "protocol-badge")}`;
+    const evidence = evidenceBadge(entry) || `<span class="status-badge ${statusClass(entry)}">${esc(statusLabel(entry))}</span>`;
+    return `<tr class="run-row" data-run="${esc(run.id)}" tabindex="0" role="button" aria-label="查看 ${esc(model.name)} 的 ${esc(benchmark.name)} system run"><td class="run-model-cell">${modelMarkup(model)}</td><td><span class="run-benchmark-name">${esc(benchmark.short || benchmark.name)}</span><small>${esc(benchmark.version || run.benchmarkVersion || "version 未注明")}</small></td><td class="run-score-cell ${scoreClass(entry, benchmark)}"><strong>${run.value === null || run.value === undefined ? "—" : fmt(run.value)}${run.value !== null && run.value !== undefined ? esc(run.unit || benchmark.unit || "") : ""}</strong><small>${esc(run.metric || benchmark.metric || "score")}</small></td><td class="run-setup-cell"><div class="run-badges">${setup}</div></td><td class="run-evidence-cell">${evidence}<small class="run-date">${esc(run.observedAt || "未注明")}${source ? ' · <span class="source-chip">S</span>' : ""}</small></td></tr>`;
   }
   function runPage(runs) {
     const pageCount = Math.max(1, Math.ceil(runs.length / RUN_PAGE_SIZE));
@@ -2019,8 +2019,8 @@
     const pager = runPagerMarkup(page.start, page.items.length, runs.length, page.pageCount);
     if (state.runView === "table") {
       if (els.runCardsView) els.runCardsView.innerHTML = "";
-      if (els.runTableHead) els.runTableHead.innerHTML = "<tr><th>MODEL / RELEASE</th><th>BENCHMARK</th><th>SCORE</th><th>HARNESS / PROTOCOL</th><th>EVIDENCE / DATE</th><th>SOURCE</th></tr>";
-      if (els.runTableBody) els.runTableBody.innerHTML = page.items.map(runRow).join("") + (pager ? `<tr class="run-pagination-row"><td colspan="6">${pager}</td></tr>` : "");
+      if (els.runTableHead) els.runTableHead.innerHTML = "<tr><th>MODEL / RELEASE</th><th>BENCHMARK</th><th>SCORE</th><th>SETUP</th><th>EVIDENCE / DATE</th></tr>";
+      if (els.runTableBody) els.runTableBody.innerHTML = page.items.map(runRow).join("") + (pager ? `<tr class="run-pagination-row"><td colspan="5">${pager}</td></tr>` : "");
     } else {
       if (els.runTableHead) els.runTableHead.innerHTML = "";
       if (els.runTableBody) els.runTableBody.innerHTML = "";
