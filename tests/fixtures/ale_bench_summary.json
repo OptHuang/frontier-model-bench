@@ -1,0 +1,32 @@
+[
+  {
+    "model_name": "gpt-5.6-sol-max",
+    "detail_path": "data/model_details/gpt-5.6-sol-max.json",
+    "overall_results": [
+      {
+        "num_self_refine": 1,
+        "performance": {"all": {"mean": 2176.875, "median": 2200}, "short": {"mean": 2000}, "long": {"mean": 2300}},
+        "rank": {"all": {"mean": 98.325}, "short": {"mean": 110}, "long": {"mean": 90}},
+        "cost": {"all": {"mean": 0.5}},
+        "results": [{"problem_id": "ahc001", "overall_absolute_score": 987654321, "code": "DO NOT COPY"}]
+      },
+      {
+        "num_self_refine": 16,
+        "performance": {"all": {"mean": 2409.525}},
+        "rank": {"all": {"mean": 63.975}},
+        "results": [{"problem_id": "ahc001"}]
+      }
+    ]
+  },
+  {
+    "model_name": "fixture-model-no-thinking",
+    "detail_path": "https://untrusted.example/data.json",
+    "overall_results": [
+      {
+        "num_self_refine": 1,
+        "performance": {"all": {"mean": 0}, "short": {"mean": null}, "long": {"mean": -110}},
+        "rank": {"all": {"mean": 700}}
+      }
+    ]
+  }
+]

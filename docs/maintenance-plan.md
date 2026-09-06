@@ -22,6 +22,18 @@ build_derived.py → validate_data.py --strict → Pages
 
 ## 2. 已配置的自动任务
 
+### 2026-09-06：关注领域与历史合并
+
+- 首页默认只呈现核心 8 列；OR 为 OptMATH / IndustryOR / MIPLIB-NL / ALE-Bench，数学聚焦 FrontierMath v2 两组与 ProofBench，科学为 TB-Science 0.1 / GPQA / HLE / SciCode / CritPt。AIME/HMMT 等目前仅较早模型有成绩的列保留在完整目录。OR 默认仅有成绩，用户可展开全部模型。
+- **科学首要来源：Terminal-Bench Science 0.1**，核心/科学页首列。`src-terminal-bench-science` 读取官方主页的公开 `/api/leaderboard`，固定 `v0-1-eval`，仅解析公开聚合行（70 任务 × 3 次）。保留 model × harness × effort、dataset version ID、标准误、领域分项、cost/tokens 与 Harbor Hub row 深链；不获取题目或轨迹，不将网站编辑日期当作 run 日期。0.2 必须新增版本，不覆盖 0.1。
+- 同名单独检查 release：TB-Science 的 DeepSeek V4 Pro 行明确指向 0813；source-scoped alias 可显式纠正 fetch 的自动别名，保留旧映射记录，不能覆盖人工 reviewed 身份。
+- 分数底色为单一浅青绿色。百分比/小数按 0–100 / 0–1 的固定尺度，非有界 performance/rank 按当前视图同版本/指标/配置范围；越低越好的指标反向。颜色不代表核验状态、统计显著性或跨 benchmark 可比，缺失格不着色。
+- 优先刷新 ALE-Bench 官方聚合 JSON、Epoch 的 FrontierMath **独立 v2 CSV**、SciCode、ProofBench、CritPt。ALE-Bench 默认摘要是 self-refine 16 / all / performance；其他配置不删除，系统表可展开。
+- OptArena 已导入公开矩阵 JSON；目前是一次性来源，未确认长期接口契约，不盲目启用 adapter。零值如无法区分未跑/无记录，保留 raw value 和 missing，不填 0。
+- 每次补数必须合并旧公开层及完整 unmapped/alternatives，禁止用当天局部 fetch 替换历史。运行 `scripts/merge_public_evidence.py --baseline data/derived/public.json --baseline data/public/unmapped.jsonl --baseline data/public/alternatives.jsonl --input-dir <新候选目录> --output-dir <新的临时目录>`；检查历史 ID 与旧快照 hash 全部保留后，再安装生成的五份输出、运行 build_derived、strict validation 与 tests。
+- 模型发布日期、LiveBench 任务版本、站点生成日期不是评测日期。来源未披露的 benchmark/judge 版本和 observed 日期必须留空；原始疑点日期保留在 `sourceReportedDates`，不据此猜测一次 run。
+- 公开层永远保持 reported/candidate 与 verified=false；上述合并不触碰 approved observations，也不自动推送或发布。
+
 `.github/workflows/maintenance.yml` 每天 UTC 02:17（北京时间 10:17）运行，也可以手动 `workflow_dispatch`：
 
 1. 检查 canonical catalog 和 observation contract。

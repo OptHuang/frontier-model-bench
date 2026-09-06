@@ -31,6 +31,7 @@ class LiveBenchAdapter(Adapter):
             kind="official_repository",
             url=self.TREE_URL,
             cadence="weekly",
+            parser_version="0.2.0",
             notes=(
                 "Selects the newest dated CSV in the official repository; "
                 "scores are source-release candidates until model aliases and "
@@ -167,8 +168,11 @@ class LiveBenchAdapter(Adapter):
                             ["missing_score"]
                             if raw is None or str(raw).strip().lower() in {"", "-", "—", "n/a"}
                             else []
-                        ),
-                        observed_at=run.metadata.get("release_date"),
+                        ) + ["evaluation_date_not_reported"],
+                        # The dated CSV identifies the benchmark task release.
+                        # New model rows are appended to that same table months
+                        # later, so it is not an evaluation/publication date.
+                        observed_at=None,
                     )
                 )
         return candidates

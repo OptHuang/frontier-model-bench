@@ -20,6 +20,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DerivedRuntimePayloadTests(unittest.TestCase):
+    def test_projection_preserves_source_version_and_explicit_missing_zero(self):
+        row = public_evidence_for_site({"id": "pub-missing", "value": None, "rawValue": 0, "benchmarkVersionId": "math@v2"})
+        self.assertIsNone(row["value"])
+        self.assertEqual(row["rawValue"], 0)
+        self.assertEqual(row["benchmarkVersionId"], "math@v2")
+
     def test_model_projection_keeps_vendor_approximate_parameter_semantics(self) -> None:
         projected = model_for_site(
             {

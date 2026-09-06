@@ -75,6 +75,9 @@ class AdapterFixtureTests(unittest.TestCase):
         self.assertEqual(len(rows), 4)
         self.assertIsNone(rows[2]["value"])
         self.assertIn("missing_score", rows[2]["quality_flags"])
+        self.assertTrue(all(row["observed_at"] is None for row in rows))
+        self.assertEqual(rows[0]["protocol"]["release_date"], "2026-08-27")
+        self.assertIn("evaluation_date_not_reported", rows[0]["quality_flags"])
 
     def test_helm_parses_explicit_table_rows(self):
         adapter = HELMAdapter("capabilities")

@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css?v=20260901-table" />
+    <link rel="stylesheet" href="focus.css?v=20260906" />
   </head>
-  <body>
+  <body class="focus-layout">
     <div class="app-shell">
       <header class="topbar">
         <a class="brand" href="#top" aria-label="Frontier Model Bench 首页">
@@ -24,10 +25,7 @@
         <nav class="topnav" aria-label="主导航">
           <a class="active" href="index.html#matrix" aria-current="page">Evaluations</a>
           <a href="benchmarks.html">Benchmarks</a>
-          <a href="long-horizon.html">Long Horizon</a>
           <a href="models.html">Models</a>
-          <a href="#method">Method</a>
-          <a id="dataLink" href="data/derived/site.json" target="_blank" rel="noreferrer">Data ↗</a>
         </nav>
         <div class="top-actions">
           <span id="freshnessPill" class="freshness-pill"><span class="status-dot"></span><span>demo snapshot</span></span>
@@ -36,79 +34,29 @@
       </header>
 
       <main id="top">
-        <section class="hero" aria-labelledby="pageTitle">
-          <div class="hero-copy">
-            <p class="eyebrow"><span class="eyebrow-line"></span>MODEL INTELLIGENCE / 001</p>
-            <h1 id="pageTitle">今天，谁在<br /><em>真正领先？</em></h1>
-            <p class="hero-lede">把分散在模型卡、论文与 benchmark 榜单里的成绩，压缩成一张可比较、可追溯、持续更新的地图；公开披露与本站复现明确分开。</p>
-            <div class="hero-meta">
-              <span class="meta-item"><span class="meta-label">SNAPSHOT</span><strong id="asOfLabel">—</strong></span>
-              <span class="meta-divider"></span>
-              <span class="meta-item"><span class="meta-label">CADENCE</span><strong id="cadenceLabel">—</strong></span>
-            </div>
-          </div>
-          <div class="hero-aside" aria-label="数据说明">
-            <div class="signal-card">
-              <div class="signal-top"><span class="signal-label">SOURCE QUALITY</span><span class="signal-value" id="qualityValue">—</span></div>
-              <div class="quality-track"><span id="qualityBar"></span></div>
-              <p>这是来源与协议的可追溯性，不是本站复现置信度；公开披露值仍标记“未复现”。</p>
-            </div>
-            <div class="quick-links">
-              <a href="#matrix">查看全矩阵 <span>↘</span></a>
-              <a href="benchmarks.html">浏览 benchmark 目录 <span>↗</span></a>
-              <a href="long-horizon.html">长程 Agent crosswalk <span>↗</span></a>
-              <a href="models.html">浏览模型目录 <span>↗</span></a>
-              <a href="#method">了解口径 <span>↘</span></a>
-            </div>
-          </div>
-        </section>
-
-        <section class="stat-grid" aria-label="数据摘要">
-          <article class="stat-card stat-primary">
-            <span class="stat-kicker">TRACKED MODELS</span>
-            <strong id="modelCount">—</strong>
-            <span class="stat-note">已纳入索引的 model / config entry</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-kicker">BENCHMARKS</span>
-            <strong id="benchmarkCount">—</strong>
-            <span class="stat-note">跨 <span id="familyCount">—</span> 个能力面</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-kicker">OBSERVATIONS</span>
-            <strong id="observationCount">—</strong>
-            <span class="stat-note">有来源的成绩记录</span>
-          </article>
-          <article class="stat-card">
-            <span class="stat-kicker">COVERAGE</span>
-            <strong id="coverageValue">—</strong>
-            <span class="stat-note">矩阵非缺失率</span>
-          </article>
-        </section>
-
+        <header class="page-heading"><h1 id="pageTitle">模型与 Agent 评测</h1><p>核心基准 · OR / 优化 · 数学 · 科学</p></header>
         <section id="matrix" class="workspace-section" aria-labelledby="matrixTitle">
           <div class="section-heading">
             <div>
-              <p class="section-index">01 / COMPARISON</p>
-              <h2 id="matrixTitle">Benchmark matrix</h2>
-              <p class="section-subtitle">先按同一评测口径比较，再打开单元格查看证据；不计算跨 benchmark 总分。</p>
+              <h2 id="matrixTitle" class="sr-only">Benchmark matrix</h2>
+              <p class="section-subtitle sr-only">公开披露分数，点击查看评测口径。</p>
             </div>
             <div class="workspace-tabs">
               <div id="modeSwitcher" class="mode-switcher" role="tablist" aria-label="比较模式">
-                <button class="mode-tab active" role="tab" aria-selected="true" data-mode="atlas">Model Atlas</button>
-                <button class="mode-tab" role="tab" aria-selected="false" data-mode="runs">System Runs</button>
-              </div>
-              <div id="atlasViewSwitcher" class="view-switcher" role="tablist" aria-label="Model Atlas 视图">
-                <button class="view-tab active" role="tab" aria-selected="true" data-view="matrix">矩阵</button>
-                <button class="view-tab" role="tab" aria-selected="false" data-view="cards">卡片</button>
-              </div>
-              <div id="runViewSwitcher" class="view-switcher" role="tablist" aria-label="System Runs 视图" hidden>
-                <button class="view-tab active" role="tab" aria-selected="true" data-run-view="table">表格</button>
-                <button class="view-tab" role="tab" aria-selected="false" data-run-view="cards">卡片</button>
+                <button class="mode-tab active" role="tab" aria-selected="true" data-mode="atlas">模型矩阵</button>
+                <button class="mode-tab" role="tab" aria-selected="false" data-mode="runs">Agent / 系统</button>
               </div>
             </div>
           </div>
 
+          <div class="focus-tabs" role="group" aria-label="关注领域">
+            <button type="button" data-focus="core" class="active" aria-pressed="true">核心</button>
+            <button type="button" data-focus="or" aria-pressed="false">OR / 优化</button>
+            <button type="button" data-focus="math" aria-pressed="false">数学</button>
+            <button type="button" data-focus="science" aria-pressed="false">科学</button>
+            <button type="button" data-focus="all" aria-pressed="false">全部</button>
+          </div>
+          <p id="focusDescription" class="focus-description"></p>
           <div class="control-bar" aria-label="筛选与排序">
             <label class="search-box">
               <span class="search-icon" aria-hidden="true">⌕</span>
@@ -119,42 +67,18 @@
               <span class="sr-only">厂商</span>
               <select id="providerFilter"><option value="all">所有厂商</option></select>
             </label>
-            <label class="select-wrap">
-              <span class="sr-only">能力面或标签</span>
-              <select id="familyFilter"><option value="all">所有能力面</option></select>
-            </label>
-            <label class="select-wrap preset-select">
-              <span class="sr-only">比较预设</span>
-              <select id="presetSelect"><option value="all">所有模型 / benchmark</option></select>
-            </label>
-            <label id="harnessFilterWrap" class="select-wrap run-only-control" hidden>
-              <span class="sr-only">Harness</span>
-              <select id="harnessFilter"><option value="all">所有 harness</option></select>
-            </label>
-            <label id="runBenchmarkFilterWrap" class="select-wrap run-only-control" hidden>
-              <span class="sr-only">运行 benchmark</span>
-              <select id="runBenchmarkFilter"><option value="all">所有 benchmark</option></select>
-            </label>
-            <label class="select-wrap sort-select">
-              <span class="sr-only">排序</span>
-              <select id="sortSelect">
-                <option value="recent">按发布日期</option>
-                <option value="coverage">按覆盖率</option>
-                <option value="name">按模型名称</option>
-                <option value="run-recent">按运行时间</option>
-                <option value="score-desc">按分数</option>
-                <option value="cost">按成本</option>
-              </select>
-            </label>
-            <label class="toggle-control"><input id="availableOnly" type="checkbox" /><span class="toggle-ui"></span><span>仅有成绩</span></label>
-            <label class="toggle-control"><input id="showCatalog" type="checkbox" /><span class="toggle-ui"></span><span>显示全量目录</span></label>
+            <label id="runBenchmarkFilterWrap" class="select-wrap run-only-control" hidden><span class="sr-only">运行 benchmark</span><select id="runBenchmarkFilter"><option value="all">所有 benchmark</option></select></label>
             <button id="resetFilters" class="text-button" type="button">重置</button>
           </div>
-
-          <div id="activeFilters" class="active-filters" aria-live="polite"></div>
-          <p id="presetHint" class="preset-hint" hidden></p>
-          <p id="coverageNote" class="coverage-note" aria-live="polite"></p>
-
+          <details class="advanced-filters"><summary>更多筛选与显示</summary><div class="control-bar">
+            <label class="select-wrap"><span class="sr-only">能力面或标签</span><select id="familyFilter"><option value="all">所有能力面</option></select></label>
+            <label class="select-wrap"><span class="sr-only">比较预设</span><select id="presetSelect"><option value="all">全部预设</option></select></label>
+            <label id="harnessFilterWrap" class="select-wrap run-only-control" hidden><span class="sr-only">Harness</span><select id="harnessFilter"><option value="all">所有 harness</option></select></label>
+            <label class="select-wrap"><span class="sr-only">排序</span><select id="sortSelect"><option value="coverage">按覆盖率</option></select></label>
+            <label class="toggle-control"><input id="availableOnly" type="checkbox" /><span>仅有成绩</span></label>
+            <label class="toggle-control"><input id="showCatalog" type="checkbox" /><span>包含历史版本</span></label>
+            <label class="toggle-control"><input id="allConfigurations" type="checkbox" /><span>系统表：全部指标与配置</span></label>
+          </div>
           <div id="matrixTools" class="matrix-tools" aria-label="矩阵显示与导航">
             <div class="matrix-tools-copy">
               <span class="matrix-tools-kicker">MATRIX NAVIGATION</span>
@@ -185,6 +109,11 @@
               <button id="matrixHome" class="matrix-home-button" type="button" title="回到热门 benchmark">热门首组</button>
             </div>
           </div>
+
+          </details>
+          <div id="activeFilters" class="active-filters" aria-live="polite"></div>
+          <p id="presetHint" class="preset-hint" hidden></p>
+          <p id="coverageNote" class="coverage-note" aria-live="polite"></p>
 
           <div id="matrixView" class="matrix-frame" data-density="compact">
             <div id="matrixScroll" class="matrix-scroll" tabindex="0" aria-label="可横向滚动的模型 benchmark 矩阵">
@@ -218,25 +147,16 @@
               </div>
               <div id="runEmptyState" class="empty-state" hidden>
                 <div class="empty-icon">∅</div>
-                <h3>没有匹配的运行记录</h3>
-                <p>试试切换预设、清空搜索词，或打开 Model Atlas 查看目录。</p>
-                <button id="runEmptyReset" class="outline-button" type="button">清空筛选</button>
+                <h3>此领域暂无匹配的系统记录</h3>
+                <p>已收录的分数可能仅来自模型评测，或未明确披露 harness。</p>
+                <button id="returnToAtlas" class="outline-button" type="button">查看该领域的模型矩阵</button>
               </div>
             </div>
             <div id="runCardsView" class="run-cards-grid" hidden></div>
           </div>
 
-          <div id="atlasLegend" class="table-legend">
-            <span><i class="legend-dot high"></i>高于 85</span>
-            <span><i class="legend-dot mid"></i>70–85</span>
-            <span><i class="legend-dot low"></i>低于 70</span>
-            <span><i class="legend-dash">—</i>暂无可展示公开值（不等于未测试）</span>
-            <span class="legend-spacer"></span>
-            <span><i class="source-chip">S</i>点击查看来源与设置</span>
-            <span class="evidence-legend"><i class="score-evidence evidence-approved">approved</i>已核验</span>
-            <span class="evidence-legend"><i class="score-evidence evidence-public">披露 · 未复现</i>公开来源</span>
-            <span class="evidence-legend"><i class="score-evidence evidence-public evidence-system">system</i>含 harness / 环境</span>
-          </div>
+          <p class="score-tint-note">浅色 → 深色：同指标由低到高（越低越好的指标反向）；不代表跨榜可比或已核验。</p>
+          <div id="atlasLegend" class="table-legend"><span>— 未收录，不代表未测试</span><span>点击数值看详情 · ↗ 直达来源 · 带 * 的数值为相关口径</span></div>
           <section id="publicEvidenceSection" class="public-evidence-section" hidden aria-labelledby="publicEvidenceTitle">
             <div class="public-evidence-heading">
               <button id="publicEvidenceToggle" class="public-evidence-toggle" type="button" aria-expanded="false" aria-controls="publicEvidenceBody">
@@ -254,37 +174,11 @@
           </section>
         </section>
 
-        <section id="spotlightSection" class="spotlight-section" aria-labelledby="spotlightTitle">
-          <div class="section-heading compact-heading">
-            <div>
-              <p class="section-index">02 / SIGNALS</p>
-              <h2 id="spotlightTitle">值得打开看的信号</h2>
-            </div>
-            <span class="section-note">各列内部取最高披露值，不跨指标排序</span>
-          </div>
-          <div id="spotlightGrid" class="spotlight-grid"></div>
-        </section>
-
-        <section id="method" class="method-section" aria-labelledby="methodTitle">
-          <div class="method-copy">
-            <p class="section-index">03 / METHOD</p>
-            <h2 id="methodTitle">把“一个分数”还原成一条证据链。</h2>
-            <p>这个页面不试图制造一个脱离语境的 SOTA 排名。公开榜单值先作为“披露”展示，严格复现值另列为 canonical；每条记录尽量保留 benchmark 版本、指标、运行设置、观测时间与来源定位。不同协议之间默认不合并。</p>
-            <div class="method-tags"><span>versioned</span><span>source-linked</span><span>protocol-aware</span><span>missing ≠ zero</span></div>
-          </div>
-          <div class="method-flow" aria-label="数据流">
-            <div class="flow-step"><span>01</span><strong>Collect</strong><small>模型卡 / 榜单 / 论文</small></div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step"><span>02</span><strong>Normalize</strong><small>版本与协议对齐</small></div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-step"><span>03</span><strong>Inspect</strong><small>矩阵 / 详情 / 来源</small></div>
-          </div>
-        </section>
-
+        <details id="method" class="method-details"><summary>数据口径</summary><p>公开榜单值标为「披露 · 未复现」。本站核验只代表出处和口径检查，不等于独立复跑。不同 benchmark、版本、harness 和预算不合并排名。* 表示主口径缺失时展示的相关切片；具体版本、指标、设置与来源见详情。</p><a href="docs/benchmark-coverage.md">完整覆盖审计 ↗</a></details>
         <footer class="footer">
           <span>Frontier Model Bench <span class="muted">· static MVP</span></span>
           <span id="footerStatus">公开披露值仅作参考；点击数值查看来源与口径。</span>
-          <a href="README.md">Update guide ↗</a>
+          <a href="long-horizon.html">长程 Agent 目录 ↗</a>
         </footer>
       </main>
     </div>
@@ -299,6 +193,6 @@
     </aside>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="app.js?v=20260901-table" defer></script>
+    <script src="app.js?v=20260906-focus" defer></script>
   </body>
 </html>

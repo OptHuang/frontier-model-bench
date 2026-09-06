@@ -366,14 +366,14 @@ async function main() {
   assert(!elements.runTableBody.innerHTML.includes("direct-model-only"), "System Runs leaked a model-only row");
   assert(elements.runTableBody.innerHTML.includes("harness-inferred-system"), "agent harness row was not inferred as system");
   assert(elements.runTableBody.innerHTML.includes("system-tail-0"), "system benchmark row was not inferred as system");
-  assert.strictEqual((elements.runTableBody.innerHTML.match(/class="run-row"/g) || []).length, 50);
+  assert.strictEqual((elements.runTableBody.innerHTML.match(/class="run-row"/g) || []).length, 25);
   assert(elements.runTableBody.innerHTML.includes('data-run-page="1"'), "bounded table page has no next-page control");
   assert.strictEqual(elements.runCardsView.innerHTML, "", "table view must not synchronously build run cards");
-  assert.strictEqual(elements.runCountLabel.textContent, "1–50 / 62");
+  assert.strictEqual(elements.runCountLabel.textContent, "1–25 / 62");
 
   runTabs.find((tab) => tab.dataset.runView === "cards").emit("click");
   assert.strictEqual(elements.runTableBody.innerHTML, "", "card view must release the hidden run table rows");
-  assert.strictEqual((elements.runCardsView.innerHTML.match(/class="run-card"/g) || []).length, 50);
+  assert.strictEqual((elements.runCardsView.innerHTML.match(/class="run-card"/g) || []).length, 25);
   assert(!elements.runCardsView.innerHTML.includes("direct-model-only"), "run cards leaked a model-only row");
 
   elements.searchInput.value = "system-tail-60";

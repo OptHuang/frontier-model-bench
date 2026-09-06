@@ -266,6 +266,7 @@ PUBLIC_EVIDENCE_RUNTIME_FIELDS = (
     # Despite its name this is display behavior, not review-only metadata:
     # app.js and models.js use it to select the representative observation.
     "selectionRank",
+    "benchmarkVersionId",
 )
 
 
@@ -285,6 +286,9 @@ def public_evidence_for_site(row: Mapping[str, Any]) -> dict[str, Any]:
     }
 
     source_url = row.get("sourceUrl")
+    # Missing is semantically different from the source's ambiguous raw zero.
+    if "value" in row and row["value"] is None:
+        result["value"] = None
     evidence_url = row.get("evidenceUrl")
     if _has_runtime_value(evidence_url) and evidence_url != source_url:
         result["evidenceUrl"] = evidence_url

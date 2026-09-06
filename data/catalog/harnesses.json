@@ -1,5 +1,16 @@
 [
   {
+    "id": "grok-build",
+    "name": "Grok Build",
+    "label": "Grok Build",
+    "kind": "coding-agent",
+    "status": "active",
+    "owner": "xAI",
+    "description": "TB-Science 官方榜单披露的 Grok Build harness；具体版本与环境未注明。",
+    "tools": [],
+    "source_ids": ["src-terminal-bench-science"]
+  },
+  {
     "id": "model-only",
     "name": "Model-only / single turn",
     "label": "model-only",

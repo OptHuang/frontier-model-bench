@@ -1,5 +1,93 @@
 [
   {
+    "id": "src-terminal-bench-science",
+    "label": "Terminal-Bench Science 0.1 · official leaderboard",
+    "kind": "official_leaderboard",
+    "publisher": "Terminal-Bench Science / Harbor",
+    "url": "https://www.terminal-bench-science.ai/",
+    "api_url": "https://www.terminal-bench-science.ai/api/leaderboard?package=terminal-bench-science%2Fterminal-bench-science&name=v0-1-eval",
+    "methodology_url": "https://www.terminal-bench-science.ai/announcement",
+    "default_evidence_level": "A",
+    "staleness_after_days": 7,
+    "enabled": true,
+    "adapter_id": "src-terminal-bench-science",
+    "license": null,
+    "license_note": "Benchmark repository is Apache-2.0; a separate license for leaderboard aggregates is not stated. Attribute official numerical results only; do not redistribute tasks, generated solutions or traces.",
+    "notes": "Homepage public API, pinned v0-1-eval. Source display status is not independent verification. Fail closed on schema/version drift."
+  },
+  {
+    "id": "src-openai-gpt6-astra-launch",
+    "label": "OpenAI · GPT-6 Astra launch and evaluations",
+    "kind": "primary",
+    "publisher": "OpenAI",
+    "url": "https://openai.com/index/gpt-6-astra/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-openai-gpt6-astra-api",
+    "label": "OpenAI · GPT-6 Astra API specification",
+    "kind": "documentation",
+    "publisher": "OpenAI",
+    "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-anthropic-fable51",
+    "label": "Anthropic · Claude Fable 5.1 and Mythos 5.1 launch",
+    "kind": "primary",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+    "default_evidence_level": "B",
+    "staleness_after_days": 120
+  },
+  {
+    "id": "src-anthropic-fable-current",
+    "label": "Anthropic · Claude Fable model overview",
+    "kind": "documentation",
+    "publisher": "Anthropic",
+    "url": "https://www.anthropic.com/claude/fable",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-google-gemini38-spec",
+    "label": "Google AI · Gemini 3.8 Flash API specification",
+    "kind": "documentation",
+    "publisher": "Google DeepMind",
+    "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-google-gemini-deprecations",
+    "label": "Google AI · Gemini release and deprecation dates",
+    "kind": "documentation",
+    "publisher": "Google DeepMind",
+    "url": "https://ai.google.dev/gemini-api/docs/deprecations",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-meta-muse-spark",
+    "label": "Meta · Muse Spark developer overview",
+    "kind": "primary",
+    "publisher": "Meta",
+    "url": "https://developer.meta.com/ai/",
+    "default_evidence_level": "B",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-meta-news",
+    "label": "Meta AI · model announcements",
+    "kind": "primary",
+    "publisher": "Meta",
+    "url": "https://ai.meta.com/subscribe",
+    "default_evidence_level": "B",
+    "staleness_after_days": 30
+  },
+  {
     "id": "openai-gpt5",
     "label": "OpenAI · Introducing GPT-5",
     "kind": "primary",
@@ -741,17 +829,18 @@
   },
   {
     "id": "src-ale-bench",
-    "label": "SakanaAI · ALE-Bench leaderboard artifact (catalog only)",
+    "label": "SakanaAI · ALE-Bench official leaderboard",
     "kind": "official_artifact",
     "publisher": "SakanaAI",
     "url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/",
     "api_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/data/results_summary.json",
     "download_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/download_results_json.sh",
     "default_evidence_level": "A",
-    "staleness_after_days": 120,
-    "enabled": false,
-    "license": "cc-by-nd-4.0",
-    "license_note": "Catalog-only for now; leaderboard data is CC BY-ND 4.0 and must be checked before redistribution or automated ingestion.",
+    "staleness_after_days": 14,
+    "enabled": true,
+    "adapter_id": "src-ale-bench",
+    "license": null,
+    "license_note": "Official leaderboard publishes aggregate result downloads; preserve source attribution and values. The benchmark task dataset is CC BY-ND 4.0; this adapter does not redistribute tasks or generated code. A separate license for leaderboard aggregates was not identified.",
     "notes": "Distinct from Agents' Last Exam (ALE-V1): this ALE-Bench measures long-horizon algorithm engineering on AtCoder Heuristic Contests."
   },
   {
@@ -1212,5 +1301,44 @@
     "default_evidence_level": "A",
     "staleness_after_days": 180,
     "notes": "First-party static-evaluation runner; Stanford HELM is a distinct benchmark/evaluation framework and remains a separate context source."
+  },
+  {
+    "id": "src-scicode-official",
+    "label": "SciCode · 官方任务与方法",
+    "kind": "primary",
+    "publisher": "SciCode",
+    "url": "https://scicode-bench.github.io/",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-proofbench-official",
+    "label": "Vals · ProofBench 官方榜单",
+    "kind": "primary",
+    "publisher": "Vals",
+    "url": "https://www.vals.ai/benchmarks/proof_bench",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-critpt-official",
+    "label": "Epoch · CritPt",
+    "kind": "primary",
+    "publisher": "Epoch",
+    "url": "https://epoch.ai/benchmarks/critpt",
+    "default_evidence_level": "A",
+    "staleness_after_days": 30
+  },
+  {
+    "id": "src-optarena",
+    "label": "ReasLab · OptArena OR leaderboard",
+    "kind": "leaderboard",
+    "publisher": "ReasLab",
+    "url": "https://arena.reaslab.io/",
+    "api_url": "https://arena.reaslab.io/download/matrix/json?benchmark=MIPLIB-NL&dir=desc&metric=pass%401&sort=macro",
+    "default_evidence_level": "B",
+    "staleness_after_days": 30,
+    "enabled": false,
+    "notes": "One-off public JSON snapshot. No stable API contract confirmed; manual refresh. Missing protocol fields remain unknown; zero-like values need status evidence."
   }
 ]

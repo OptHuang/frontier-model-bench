@@ -33,6 +33,15 @@ class EpochBenchmarkAdapter(Adapter):
         "os_world_external": "osworld",
     }
 
+    # A model release date is not a benchmark revision. Keep the v2 tables
+    # separate from the legacy benchmark IDs and bind versions by filename.
+    FILE_VERSIONS = {
+        "frontiermath": "frontiermath@t1-t3",
+        "frontiermath_tier_4": "epoch-frontiermath_tier_4@rolling",
+        "frontiermath_tiers_1_3_v2": "frontiermath@v2-t1-t3",
+        "frontiermath_tier_4_v2": "frontiermath@v2-tier-4",
+    }
+
     # The first numeric column is the headline metric shown by Epoch.  The
     # other columns are useful context but are intentionally not fanned out
     # into hundreds of synthetic metrics here.
@@ -57,6 +66,7 @@ class EpochBenchmarkAdapter(Adapter):
             kind="official_artifact",
             url=self.URL,
             cadence="weekly",
+            parser_version="epoch@0.2.0",
             notes=(
                 "Public CSV ZIP under CC BY; some tables retain original licences. "
                 "Rows are external/provider or Epoch reports and are not reproduced here."
@@ -101,6 +111,12 @@ class EpochBenchmarkAdapter(Adapter):
         """
 
         low = f"{benchmark_ref} {column}".casefold()
+        if benchmark_ref == "epoch-scicode_external" and column == "Score":
+            # AA publishes subproblem accuracy as a fraction in this export.
+            # Keep 0.56 as a fraction, never label it as 0.56 percent.
+            if 0 <= number <= 1:
+                return number, "fraction", ["source_fraction_accuracy"]
+            return number, "score", ["unexpected_scicode_scale", "unit_unverified"]
         if "rank" in low:
             return number, "rank", ["unit_inferred_from_column"]
         if "arena score" in low or "elo" in low or "rating" in low:
@@ -154,6 +170,8 @@ class EpochBenchmarkAdapter(Adapter):
                 run.warnings.append(f"{member}: no model/score column; skipped")
                 continue
             benchmark_ref = self._benchmark_ref(member)
+            stem = re.sub(r"\.csv$", "", member.rsplit("/", 1)[-1])
+            benchmark_version_id = self.FILE_VERSIONS.get(stem)
             for row_no, row in enumerate(reader, 2):
                 model = (row.get(model_key) or "").strip()
                 number, raw = parse_number(row.get(score_key))
@@ -163,10 +181,27 @@ class EpochBenchmarkAdapter(Adapter):
                 subject_type = "system" if (row.get("Agent") or row.get("Harness")) else "model"
                 harness = (row.get("Agent") or row.get("Harness") or "").strip() or None
                 observed = (row.get("Date of evaluation") or row.get("Run date") or
-                            row.get("Last updated") or row.get("Date") or
-                            row.get("Release date") or "").strip() or None
-                candidates.append(
-                    self.make_candidate(
+                            row.get("Started at") or "").strip() or None
+                published = (row.get("Last updated") or row.get("Date") or "").strip() or None
+                protocol = {"subject_type": subject_type, "harness": harness}
+                if stem == "proofbench_external":
+                    protocol.update({
+                        "subject_type": "system",
+                        "harness": "Vals ProofBench",
+                        "harness_id": "vals-proofbench",
+                        "benchmark_version_id": None,
+                        "setup_url": "https://www.vals.ai/benchmarks/proof_bench",
+                    })
+                if benchmark_version_id:
+                    protocol["benchmark_version_id"] = benchmark_version_id
+                effort = (row.get("Reasoning effort") or "").strip()
+                if effort:
+                    protocol["reasoning_effort"] = effort
+                if not observed:
+                    unit_flags.append("missing_evaluation_date")
+                source_link = (row.get("Log viewer") or row.get("Source link") or
+                               row.get("Source Link") or row.get("Source") or "").strip() or None
+                candidate = self.make_candidate(
                         run,
                         model_ref=model,
                         benchmark_ref=benchmark_ref,
@@ -178,17 +213,24 @@ class EpochBenchmarkAdapter(Adapter):
                         status="candidate",
                         evidence_level="A",
                         comparability="conditional",
-                        protocol={"subject_type": subject_type, "harness": harness},
+                        protocol=protocol,
                         metadata={
                             "epoch_file": member,
                             "organization": row.get("Organization"),
-                            "release_date": row.get("Release date"),
-                            "source_link": row.get("Source link") or row.get("Source Link"),
+                            "model_release_date": row.get("Release date"),
+                            "source_link": source_link,
+                            "source": row.get("Source"),
+                            "log_viewer": row.get("Log viewer"),
+                            "logs": row.get("Logs"),
+                            "started_at": row.get("Started at"),
+                            "aa_model_slug": row.get("AA model slug"),
+                            "source_model_name": row.get("Name"),
                             "notes": row.get("Notes") or row.get("Notes (details)"),
                         },
                         quality_flags=unit_flags,
-                        observed_at=observed,
-                    )
+                        observed_at=observed[:10] if observed else None,
                 )
+                candidate["published_at"] = published[:10] if published else None
+                candidates.append(candidate)
         run.metadata["csv_files"] = len([n for n in archive.namelist() if n.lower().endswith(".csv")])
         return candidates

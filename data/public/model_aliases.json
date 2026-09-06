@@ -5,9 +5,70 @@
     "policy": "Only high-confidence same-release spellings are listed. Dates, adjacent releases, quantized checkpoints, and named derivatives stay unmapped until reviewed.",
     "status": "curated-unreviewed",
     "verified": false,
-    "lastExpandedAt": "2026-08-28"
+    "lastExpandedAt": "2026-09-06"
   },
   "aliases": [
+    {"canonicalModelId": "anthropic/claude-opus-5@2026-07-24", "sourceIds": ["src-terminal-bench-science"], "values": ["Opus 5"], "note": "Official row names Opus 5, release 2026-07-24 and Anthropic Opus 5 launch URL; harness/effort remain separate."},
+    {"canonicalModelId": "anthropic/claude-opus-4.8@current", "sourceIds": ["src-terminal-bench-science"], "values": ["Opus 4.8"], "note": "Official board abbreviation of Claude Opus 4.8; retains source release date in metadata."},
+    {"canonicalModelId": "anthropic/claude-fable-5@2026-06-09", "sourceIds": ["src-terminal-bench-science"], "values": ["Fable 5"], "note": "Official row identifies Anthropic Fable 5, released 2026-06-09; not Fable 5.1."},
+    {"canonicalModelId": "deepseek/v4-pro@2026-08-13", "sourceIds": ["src-terminal-bench-science"], "values": ["DeepSeek V4 Pro"], "overrideAutomatic": true, "note": "Official row links news260813 and reports 2026-08-13 release; do not map to the older V4 Pro release."},
+    {
+      "canonicalModelId": "openai/gpt-6-astra@2026-09-03",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-6-astra-max",
+        "gpt-6-astra_max",
+        "gpt-6-astra_low",
+        "gpt-6-astra_medium",
+        "gpt-6-astra_high",
+        "gpt-6-astra_xhigh"
+      ],
+      "note": "Official launch and API documentation identify gpt-6-astra and these supported effort levels. Source effort remains in the original name and protocol. The unsupported gpt-6-astra_none spelling is deliberately excluded."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-fable-5.1@2026-09-01",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "claude-fable-5-1-max-effort",
+        "claude-fable-5-1_low",
+        "claude-fable-5-1_medium",
+        "claude-fable-5-1_high",
+        "claude-fable-5-1_max",
+        "claude-fable-5-1_unknown"
+      ],
+      "note": "Anthropic identifies claude-fable-5-1 as Fable 5.1. Source effort/unknown tags are preserved; this alias does not map Mythos or declare settings independently verified."
+    },
+    {
+      "canonicalModelId": "google/gemini-3.8-flash@2026-09-02",
+      "sourceIds": [
+        "livebench-official",
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gemini-3.8-flash-high",
+        "gemini-3.8-flash_high",
+        "gemini-3.8-flash_medium",
+        "gemini-3.8-flash_low",
+        "gemini-3.8-flash_unknown"
+      ],
+      "note": "Official stable endpoint gemini-3.8-flash, released 2026-09-02. Source thinking/unknown labels remain visible."
+    },
+    {
+      "canonicalModelId": "meta/muse-spark-1.3@2026-09-02",
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "muse-spark-1.3-xhigh"
+      ],
+      "note": "Meta's official developer overview and announcement identify Muse Spark 1.3. xhigh is the benchmark source configuration label, not an independently verified API capability."
+    },
     {
       "canonicalModelId": "openai/gpt-5.5@current",
       "sourceIds": [
@@ -1323,248 +1384,578 @@
     },
     {
       "canonicalModelId": "openai/gpt-5.4-pro@2026-03-05",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gpt-5.4-pro-2026-03-05_none", "gpt-5.4-pro-2026-03-05_unknown", "gpt-5.4-pro-2026-03-05_xhigh", "gpt-5.4-pro-2026-03-05-web-app"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.4-pro-2026-03-05_none",
+        "gpt-5.4-pro-2026-03-05_unknown",
+        "gpt-5.4-pro-2026-03-05_xhigh",
+        "gpt-5.4-pro-2026-03-05-web-app"
+      ],
       "confidence": "high",
       "note": "Epoch spellings for the dated GPT-5.4 Pro release; compute and web-app settings remain in protocol metadata."
     },
     {
       "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gpt-5.4-nano-2026-03-17_high", "gpt-5.4-nano-2026-03-17_low", "gpt-5.4-nano-2026-03-17_medium", "gpt-5.4-nano-2026-03-17_none", "gpt-5.4-nano-2026-03-17_unknown", "gpt-5.4-nano-2026-03-17_xhigh"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5.4-nano-2026-03-17_high",
+        "gpt-5.4-nano-2026-03-17_low",
+        "gpt-5.4-nano-2026-03-17_medium",
+        "gpt-5.4-nano-2026-03-17_none",
+        "gpt-5.4-nano-2026-03-17_unknown",
+        "gpt-5.4-nano-2026-03-17_xhigh"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for the explicit 2026-03-17 GPT-5.4 nano snapshot."
     },
     {
       "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
-      "sourceIds": ["livebench-official"],
-      "values": ["gpt-5.4-nano-xhigh"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "gpt-5.4-nano-xhigh"
+      ],
       "confidence": "high",
       "note": "LiveBench xhigh presentation of GPT-5.4 nano; effort stays in the source protocol."
     },
     {
       "canonicalModelId": "openai/gpt-5.4-nano@2026-03-17",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gpt-5.4-nano-high"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5.4-nano-high"
+      ],
       "confidence": "high",
       "note": "Arena high-effort presentation of GPT-5.4 nano."
     },
     {
       "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
-      "sourceIds": ["src-bfcl"],
-      "values": ["GPT-5-mini-2025-08-07"],
+      "sourceIds": [
+        "src-bfcl"
+      ],
+      "values": [
+        "GPT-5-mini-2025-08-07"
+      ],
       "confidence": "high",
       "note": "BFCL exact dated model spelling."
     },
     {
       "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gpt-5-mini-2025-08-07_high", "gpt-5-mini-2025-08-07_low", "gpt-5-mini-2025-08-07_medium", "gpt-5-mini-2025-08-07_minimal", "gpt-5-mini-2025-08-07_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5-mini-2025-08-07_high",
+        "gpt-5-mini-2025-08-07_low",
+        "gpt-5-mini-2025-08-07_medium",
+        "gpt-5-mini-2025-08-07_minimal",
+        "gpt-5-mini-2025-08-07_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for the dated GPT-5 mini release."
     },
     {
       "canonicalModelId": "openai/gpt-5-mini@2025-08-07",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gpt-5-mini-high"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5-mini-high"
+      ],
       "confidence": "high",
       "note": "Arena high-effort presentation of GPT-5 mini."
     },
     {
       "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
-      "sourceIds": ["src-bfcl"],
-      "values": ["GPT-5-nano-2025-08-07"],
+      "sourceIds": [
+        "src-bfcl"
+      ],
+      "values": [
+        "GPT-5-nano-2025-08-07"
+      ],
       "confidence": "high",
       "note": "BFCL exact dated model spelling."
     },
     {
       "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gpt-5-nano-2025-08-07_high", "gpt-5-nano-2025-08-07_low", "gpt-5-nano-2025-08-07_medium", "gpt-5-nano-2025-08-07_minimal", "gpt-5-nano-2025-08-07_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gpt-5-nano-2025-08-07_high",
+        "gpt-5-nano-2025-08-07_low",
+        "gpt-5-nano-2025-08-07_medium",
+        "gpt-5-nano-2025-08-07_minimal",
+        "gpt-5-nano-2025-08-07_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for the dated GPT-5 nano release."
     },
     {
       "canonicalModelId": "openai/gpt-5-nano@2025-08-07",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gpt-5-nano-high"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gpt-5-nano-high"
+      ],
       "confidence": "high",
       "note": "Arena high-effort presentation of GPT-5 nano."
     },
     {
       "canonicalModelId": "qwen/qwen3.5-35b-a3b@current",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["qwen3.5-35b-a3b"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3.5-35b-a3b"
+      ],
       "confidence": "high",
       "note": "Arena exact spelling of Qwen3.5 35B-A3B."
     },
     {
       "canonicalModelId": "qwen/qwen3.5-9b@current",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["qwen3.5-9B"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3.5-9B"
+      ],
       "confidence": "high",
       "note": "Epoch exact capitalization for Qwen3.5 9B."
     },
     {
       "canonicalModelId": "qwen/qwen3.5-max-preview@2026-03-18",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["qwen3.5-max-preview"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "qwen3.5-max-preview"
+      ],
       "confidence": "high",
       "note": "Arena explicit Qwen3.5 Max Preview endpoint spelling."
     },
     {
       "canonicalModelId": "qwen/qwen3-coder-next@2026-02-03",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["qwen3-coder-next"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "qwen3-coder-next"
+      ],
       "confidence": "high",
       "note": "Epoch exact Qwen3-Coder-Next spelling."
     },
     {
       "canonicalModelId": "qwen/qwen3-coder-next@2026-02-03",
-      "sourceIds": ["hf-swebench-pro", "hf-swebench-verified", "hf-terminal-bench"],
-      "values": ["Qwen/Qwen3-Coder-Next"],
+      "sourceIds": [
+        "hf-swebench-pro",
+        "hf-swebench-verified",
+        "hf-terminal-bench"
+      ],
+      "values": [
+        "Qwen/Qwen3-Coder-Next"
+      ],
       "confidence": "high",
       "note": "Hugging Face benchmark labels for the explicit Qwen3-Coder-Next checkpoint."
     },
     {
       "canonicalModelId": "google/gemini-3.7-flash@current",
-      "sourceIds": ["livebench-official"],
-      "values": ["gemini-3.7-flash-high"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "gemini-3.7-flash-high"
+      ],
       "confidence": "high",
       "note": "LiveBench high presentation of Gemini 3.7 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.7-flash@current",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gemini-3.7-flash-high", "Gemini 3.7 Flash (High)"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gemini-3.7-flash-high",
+        "Gemini 3.7 Flash (High)"
+      ],
       "confidence": "high",
       "note": "Arena high presentations of Gemini 3.7 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.7-flash@current",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gemini-3.7-flash_high", "gemini-3.7-flash_low", "gemini-3.7-flash_medium", "gemini-3.7-flash_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gemini-3.7-flash_high",
+        "gemini-3.7-flash_low",
+        "gemini-3.7-flash_medium",
+        "gemini-3.7-flash_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for Gemini 3.7 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.6-flash@current",
-      "sourceIds": ["livebench-official"],
-      "values": ["gemini-3.6-flash-high"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "gemini-3.6-flash-high"
+      ],
       "confidence": "high",
       "note": "LiveBench high presentation of Gemini 3.6 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.6-flash@current",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gemini-3.6-flash-high", "Gemini 3.6 Flash (High)"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gemini-3.6-flash-high",
+        "Gemini 3.6 Flash (High)"
+      ],
       "confidence": "high",
       "note": "Arena high presentations of Gemini 3.6 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.6-flash@current",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gemini-3.6-flash_high", "gemini-3.6-flash_low", "gemini-3.6-flash_medium", "gemini-3.6-flash_minimal", "gemini-3.6-flash_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gemini-3.6-flash_high",
+        "gemini-3.6-flash_low",
+        "gemini-3.6-flash_medium",
+        "gemini-3.6-flash_minimal",
+        "gemini-3.6-flash_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for Gemini 3.6 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash@current",
-      "sourceIds": ["livebench-official"],
-      "values": ["gemini-3.5-flash-high"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "gemini-3.5-flash-high"
+      ],
       "confidence": "high",
       "note": "LiveBench high presentation of Gemini 3.5 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash@current",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gemini-3.5-flash-high", "gemini-3.5-flash-medium", "Gemini 3.5 Flash (High)", "Gemini 3.5 Flash (Medium)"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gemini-3.5-flash-high",
+        "gemini-3.5-flash-medium",
+        "Gemini 3.5 Flash (High)",
+        "Gemini 3.5 Flash (Medium)"
+      ],
       "confidence": "high",
       "note": "Arena high and medium presentations of Gemini 3.5 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash@current",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gemini-3.5-flash_high", "gemini-3.5-flash_low", "gemini-3.5-flash_medium", "gemini-3.5-flash_minimal", "gemini-3.5-flash_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gemini-3.5-flash_high",
+        "gemini-3.5-flash_low",
+        "gemini-3.5-flash_medium",
+        "gemini-3.5-flash_minimal",
+        "gemini-3.5-flash_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for Gemini 3.5 Flash."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash-lite@current",
-      "sourceIds": ["livebench-official"],
-      "values": ["gemini-3.5-flash-lite-high"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "gemini-3.5-flash-lite-high"
+      ],
       "confidence": "high",
       "note": "LiveBench high presentation of Gemini 3.5 Flash-Lite."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash-lite@current",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["gemini-3.5-flash-lite", "Gemini 3.5 Flash Lite"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "gemini-3.5-flash-lite",
+        "Gemini 3.5 Flash Lite"
+      ],
       "confidence": "high",
       "note": "Arena base presentations of Gemini 3.5 Flash-Lite."
     },
     {
       "canonicalModelId": "google/gemini-3.5-flash-lite@current",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["gemini-3.5-flash-lite", "gemini-3.5-flash-lite_high", "gemini-3.5-flash-lite_low", "gemini-3.5-flash-lite_medium", "gemini-3.5-flash-lite_minimal"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash-lite_high",
+        "gemini-3.5-flash-lite_low",
+        "gemini-3.5-flash-lite_medium",
+        "gemini-3.5-flash-lite_minimal"
+      ],
       "confidence": "high",
       "note": "Epoch base and effort spellings for Gemini 3.5 Flash-Lite."
     },
     {
       "canonicalModelId": "xai/grok-4.5@2026-07-16",
-      "sourceIds": ["livebench-official"],
-      "values": ["grok-4.5"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "grok-4.5"
+      ],
       "confidence": "high",
       "note": "LiveBench base spelling of Grok 4.5."
     },
     {
       "canonicalModelId": "xai/grok-4.5@2026-07-16",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["grok-4.5", "Grok 4.5"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "grok-4.5",
+        "Grok 4.5"
+      ],
       "confidence": "high",
       "note": "Arena base spellings of Grok 4.5."
     },
     {
       "canonicalModelId": "xai/grok-4.5@2026-07-16",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["grok-4.5_high", "grok-4.5_low", "grok-4.5_medium", "grok-4.5_unknown"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "grok-4.5_high",
+        "grok-4.5_low",
+        "grok-4.5_medium",
+        "grok-4.5_unknown"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for Grok 4.5."
     },
     {
       "canonicalModelId": "xai/grok-4.5@2026-07-16",
-      "sourceIds": ["agents-last-exam"],
-      "values": ["grok-4-5"],
+      "sourceIds": [
+        "agents-last-exam"
+      ],
+      "values": [
+        "grok-4-5"
+      ],
       "confidence": "high",
       "note": "Agents' Last Exam spelling of Grok 4.5; harness remains in the system row."
     },
     {
       "canonicalModelId": "xai/grok-4.6@2026-08-12",
-      "sourceIds": ["livebench-official"],
-      "values": ["grok-4.6"],
+      "sourceIds": [
+        "livebench-official"
+      ],
+      "values": [
+        "grok-4.6"
+      ],
       "confidence": "high",
       "note": "LiveBench base spelling of Grok 4.6."
     },
     {
       "canonicalModelId": "xai/grok-4.6@2026-08-12",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["grok-4.6-high"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "grok-4.6-high"
+      ],
       "confidence": "high",
       "note": "Arena high-effort presentation of Grok 4.6."
     },
     {
       "canonicalModelId": "xai/grok-4.6@2026-08-12",
-      "sourceIds": ["src-epoch-benchmark-hub"],
-      "values": ["grok-4.6_high", "grok-4.6_low", "grok-4.6_medium", "grok-4.6_unknown", "grok-4.6_xhigh"],
+      "sourceIds": [
+        "src-epoch-benchmark-hub"
+      ],
+      "values": [
+        "grok-4.6_high",
+        "grok-4.6_low",
+        "grok-4.6_medium",
+        "grok-4.6_unknown",
+        "grok-4.6_xhigh"
+      ],
       "confidence": "high",
       "note": "Epoch effort spellings for Grok 4.6."
     },
     {
       "canonicalModelId": "zai/glm-5v-turbo@2026-04-01",
-      "sourceIds": ["lmarena-hf-dataset"],
-      "values": ["glm-5v-turbo"],
+      "sourceIds": [
+        "lmarena-hf-dataset"
+      ],
+      "values": [
+        "glm-5v-turbo"
+      ],
       "confidence": "high",
       "note": "Arena exact GLM-5V-Turbo endpoint spelling."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-haiku-4.5@2025-10-01",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.5-haiku"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.5@2025-11-01",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.5-opus"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.5-sonnet"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.6@2026-02-05",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.6-opus-no-thinking"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.6@current",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.6-sonnet-medium"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.7@current",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.7-opus-no-thinking"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-opus-4.8@current",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "claude-4.8-opus-high",
+        "claude-4.8-opus-no-thinking"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "deepseek/v4-flash@2026-07-31",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "deepseek-v4-flash-no-thinking"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.4@current",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "gpt-5.4-none"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5.5@current",
+      "sourceIds": [
+        "src-ale-bench"
+      ],
+      "values": [
+        "gpt-5.5-none"
+      ],
+      "note": "The official ALE-Bench table uses a model/version spelling or thinking setting for this existing release. Preserve the original name, self-refine iteration and source configuration; this remains reported and not reproduced."
+    },
+    {
+      "canonicalModelId": "openai/gpt-5@2025-08-07",
+      "sourceIds": [
+        "src-optarena"
+      ],
+      "values": [
+        "gpt-5"
+      ],
+      "note": "Exact GPT-5 model spelling already present in the catalog; this does not identify a later GPT-5.x release or a Codex variant."
+    },
+    {
+      "canonicalModelId": "anthropic/claude-sonnet-4.5@2025-09-29",
+      "sourceIds": [
+        "src-optarena"
+      ],
+      "values": [
+        "claude-sonnet-4-5",
+        "claude-sonnet-4-5-think"
+      ],
+      "note": "OptArena explicitly distinguishes Sonnet 4.5 and its think configuration. Hyphenated 4-5 denotes the catalog Sonnet 4.5 release; the think suffix remains in model_ref and protocol, and does not imply a particular token budget."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.2@2025-12-01",
+      "sourceIds": [
+        "src-optarena"
+      ],
+      "values": [
+        "deepseek-v3.2",
+        "deepseek-v3.2-think"
+      ],
+      "note": "OptArena names V3.2 and its think configuration separately. Keep the source mode in protocol; do not map either to V3.2 Exp or any V4 release."
+    },
+    {
+      "canonicalModelId": "deepseek/v3.1@2025-08-21",
+      "sourceIds": [
+        "src-optarena"
+      ],
+      "values": [
+        "deepseek-v3.1"
+      ],
+      "note": "Exact V3.1 catalog alias; do not upgrade it to V3.1 Terminus."
     }
   ]
 }

@@ -13,11 +13,33 @@ from scripts.build_public_evidence import (
     build_index,
     build_model_alias_lookup,
     load_public_aliases,
+    normalize_candidate,
     write_index,
 )
 
 
 class PublicEvidenceTests(unittest.TestCase):
+    def test_livebench_task_version_is_not_evaluation_date(self) -> None:
+        candidate = {
+            "source_id": "livebench-official",
+            "source_url": "https://livebench.ai/",
+            "model_ref": "new-model-max",
+            "benchmark_ref": "livebench-math",
+            "metric": "score",
+            "value": 80,
+            "unit": "percent",
+            "observed_at": "2026_06_25",
+            "protocol": {"release_date": "2026_06_25"},
+        }
+        row = normalize_candidate(candidate, {}, {}, artifact_path=Path("fixture"))
+        self.assertIsNone(row["observedAt"])
+        self.assertEqual(row["protocol"]["release_date"], "2026_06_25")
+        self.assertIn("table_version_is_not_evaluation_date", row["qualityFlags"])
+        # A separately supplied run date must survive normalization.
+        candidate["observed_at"] = "2026-09-04"
+        row = normalize_candidate(candidate, {}, {}, artifact_path=Path("fixture"))
+        self.assertEqual(row["observedAt"], "2026-09-04")
+
     def test_parenthesized_effort_suffix_is_display_only(self) -> None:
         self.assertIn("gpt55", _model_alias_keys("GPT 5.5 (High)"))
         self.assertIn("claudeopus5", _model_alias_keys("Claude Opus 5 (Max)"))

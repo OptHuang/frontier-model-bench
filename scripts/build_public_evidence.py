@@ -234,6 +234,7 @@ def load_public_aliases(
                     "registry": str(alias_path.name),
                     "note": note,
                     "confidence": confidence,
+                    "overrideAutomatic": item.get("overrideAutomatic") is True and source_id != "*",
                 }
     return lookup, metadata, warnings
 
@@ -516,11 +517,16 @@ def annotate_curated_public_mapping(
     unverified after mapping.
     """
 
-    if row.get("canonicalModelId"):
-        return
+    existing = row.get("canonicalModelId")
     source_id = _nonempty(row.get("sourceId")) or _nonempty(row.get("source_id")) or ""
     normalized = _normal_model_text(row.get("modelRef"))
     if not normalized:
+        return
+    explicit = (alias_metadata or {}).get(f"{source_id}|{normalized}", {})
+    # Only a deliberately opted-in, source-specific correction can replace
+    # the fetcher's generic alias. Never override a reviewed mapping.
+    if existing and not (row.get("mappingStatus") in {"exact_alias", "heuristic_alias"}
+                         and explicit.get("overrideAutomatic") is True):
         return
     keys = [(source_id, normalized), ("*", normalized)]
     matches: set[str] = set()
@@ -540,6 +546,8 @@ def annotate_curated_public_mapping(
             row["mappingCandidates"] = sorted(matches)
         return
     target = sorted(matches)[0]
+    if existing and existing != target:
+        row["previousAutomaticMapping"] = {"canonicalModelId": existing, "mappingStatus": row.get("mappingStatus")}
     row["canonicalModelId"] = target
     row["mappingStatus"] = "curated_alias"
     row["mappingCandidates"] = [target]
@@ -774,6 +782,15 @@ def normalize_candidate(
     if not isinstance(quality_flags, list):
         quality_flags = []
     quality_flags = list(quality_flags)
+    if source_id == "livebench-official":
+        table_version = _nonempty(protocol.get("release_date") or metadata.get("release_date"))
+        # Repair old adapter artifacts at display time without changing their
+        # raw snapshot: the CSV task-release label was used as observed_at.
+        if observed_at and table_version and observed_at.replace("_", "-") == table_version.replace("_", "-"):
+            observed_at = None
+            quality_flags.append("table_version_is_not_evaluation_date")
+        if not observed_at:
+            quality_flags.append("evaluation_date_not_reported")
     if version_status == "catalog_default_hint":
         quality_flags.append("inferred_benchmark_version_hint")
     elif version_status == "source_hint":
@@ -1116,6 +1133,7 @@ def build_index(
     *,
     generated_at: str | None = None,
     max_per_key: int = DEFAULT_MAX_PER_KEY,
+    baseline_rows: Sequence[Mapping[str, Any]] | None = None,
 ) -> dict[str, Any]:
     catalog = load_catalog(root)
     curated_alias_lookup, curated_alias_metadata, alias_warnings = load_public_aliases(
@@ -1124,6 +1142,13 @@ def build_index(
     )
     files, discovery_errors = discover_candidate_files(input_dirs, input_files)
     raw_rows, read_errors = read_candidates(files, catalog)
+    if baseline_rows is not None:
+        # The merge CLI supplies normalized historical rows. Keep their
+        # provenance and remap unresolved names with the current catalog.
+        from scripts.merge_public_evidence import merge_normalized_rows
+        raw_rows = merge_normalized_rows(
+            baseline_rows, raw_rows, generated_at=generated_at or utc_now()
+        )
     alias_lookup = build_model_alias_lookup(catalog.get("models", {}))
     for row in raw_rows:
         # Apply explicit source-scoped aliases first.  The generic matcher
@@ -1135,7 +1160,7 @@ def build_index(
             model = catalog.get("models", {}).get(str(canonical_id))
             if isinstance(model, Mapping):
                 row["modelName"] = model.get("name") or row.get("modelName")
-    all_rows = deduplicate_rows(raw_rows)
+    all_rows = deduplicate_rows(raw_rows) if baseline_rows is None else raw_rows
     selected_rows, omitted_rows = select_public_rows(
         all_rows,
         catalog,
@@ -1156,6 +1181,12 @@ def build_index(
     mapped_telemetry_rows = [row for row in mapped_rows if row.get("matrixExcluded")]
     retrieved_values = sorted(str(row.get("retrievedAt")) for row in all_rows if row.get("retrievedAt"))
     payload_hashes = sorted({str(row.get("payloadSha256")) for row in all_rows if row.get("payloadSha256")})
+    if baseline_rows is not None:
+        # Same-id refreshes keep earlier retrieval receipts in each row.
+        # Include those in the aggregate snapshot metadata as well.
+        receipts = [receipt for row in all_rows for receipt in (row.get("snapshotLocations") or [])]
+        retrieved_values = sorted(set(retrieved_values) | {str(r["retrievedAt"]) for r in receipts if r.get("retrievedAt")})
+        payload_hashes = sorted(set(payload_hashes) | {str(r["payloadSha256"]) for r in receipts if r.get("payloadSha256")})
     sources = []
     for source_id, count in sorted(source_counts.items()):
         source = catalog.get("sources", {}).get(source_id, {})
