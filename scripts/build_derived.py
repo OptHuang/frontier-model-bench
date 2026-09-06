@@ -975,6 +975,57 @@ def run_for_site(
     }
 
 
+def model_display_order(models: Sequence[Mapping[str, Any]], policy: Mapping[str, Any]) -> dict[str, int]:
+    """A presentation preference, never a score or a cross-benchmark ranking."""
+    if not isinstance(policy, Mapping):
+        raise ValueError("Model order policy must be an object")
+    providers = policy.get("preferred_providers", [])
+    featured = policy.get("featured_models", [])
+    tiers = policy.get("sibling_tiers", [])
+    for key, values in (("preferred_providers", providers), ("featured_models", featured), ("sibling_tiers", tiers)):
+        if not isinstance(values, list) or not all(isinstance(value, str) and value for value in values):
+            raise ValueError(f"Model order {key} must be a list of nonempty strings")
+        if len(values) != len(set(values)):
+            raise ValueError(f"Duplicate model order {key}")
+    unknown = set(featured) - {str(model.get("id")) for model in models}
+    if unknown:
+        raise ValueError(f"Unknown featured model IDs: {sorted(unknown)}")
+    if policy:
+        datetime.strptime(str(policy.get("reviewed_at", "")), "%Y-%m-%d")
+    provider_rank = {name: index for index, name in enumerate(providers)}
+    featured_rank = {identifier: index for index, identifier in enumerate(featured)}
+    tier_rank = {tier: index for index, tier in enumerate(tiers)}
+
+    def key(model: Mapping[str, Any]) -> tuple[Any, ...]:
+        status = str(model.get("status") or "").lower()
+        tags = set(model.get("tags") or [])
+        lifecycle = 0 if status in {"active", "preview", "restricted"} else 1
+        if status == "previous" or tags & {"上一代", "历史"}:
+            lifecycle = 2
+        if status in {"retired", "deprecated"}:
+            lifecycle = 3
+        provider = str(model.get("provider") or "")
+        try:
+            date = datetime.strptime(str(model.get("release_date") or model.get("release") or ""), "%Y-%m-%d").toordinal()
+        except ValueError:
+            date = 0
+        return (
+            lifecycle,
+            0 if provider in provider_rank else 1,
+            featured_rank.get(str(model.get("id")), len(featured)),
+            0 if tags & {"旗舰", "前沿"} else 1,
+            -date,
+            provider_rank.get(provider, len(providers)),
+            provider,
+            str(model.get("family_id") or ""),
+            tier_rank.get((model.get("variant") or {}).get("tier"), len(tiers)),
+            str(model.get("name") or ""),
+            str(model.get("id") or ""),
+        )
+
+    return {str(model.get("id")): index for index, model in enumerate(sorted(models, key=key))}
+
+
 def build(root: Path, output: Path) -> dict[str, Any]:
     catalog_dir = root / "data" / "catalog"
     observations_path = root / "data" / "observations" / "results.jsonl"
@@ -991,6 +1042,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
     public_meta, public_stats, public_rows, public_unmapped_models = load_public_evidence(root)
 
     canonical_models = canonical_model_list(model_payload)
+    order_policy = load_json(root / "data" / "presentation" / "model-order.json", {})
+    display_order = model_display_order(canonical_models, order_policy)
     canonical_benchmarks = canonical_benchmark_list(benchmark_payload)
     benchmark_profiles = (
         benchmark_profiles_payload
@@ -1096,6 +1149,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             model_profiles.get(model_id),
         )
         site_model["systemRunCount"] = system_counts.get(model_id, 0)
+        site_model["displayOrder"] = display_order[model_id]
         catalog_models.append(site_model)
         if chosen:
             scored_models.append(site_model)
@@ -1163,6 +1217,8 @@ def build(root: Path, output: Path) -> dict[str, Any]:
         "updateCadence": meta_legacy.get("updateCadence") or "每周复核，重大模型发布时加急",
         "defaultView": "atlas",
         "defaultPreset": "public-coverage",
+        "defaultSort": "recommended",
+        "modelOrderPolicy": order_policy,
         "defaultBenchmarkIds": featured_ids,
         "generatedFrom": [
             "data/catalog/models.json",
@@ -1172,6 +1228,7 @@ def build(root: Path, output: Path) -> dict[str, Any]:
             "data/catalog/sources.json",
             "data/catalog/harnesses.json",
             "data/catalog/presets.json",
+            "data/presentation/model-order.json (presentation preference, not a strength ranking)",
             "data/observations/results.jsonl",
             "data/models.json (legacy fallback)",
             "data/derived/public.json (reported/unverified display layer, optional)",

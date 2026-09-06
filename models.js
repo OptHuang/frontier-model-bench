@@ -69,7 +69,7 @@
     family: "all",
     modality: "all",
     weights: "all",
-    sort: "recent",
+    sort: "recommended",
     currentOnly: false,
     withScoresOnly: false,
     toastTimer: null,
@@ -657,6 +657,7 @@
       return number(model.contextWindow) || 0;
     };
     return models.sort((a, b) => {
+      if (state.sort === "recommended") return (a.displayOrder ?? Number.MAX_SAFE_INTEGER) - (b.displayOrder ?? Number.MAX_SAFE_INTEGER) || a.name.localeCompare(b.name, "zh-CN");
       if (state.sort === "name") return a.name.localeCompare(b.name, "zh-CN");
       if (state.sort === "provider") return a.provider.localeCompare(b.provider, "zh-CN") || a.name.localeCompare(b.name, "zh-CN");
       if (state.sort === "context") return contextValue(b) - contextValue(a) || a.name.localeCompare(b.name, "zh-CN");
@@ -1026,7 +1027,7 @@
     state.family = "all";
     state.modality = "all";
     state.weights = "all";
-    state.sort = "recent";
+    state.sort = "recommended";
     state.currentOnly = false;
     state.withScoresOnly = false;
     if (els.searchInput) els.searchInput.value = "";
@@ -1035,7 +1036,7 @@
     if (els.familyFilter) els.familyFilter.value = "all";
     if (els.modalityFilter) els.modalityFilter.value = "all";
     if (els.weightsFilter) els.weightsFilter.value = "all";
-    if (els.sortSelect) els.sortSelect.value = "recent";
+    if (els.sortSelect) els.sortSelect.value = "recommended";
     if (els.currentOnly) els.currentOnly.checked = false;
     if (els.withScoresOnly) els.withScoresOnly.checked = false;
     render();

@@ -22,6 +22,14 @@ build_derived.py → validate_data.py --strict → Pages
 
 ## 2. 已配置的自动任务
 
+### 关注优先排序（2026-09-06）
+
+- 矩阵、Agent 系统表、模型目录统一默认“关注优先”；规则只在 `data/presentation/model-order.json` 维护。构建生成每个模型的 `displayOrder`，不改 canonical 目录顺序、身份、分数或证据状态。
+- 当前 OpenAI / Anthropic 优先；精选主力目前为 GPT-6 Astra、Fable 5.1、GPT-5.6 Sol、Opus 5。其余当前模型按已有旗舰/前沿标签、发布日期安排，同日同族参考 `sibling_tiers`（如 Terra 在 Luna 前）；两家的其他当前模型仍在其他 provider 前。历史/上一代和已退役模型后置，不删除。未知发布日期不猜测。
+- 每日维护同时复查新 release、上下线状态和重要公开测评；每周至少完整复查一次精选顺序。优先参考 Terminal-Bench Science 0.1、OR / math / science 与重要 agent 榜单的有来源结果，同版本/指标/预算内比较；允许采用清晰标注的厂商/第三方披露，不要求重跑每条 run。
+- 这是用户关注顺序，不是总实力排名；不把跨 benchmark 分数平均，不将覆盖率、单次最高分或型号名称当作实力结论。新主力或多项可比结果有明确变化时调整精选列表并记录来源链接、理由、复查日期；只有单项或不同 harness 的优势时，不推断全面领先。没有依据的顺序不悄悄改。
+- 后续定时任务可修改此独立展示配置、重建 derived 并准备候选 diff，但不修改 approved，不自动推送/合并/发布；仍等仓库所有者审核。无排序变化不为刷新日期制造提交或提醒。用户手动按日期、覆盖率、分数、成本等排序不受关注排序覆盖。
+
 ### 2026-09-06：关注领域与历史合并
 
 - 首页默认只呈现核心 8 列；OR 为 OptMATH / IndustryOR / MIPLIB-NL / ALE-Bench，数学聚焦 FrontierMath v2 两组与 ProofBench，科学为 TB-Science 0.1 / GPQA / HLE / SciCode / CritPt。AIME/HMMT 等目前仅较早模型有成绩的列保留在完整目录。OR 默认仅有成绩，用户可展开全部模型。
@@ -88,6 +96,7 @@ python3 scripts/validate_data.py --strict
 ### 每日：发现与健康检查
 
 - 查看最近一次 `maintenance.yml` 的 `summary.md`。
+- 按上述“关注优先排序”复查当前主力；有依据时更新独立展示配置，并测试矩阵、系统表、模型目录顺序一致与手动排序仍可用。
 - 先处理 `high`：当前/preview 模型的 featured benchmark 缺口、来源失效、协议冲突和明显撤回。
 - 检查 source probe 的 4xx/5xx、重定向到登录页、robots/许可证变化；不要把 HTTP 200 当成数据解析成功。
 - 先看 public preview：它能快速告诉我们外部榜单已经报告了哪些值；确认来源、版本或

@@ -1,0 +1,13 @@
+{
+  "reviewed_at": "2026-09-06",
+  "label": "关注优先",
+  "note": "按用户关注安排展示，不是综合能力排名。当前 OpenAI / Anthropic 优先，精选主力在前，其余参考旗舰标签与发布日期；历史模型靠后。不得用跨 benchmark 平均分、覆盖率或单次 run 给出总实力排序。",
+  "preferred_providers": ["OpenAI", "Anthropic"],
+  "sibling_tiers": ["astra", "pro", "sol", "terra", "luna", "mini", "nano"],
+  "featured_models": [
+    "openai/gpt-6-astra@2026-09-03",
+    "anthropic/claude-fable-5.1@2026-09-01",
+    "openai/gpt-5.6-sol@2026-07-09",
+    "anthropic/claude-opus-5@2026-07-24"
+  ]
+}

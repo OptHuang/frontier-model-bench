@@ -22,7 +22,7 @@
     // Public evidence is broad by default; the preset menu still offers a
     // compact current-frontier slice when a narrower view is preferable.
     preset: "public-coverage",
-    sort: "coverage",
+    sort: "recommended",
     availableOnly: false,
     showCatalog: false,
     allConfigurations: false,
@@ -1477,6 +1477,7 @@
       return matchesQuery && matchesProvider && matchesFamily && matchesPreset && hasAnyScore && !hiddenCatalog && !hiddenRetired && !historical;
     });
     return models.sort((a, b) => {
+      if (state.sort === "recommended") return (a.displayOrder ?? Number.MAX_SAFE_INTEGER) - (b.displayOrder ?? Number.MAX_SAFE_INTEGER) || a.name.localeCompare(b.name, "zh-CN");
       if (state.sort === "recent") return String(b.release || "").localeCompare(String(a.release || ""));
       if (state.sort === "name") return a.name.localeCompare(b.name, "zh-CN");
       return (metrics?.get(b.id)?.coverage || 0) - (metrics?.get(a.id)?.coverage || 0) || String(b.release || "").localeCompare(String(a.release || ""));
@@ -1514,6 +1515,10 @@
       return matchesQuery && matchesProvider && matchesFamily && matchesHarness && matchesBenchmark && matchesPreset && hasValue && !historical && primary && aleHeadline;
     });
     return runs.sort((a, b) => {
+      if (state.sort === "recommended") {
+        const order = (modelById(a.modelId)?.displayOrder ?? Number.MAX_SAFE_INTEGER) - (modelById(b.modelId)?.displayOrder ?? Number.MAX_SAFE_INTEGER);
+        return order || String(b.observedAt || "").localeCompare(String(a.observedAt || "")) || String(a.id).localeCompare(String(b.id));
+      }
       if (state.sort === "score-desc") {
         const group = a.benchmarkId.localeCompare(b.benchmarkId) || String(a.metric || "").localeCompare(String(b.metric || ""));
         return group || (Number(b.value ?? -Infinity) - Number(a.value ?? -Infinity));
@@ -1690,8 +1695,8 @@
       els.runBenchmarkFilter.value = state.runBenchmark === "all" || systemBenchmarkIds.has(state.runBenchmark) ? state.runBenchmark : "all";
     }
     if (els.sortSelect) {
-      const atlasOptions = [["recent", "按发布日期"], ["coverage", "按覆盖率"], ["name", "按模型名称"]];
-      const runOptions = [["run-recent", "按运行时间"], ["score-desc", "按分数"], ["cost", "按成本"], ["name", "按模型名称"]];
+      const atlasOptions = [["recommended", "关注优先"], ["recent", "按发布日期"], ["coverage", "按覆盖率"], ["name", "按模型名称"]];
+      const runOptions = [["recommended", "关注优先"], ["run-recent", "按运行时间"], ["score-desc", "按分数"], ["cost", "按成本"], ["name", "按模型名称"]];
       const options = state.mode === "runs" ? runOptions : atlasOptions;
       if (!options.some(([value]) => value === state.sort)) state.sort = options[0][0];
       els.sortSelect.innerHTML = options.map(([value, label]) => `<option value="${value}">${label}</option>`).join("");
@@ -2314,7 +2319,7 @@
 
   function resetFilters() {
     state.focus = "core";
-    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = state.data?.presets?.some((preset) => preset.id === "public-coverage") ? "public-coverage" : "all"; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.availableOnly = false; state.showCatalog = false; state.runPage = 0; state.matrixColumnStart = 0; state.matrixBenchmarkJump = "";
+    state.search = ""; state.provider = "all"; state.family = "all"; state.harness = "all"; state.runBenchmark = "all"; state.preset = state.data?.presets?.some((preset) => preset.id === "public-coverage") ? "public-coverage" : "all"; state.sort = "recommended"; state.availableOnly = false; state.showCatalog = false; state.runPage = 0; state.matrixColumnStart = 0; state.matrixBenchmarkJump = "";
     if (els.searchInput) els.searchInput.value = "";
     if (els.availableOnly) els.availableOnly.checked = false;
     if (els.showCatalog) els.showCatalog.checked = false;
@@ -2322,7 +2327,7 @@
   }
 
   function bind() {
-    $("returnToAtlas")?.addEventListener("click", () => { state.mode = "atlas"; state.sort = "coverage"; state.runBenchmark = "all"; render(); });
+    $("returnToAtlas")?.addEventListener("click", () => { state.mode = "atlas"; state.sort = "recommended"; state.runBenchmark = "all"; render(); });
     $("allConfigurations")?.addEventListener("change", (event) => { state.allConfigurations = event.target.checked; state.runPage = 0; render(); });
     document.querySelectorAll("[data-focus]").forEach((button) => button.addEventListener("click", () => {
       state.focus = button.dataset.focus;
@@ -2346,7 +2351,7 @@
       // from a run preset must explicitly return to the release-level atlas;
       // otherwise the controls keep showing a stale System Runs view.
       state.mode = preset?.mode === "runs" ? "runs" : "atlas";
-      state.sort = state.mode === "runs" ? "run-recent" : "coverage";
+      state.sort = "recommended";
       state.runPage = 0;
       state.matrixColumnStart = 0;
       state.matrixBenchmarkJump = "";
@@ -2358,7 +2363,7 @@
     els.availableOnly?.addEventListener("change", (event) => { state.availableOnly = event.target.checked; state.runPage = 0; render(); });
     els.showCatalog?.addEventListener("change", (event) => { state.showCatalog = event.target.checked; state.runPage = 0; render(); });
     $("resetFilters")?.addEventListener("click", resetFilters); $("emptyReset")?.addEventListener("click", resetFilters); $("runEmptyReset")?.addEventListener("click", resetFilters);
-    document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => { state.mode = tab.dataset.mode; state.sort = state.mode === "runs" ? "run-recent" : "coverage"; state.runPage = 0; render(); }));
+    document.querySelectorAll(".mode-tab").forEach((tab) => tab.addEventListener("click", () => { state.mode = tab.dataset.mode; state.sort = "recommended"; state.runPage = 0; render(); }));
     document.querySelectorAll(".view-tab[data-view]").forEach((tab) => tab.addEventListener("click", () => { state.atlasView = tab.dataset.view; render(); }));
     document.querySelectorAll(".view-tab[data-run-view]").forEach((tab) => tab.addEventListener("click", () => { state.runView = tab.dataset.runView; state.runPage = 0; render(); }));
     document.querySelectorAll("[data-matrix-density]").forEach((button) => button.addEventListener("click", () => {
