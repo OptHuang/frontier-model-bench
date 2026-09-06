@@ -9,9 +9,12 @@ const sandbox = {
   console, Map, Set, Date, Intl, URL, URLSearchParams,
 };
 vm.createContext(sandbox);
-const script = fs.readFileSync(process.argv[2], "utf8").replace("  boot();", "  globalThis.testAPI = { state, normalise, normaliseEvidence, buildRuntimeIndexes, filteredBenchmarks, filteredRuns, renderMatrix, render, modelMarkup, chooseEvidence, scoreTint, heatRanges, FOCUS };");
+const script = fs.readFileSync(process.argv[2], "utf8").replace("  boot();", "  globalThis.testAPI = { state, normalise, normaliseEvidence, buildRuntimeIndexes, filteredBenchmarks, filteredRuns, renderMatrix, render, modelMarkup, chooseEvidence, scoreTint, heatRanges, evidenceBadge, statusLabel, FOCUS };");
 vm.runInContext(script, sandbox);
 const a = sandbox.testAPI;
+const providerReport = a.normaliseEvidence({value:64.6, public:true, status:"reported", sourceId:"provider", subjectType:"system", protocol:{reporting_party:"model_provider"}});
+assert(a.evidenceBadge(providerReport).includes("厂商披露 · 未复现"));
+assert.strictEqual(a.statusLabel(providerReport), "厂商披露 · 未复现");
 assert.strictEqual(a.FOCUS.science.ids[0], "terminal-bench-science");
 assert.strictEqual(a.FOCUS.core.ids[0], "terminal-bench-science");
 const percent = {id:"percent",metric:"accuracy",unit:"%",direction:"higher"};

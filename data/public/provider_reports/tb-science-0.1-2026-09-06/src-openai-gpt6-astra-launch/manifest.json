@@ -1,0 +1,16 @@
+{
+  "source_id": "src-openai-gpt6-astra-launch",
+  "requested_url": "https://openai.com/index/gpt-6-astra/",
+  "resolved_url": "https://openai.com/index/gpt-6-astra/",
+  "retrieved_at": "2026-09-06T14:36:04Z",
+  "http_status": null,
+  "payload_sha256": "274fded5e87694d369926d629865800ddc4ca95dda2cefe1aa04acfa76508cad",
+  "parser_version": "curated-provider-excerpt@0.1",
+  "metadata": {
+    "capture_kind": "curated_numeric_source_excerpt",
+    "payload_hash_scope": "source_excerpt.json",
+    "full_page_snapshot": false
+  },
+  "warnings": [],
+  "errors": []
+}

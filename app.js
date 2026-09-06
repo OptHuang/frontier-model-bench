@@ -1585,6 +1585,7 @@
     const publicEvidence = Boolean(entry?.public || entry?.evidenceOrigin === "public" || selected?.public || selected?.evidenceOrigin === "public");
     const status = evidenceStatus(entry, selected?.status || "reported");
     if (publicEvidence && status === "candidate") return "榜单候选 · 未复现";
+    if (publicEvidence && (selected || entry)?.protocol?.reporting_party === "model_provider") return "厂商披露 · 未复现";
     if (publicEvidence) return "榜单披露 · 未复现";
     if (status === "approved" || status === "verified" || status === "reproduced") return "已核验";
     if (status === "reported" || status === "official" || status === "published") return "官方披露 · 未复现";
@@ -1628,8 +1629,9 @@
     const publicEvidence = isPublicEvidence(entry);
     const system = String(first(entry?.subjectType, entry?.subject_type, selected?.subjectType, "")).toLowerCase() === "system";
     const mapping = first(entry?.mappingStatus, entry?.mapping_status, selected?.mappingStatus, selected?.mapping_status);
+    const providerReport = (selected || entry)?.protocol?.reporting_party === "model_provider";
     const label = publicEvidence
-      ? (status === "candidate" ? "候选 · 未复现" : "披露 · 未复现")
+      ? (status === "candidate" ? "候选 · 未复现" : (providerReport ? "厂商披露 · 未复现" : "披露 · 未复现"))
       : (status === "approved" ? "approved" : (status === "candidate" ? "candidate · 未复现" : "官方披露 · 未复现"));
     const count = items.length > 1 ? ` +${items.length - 1}` : "";
     const systemMark = system ? " · system" : "";

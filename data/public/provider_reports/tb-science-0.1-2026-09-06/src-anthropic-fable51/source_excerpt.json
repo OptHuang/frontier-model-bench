@@ -1,0 +1,12 @@
+{
+  "capture_kind": "curated_numeric_source_excerpt",
+  "source_url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+  "source_locator": "Comparison table > Agentic scientific research / Terminal-Bench-Science 0.1 > Fable 5.1; chart point aria-label Fable 5.1 max; footnote 1",
+  "retrieved_at": "2026-09-06T14:36:04Z",
+  "method": "public HTML table and accessible chart label; cross-checked with web text extraction",
+  "benchmark": "Terminal-Bench Science 0.1",
+  "source_model": "Fable 5.1",
+  "reported_value": 52.6,
+  "unit": "percent",
+  "protocol_note": "厂商自评配置；图表标明 max。脚注给出的 ±3.5–4.5 个百分点为各模型标准误范围；不视为该分数的精确误差条。脚注中的 Claude Code / 3 trials 是主榜配置，不能推定为厂商配置。"
+}

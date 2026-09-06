@@ -1,0 +1,16 @@
+{
+  "source_id": "src-anthropic-fable51",
+  "requested_url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+  "resolved_url": "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+  "retrieved_at": "2026-09-06T14:36:04Z",
+  "http_status": null,
+  "payload_sha256": "d7ffca36681f8c53dccd7466357180113458f7d8e465bd76017c857de0daf1e3",
+  "parser_version": "curated-provider-excerpt@0.1",
+  "metadata": {
+    "capture_kind": "curated_numeric_source_excerpt",
+    "payload_hash_scope": "source_excerpt.json",
+    "full_page_snapshot": false
+  },
+  "warnings": [],
+  "errors": []
+}

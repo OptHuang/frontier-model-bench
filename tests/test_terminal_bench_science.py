@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import unittest
 from pathlib import Path
 
 from scripts.adapters import TerminalBenchScienceAdapter, all_adapters
 from scripts.adapters.base import AdapterRun
-from scripts.build_public_evidence import annotate_curated_public_mapping, load_catalog, load_public_aliases
+from scripts.build_public_evidence import annotate_curated_public_mapping, build_index, load_catalog, load_public_aliases
 
 
 class TerminalBenchScienceTests(unittest.TestCase):
@@ -110,6 +111,31 @@ class TerminalBenchScienceTests(unittest.TestCase):
             row = {**original, **updates}
             annotate_curated_public_mapping(row, lookup, metadata)
             self.assertEqual(row["canonicalModelId"], original["canonicalModelId"])
+
+    def test_provider_disclosures_are_versioned_unverified_systems(self):
+        root = Path(__file__).resolve().parents[1]
+        directory = root / "data/public/provider_reports/tb-science-0.1-2026-09-06"
+        index = build_index(root, [directory], generated_at="2026-09-06T14:37:33Z")
+        self.assertFalse(index["meta"]["errors"])
+        rows = {row["canonicalModelId"]: row for row in index["rows"]}
+        self.assertEqual({key: row["value"] for key, row in rows.items()}, {
+            "openai/gpt-6-astra@2026-09-03": 64.6,
+            "anthropic/claude-fable-5.1@2026-09-01": 52.6,
+        })
+        for row in rows.values():
+            self.assertEqual(row["benchmarkVersionId"], "terminal-bench-science@0.1")
+            self.assertEqual((row["subjectType"], row["status"], row["verified"]), ("system", "reported", False))
+            self.assertEqual(row["harnessId"], "unspecified-reported")
+            self.assertEqual(row["protocol"]["reporting_party"], "model_provider")
+            self.assertIsNone(row["observedAt"])
+            self.assertIsNone(row["protocol"]["trials_per_task"])
+            self.assertEqual(row["comparability"], "conditional")
+            self.assertTrue(row["sourceLocator"])
+            excerpt = directory / row["sourceId"] / "source_excerpt.json"
+            self.assertEqual(row["payloadSha256"], hashlib.sha256(excerpt.read_bytes()).hexdigest())
+            self.assertIn("curated_excerpt_not_full_page", row["qualityFlags"])
+        self.assertIsNone(rows["openai/gpt-6-astra@2026-09-03"]["protocol"]["reasoning_effort"])
+        self.assertEqual(rows["anthropic/claude-fable-5.1@2026-09-01"]["protocol"]["reasoning_effort"], "max")
 
 
 if __name__ == "__main__":

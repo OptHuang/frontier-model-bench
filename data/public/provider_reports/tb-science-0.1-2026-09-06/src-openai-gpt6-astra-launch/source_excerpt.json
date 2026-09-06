@@ -1,0 +1,12 @@
+{
+  "capture_kind": "curated_numeric_source_excerpt",
+  "source_url": "https://openai.com/index/gpt-6-astra/",
+  "source_locator": "Academic table > Terminal-Bench Science 0.1 > GPT-6 Astra; evaluation settings paragraph below tables",
+  "retrieved_at": "2026-09-06T14:36:04Z",
+  "method": "web text extraction; direct HTTP fetch returned 403 and was not bypassed",
+  "benchmark": "Terminal-Bench Science 0.1",
+  "source_model": "GPT-6 Astra",
+  "reported_value": 64.6,
+  "unit": "percent",
+  "protocol_note": "发布页说明表格为各 effort 中的最高结果；GPT 评测在研究环境或 API 中进行。该行的 harness、具体 effort、重复次数与运行日期未披露，不套用主榜 Codex 配置。"
+}
