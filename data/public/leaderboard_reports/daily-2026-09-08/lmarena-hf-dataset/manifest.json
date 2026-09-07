@@ -1,0 +1,76 @@
+{
+  "candidate_count": 110,
+  "candidates_truncated": false,
+  "errors": [],
+  "headers": {
+    "cache-control": "max-age=120",
+    "content-length": "21747",
+    "content-type": "application/json"
+  },
+  "http_status": 200,
+  "metadata": {
+    "configs": [
+      "text",
+      "vision",
+      "webdev",
+      "search",
+      "document",
+      "agent"
+    ],
+    "dataset": "lmarena-ai/leaderboard-dataset",
+    "dataset_url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+    "license": "cc-by-4.0",
+    "max_rows_per_config": 100,
+    "page_size": 100,
+    "pages": {
+      "agent": 1,
+      "document": 1,
+      "search": 1,
+      "text": 1,
+      "vision": 1,
+      "webdev": 1
+    },
+    "reported_rows": {
+      "agent": 59,
+      "document": 38,
+      "search": 34,
+      "text": 10517,
+      "vision": 998,
+      "webdev": 531
+    },
+    "rows_endpoint": "https://datasets-server.huggingface.co/rows",
+    "rows_fetched": {
+      "agent": 59,
+      "document": 38,
+      "search": 34,
+      "text": 100,
+      "vision": 100,
+      "webdev": 100
+    },
+    "split": "latest",
+    "truncated_configs": [
+      "text",
+      "vision",
+      "webdev"
+    ],
+    "selection": "Current-catalog semantic new/changed public disclosures; not reproduced or approved",
+    "original_candidate_count": 431
+  },
+  "not_modified": false,
+  "parser_version": "0.1.0",
+  "payload_bytes": 154582,
+  "payload_sha256": "d3b9df7282712e47fee7462a24e3eadf681bd28dee248073dab9bbc3fa587c68",
+  "requested_url": "https://huggingface.co/datasets/lmarena-ai/leaderboard-dataset",
+  "resolved_url": "https://datasets-server.huggingface.co/rows",
+  "retrieved_at": "2026-09-07T17:01:38Z",
+  "saved_payload": null,
+  "schema_version": "source-fetch-manifest@0.1",
+  "snapshot_dir": "lmarena-hf-dataset/snapshots/20260907T170138Z-d3b9df7282712e47",
+  "source_id": "lmarena-hf-dataset",
+  "warnings": [
+    "text: capped at 100 rows of reported 10517",
+    "vision: capped at 100 rows of reported 998",
+    "webdev: capped at 100 rows of reported 531"
+  ],
+  "written_candidate_count": 110
+}

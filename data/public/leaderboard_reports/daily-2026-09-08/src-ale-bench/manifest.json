@@ -1,0 +1,36 @@
+{
+  "candidate_count": 30,
+  "candidates_truncated": false,
+  "errors": [],
+  "headers": {
+    "cache-control": "max-age=600",
+    "content-length": "9432440",
+    "content-type": "application/json; charset=utf-8",
+    "etag": "\"6a9e50b0-8fed78\"",
+    "last-modified": "Mon, 07 Sep 2026 05:50:40 GMT"
+  },
+  "http_status": 200,
+  "metadata": {
+    "aggregate_only": true,
+    "benchmark_version_id": null,
+    "configuration_count": 635,
+    "judge_version": null,
+    "leaderboard_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/",
+    "model_count": 127,
+    "selection": "Current-catalog semantic new/changed public disclosures; not reproduced or approved",
+    "original_candidate_count": 3810
+  },
+  "not_modified": false,
+  "parser_version": "ale-bench@0.1.0",
+  "payload_bytes": 9432440,
+  "payload_sha256": "158f4a9d4a59fcea2f9508152dd793c28eb417d25153e1df8d702e6bdc3933c7",
+  "requested_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/data/results_summary.json",
+  "resolved_url": "https://sakanaai.github.io/ALE-Bench-Leaderboard/data/results_summary.json",
+  "retrieved_at": "2026-09-07T17:01:38Z",
+  "saved_payload": null,
+  "schema_version": "source-fetch-manifest@0.1",
+  "snapshot_dir": "src-ale-bench/snapshots/20260907T170138Z-158f4a9d4a59fcea",
+  "source_id": "src-ale-bench",
+  "warnings": [],
+  "written_candidate_count": 30
+}
