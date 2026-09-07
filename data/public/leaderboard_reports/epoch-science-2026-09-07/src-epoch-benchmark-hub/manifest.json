@@ -1,0 +1,42 @@
+{
+  "candidate_count": 11,
+  "candidates_truncated": false,
+  "errors": [],
+  "headers": {
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-length": "2303497",
+    "content-type": "application/zip",
+    "etag": "\"aee0b158cc5d0db03c467ed941528b37\""
+  },
+  "http_status": 200,
+  "metadata": {
+    "csv_files": 85,
+    "selection": "11-row science-focused pending publication proposal; not an approved observation",
+    "original_candidate_count": 5975
+  },
+  "not_modified": false,
+  "parser_version": "epoch@0.2.0",
+  "payload_bytes": 2303497,
+  "payload_sha256": "ca1e2be0e7e94f4b40331e4e1083f0d3ac04cb47912776668eb4b76653909d95",
+  "requested_url": "https://epoch.ai/data/benchmark_data.zip",
+  "resolved_url": "https://epoch.ai/data/benchmark_data.zip",
+  "retrieved_at": "2026-09-06T17:01:56Z",
+  "saved_payload": null,
+  "schema_version": "source-fetch-manifest@0.1",
+  "snapshot_dir": "src-epoch-benchmark-hub/snapshots/20260906T170156Z-ca1e2be0e7e94f4b",
+  "source_id": "src-epoch-benchmark-hub",
+  "warnings": [
+    "benchmark_metadata.csv: no model/score column; skipped",
+    "cad_eval_external.csv: no model/score column; skipped",
+    "cybench_external.csv: no model/score column; skipped",
+    "epoch_capabilities_index/eci_scores.csv: no model/score column; skipped",
+    "epoch_capabilities_index/edi_scores.csv: no model/score column; skipped",
+    "epoch_capabilities_index/processed_data_for_eci.csv: no model/score column; skipped",
+    "exploitbench_external.csv: no model/score column; skipped",
+    "fictionlivebench_external.csv: no model/score column; skipped",
+    "model_metadata.csv: no model/score column; skipped",
+    "posttrainbench_external.csv: no model/score column; skipped",
+    "video_mme_external.csv: no model/score column; skipped"
+  ],
+  "written_candidate_count": 11
+}

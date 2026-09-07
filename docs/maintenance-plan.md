@@ -1,6 +1,17 @@
 # Frontier Model Bench 维护计划
 
-本文是这个信息站的长期维护契约。目标不是做一个会悄悄变动的“实时总榜”，而是让新模型、新 benchmark 和新成绩可以被定期发现、审阅、追溯，并以小 PR 安全地进入静态站点。
+本文是这个信息站的长期维护契约。目标是让新模型、新 benchmark 和新成绩定期进入信息站，同时保留来源、协议、历史和可恢复的发布记录。
+
+## 0. 当前发布授权（2026-09-07）
+
+用户已明确要求“以后直接发布，有问题再改”。本地 Codex 日常维护因此采用 **检查来源 → 更新 → 校验 → 提交/推送 → 确认 Pages 上线**，不再对普通公开披露补数、来源明确的目录补全、关注排序及相关数据/展示修正逐次请求审核。此授权仅适用于本仓库及现有 GitHub Pages，不扩展到相邻仓库、付费评测或其他外部操作。
+
+- 发布门槛是来源说明完整、历史保留、strict validation 与测试通过，不是“本站重跑每条 run”。公开分数继续标为“披露 · 未复现”；发布不等于晋升 approved。
+- 不因表格行号/抓取时间变化批量新增重复分数。比较来源、原始模型/effort、benchmark/version、metric/unit、harness/protocol 与值，只发布实质变化；完整抓取及旧证据保留在本地维护 artifact。
+- 不清楚的版本、日期、工具/环境保持未知并标明；身份歧义先留在公开索引/候选，不强行映射矩阵，也不阻挡其他明确的数据发布。
+- 发布前检查 Git diff，只提交本次维护的文件，不夹带用户改动；非快进、测试失败或权限限制先安全诊断，不强推或绕过检查。GitHub Actions 现有候选任务继续只读，本地 heartbeat 负责自动发布，避免两个写入者竞争。
+- 推送后核对当前 SHA 的 CI、Pages 及线上关键数据，不能把 push 成功当作上线成功。有问题直接做本任务范围内的前向修复，必要时以新提交回退已确认有问题的本任务变更，保留历史，不使用 hard reset/force push。只有无法安全解决或需要新权限时才询问用户。
+- 无实质变化保持安静；有新内容成功上线、重要修复、发布失败或确需用户决定时简短汇报。
 
 ## 1. 不可变的工作流
 
@@ -15,7 +26,7 @@ approved observation（data/observations/results.jsonl）
 build_derived.py → validate_data.py --strict → Pages
 ```
 
-定时任务永远不覆盖 `data/catalog/`、`data/observations/` 或已批准分数。数值完整且能
+定时任务不覆盖 `data/observations/` 或已批准分数，不抹去既有目录与历史。数值完整且能
 安全保留来源定位的候选，可以先进入独立的 `public/reported evidence` 页面层；它必须
 显示“披露 · 未复现”，不参与 canonical 排名。网络失败、网页改版和解析不确定性只能
 产生 warning/candidate；进入 approved 仍必须是人工审阅的 PR。
@@ -28,7 +39,7 @@ build_derived.py → validate_data.py --strict → Pages
 - 当前 OpenAI / Anthropic 优先；精选主力目前为 GPT-6 Astra、Fable 5.1、GPT-5.6 Sol、Opus 5。其余当前模型按已有旗舰/前沿标签、发布日期安排，同日同族参考 `sibling_tiers`（如 Terra 在 Luna 前）；两家的其他当前模型仍在其他 provider 前。历史/上一代和已退役模型后置，不删除。未知发布日期不猜测。
 - 每日维护同时复查新 release、上下线状态和重要公开测评；每周至少完整复查一次精选顺序。优先参考 Terminal-Bench Science 0.1、OR / math / science 与重要 agent 榜单的有来源结果，同版本/指标/预算内比较；允许采用清晰标注的厂商/第三方披露，不要求重跑每条 run。
 - 这是用户关注顺序，不是总实力排名；不把跨 benchmark 分数平均，不将覆盖率、单次最高分或型号名称当作实力结论。新主力或多项可比结果有明确变化时调整精选列表并记录来源链接、理由、复查日期；只有单项或不同 harness 的优势时，不推断全面领先。没有依据的顺序不悄悄改。
-- 后续定时任务可修改此独立展示配置、重建 derived 并准备候选 diff，但不修改 approved，不自动推送/合并/发布；仍等仓库所有者审核。无排序变化不为刷新日期制造提交或提醒。用户手动按日期、覆盖率、分数、成本等排序不受关注排序覆盖。
+- 后续定时任务可修改此独立展示配置、重建 derived，校验通过后直接提交/推送并确认上线，不再逐次等审核；不修改 approved。无排序变化不为刷新日期制造提交或提醒。用户手动按日期、覆盖率、分数、成本等排序不受关注排序覆盖。
 
 ### 2026-09-06：关注领域与历史合并
 
@@ -41,7 +52,7 @@ build_derived.py → validate_data.py --strict → Pages
 - OptArena 已导入公开矩阵 JSON；目前是一次性来源，未确认长期接口契约，不盲目启用 adapter。零值如无法区分未跑/无记录，保留 raw value 和 missing，不填 0。
 - 每次补数必须合并旧公开层及完整 unmapped/alternatives，禁止用当天局部 fetch 替换历史。运行 `scripts/merge_public_evidence.py --baseline data/derived/public.json --baseline data/public/unmapped.jsonl --baseline data/public/alternatives.jsonl --input-dir <新候选目录> --output-dir <新的临时目录>`；检查历史 ID 与旧快照 hash 全部保留后，再安装生成的五份输出、运行 build_derived、strict validation 与 tests。
 - 模型发布日期、LiveBench 任务版本、站点生成日期不是评测日期。来源未披露的 benchmark/judge 版本和 observed 日期必须留空；原始疑点日期保留在 `sourceReportedDates`，不据此猜测一次 run。
-- 公开层永远保持 reported/candidate 与 verified=false；上述合并不触碰 approved observations，也不自动推送或发布。
+- 公开层永远保持 reported/candidate 与 verified=false；上述合并不触碰 approved observations。校验通过的实质公开更新按第 0 节直接发布。
 
 `.github/workflows/maintenance.yml` 每天 UTC 02:17（北京时间 10:17）运行，也可以手动 `workflow_dispatch`：
 
@@ -89,7 +100,7 @@ python3 scripts/validate_data.py --strict
 
 `maintenance_report.py` 是只读报告器；它的 exit code 只在输入损坏或报告无法生成时非零。摘要会把 canonical gaps 分成 `Public reported / awaiting canonical review` 和 `No mapped public evidence` 两类；前者在 `summary.md` 中默认折叠，完整明细仍保留在 `candidates.json`。候选很多并不代表发布失败，应该按优先级分批处理。
 
-本地 Codex 维护 heartbeat 另在每天北京时间 09:00 检查同一仓库：读取本计划、运行报告/适配器和校验，并只在出现候选、来源变化、失败或需要决策时提醒。它与 GitHub Actions 是“主动审阅提醒 + 可下载 artifact”两层，不会自动合并或发布数据。
+本地 Codex 维护 heartbeat 按已保存的每日计划检查同一仓库：读取本计划、运行报告/适配器与校验，自动发布正常维护更新。它与 GitHub Actions 是“本地维护与发布 + 只读候选 artifact”两层。原描述为北京时间 09:00，但 09-07 的实际触发为 01:00；本次仅更新发布授权，未改触发时间，时区疑点保留待单独确认。
 
 ## 3. 日常、每周、每月节奏
 
@@ -101,7 +112,7 @@ python3 scripts/validate_data.py --strict
 - 检查 source probe 的 4xx/5xx、重定向到登录页、robots/许可证变化；不要把 HTTP 200 当成数据解析成功。
 - 先看 public preview：它能快速告诉我们外部榜单已经报告了哪些值；确认来源、版本或
   协议不清的行保留 `unreviewed`，不要因为矩阵想填满就手动改名或平均。
-- 用 `review.md`/`review.json` 逐条核对可确认事实，再放入一个小 PR；无法确认的只留在 candidate artifact，不手工“猜”分数。
+- 公开层做来源和实质差异检查，校验后直接小批次发布；不要求逐条重跑评测。`review.md`/`review.json` 留作审计与 canonical promotion 的材料；无法确认的身份/事实不手工“猜”。
 
 ### 每周：补全和冲突审阅
 
@@ -167,9 +178,9 @@ Arena 的 Elo、聚合榜的 intelligence index 与 benchmark accuracy 是不同
 - `deprecated`/`retired`：endpoint 下线、官方明确撤回或长期不可用；从默认预设隐藏，但不删除数据。
 - 只有错误身份、违法再分发或明确要求移除时才做 `retracted`，并留下治理说明。
 
-## 6. PR 审阅门槛
+## 6. 发布检查与 canonical PR 审阅
 
-每个数据 PR 至少回答：
+每次数据发布检查至少回答；canonical promotion 的 PR 也必须回答：
 
 - 这是哪个 canonical model release/endpoint？是否误把 alias 当新模型？
 - benchmark 的 version、metric、unit、direction、split/subset 是什么？
@@ -186,7 +197,7 @@ python3 scripts/validate_data.py --strict
 git diff --check
 ```
 
-Pages workflow 只发布通过校验的 derived index。若新数据有问题，关闭 PR 即可；上一个 approved commit/Pages 版本不受候选任务影响。
+Pages workflow 只发布通过校验的 derived index。公开层不再等用户逐次审核；线上发现问题按第 0 节修复或用新提交回退本任务问题变更。canonical promotion 仍需要人工审阅，不得借发布授权改成已复现。
 
 ## 7. 健康状态解释
 
@@ -200,6 +211,6 @@ Pages workflow 只发布通过校验的 derived index。若新数据有问题，
 
 ## 8. 后续演进
 
-第一阶段只做 landing-page health + candidate queue；第二阶段为高价值来源增加带 fixture 的 adapter；第三阶段再考虑受控的自动 PR（仍需人工 merge）。仓库内的 skill 草案已经把这些动作固化为可复用流程；无论是否安装到个人环境，都必须遵守“candidate 不覆盖 approved”和人工审阅门槛。
+当前已启用公开层与排序的自动发布；后续优先补高价值来源 adapter、语义去重和修正回执。仓库内的维护 skill 固化同一授权边界；无论是否安装到个人环境，都必须遵守“candidate 不覆盖 approved”。人工审阅门槛针对 canonical promotion，不是普通公开层发布。
 
-仓库内的维护 skill 草案位于 [`skills/frontier-model-bench-maintenance/SKILL.md`](../skills/frontier-model-bench-maintenance/SKILL.md)，它把本计划转成 Audit、Fetch、Review/Promotion、Catalog maintenance 四种操作模式。新增 adapter 的接口和 fixture 约定见 [`docs/adding-source.md`](adding-source.md)。
+仓库内的维护 skill 位于 [`skills/frontier-model-bench-maintenance/SKILL.md`](../skills/frontier-model-bench-maintenance/SKILL.md)，包含 Audit、Fetch、Review/Promotion、Catalog maintenance、Public publication 五种操作模式。新增 adapter 的接口和 fixture 约定见 [`docs/adding-source.md`](adding-source.md)。

@@ -91,6 +91,8 @@ GitHub Actions 会在涉及 `data/`、`scripts/` 或 schema 的 push/PR 上先�
 
 ### 定期维护
 
+用户已于 2026-09-07 授权“以后直接发布，有问题再改”：本地 Codex 每日维护对来源清楚的公开补数、目录/排序更新和相关修正，在校验通过后直接提交、推送并确认 Pages 上线，不再逐次请求审核。公开数值仍标“披露 · 未复现”，canonical promotion 仍单独审阅。出现问题直接修复并保留历史；无实质变化不发布、不提醒。详见 [维护计划](docs/maintenance-plan.md)。
+
 `maintenance.yml` 每天 UTC 02:17 生成只读维护报告，并运行已注册的公开 leaderboard adapters；不会修改 approved 数据。报告作为 Actions artifact 保留 30 天，包含覆盖率、过期来源、缺失/刷新候选、来源探测和 adapter candidates。手动运行或本地预览：
 
 ```bash

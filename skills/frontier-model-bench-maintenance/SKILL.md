@@ -1,11 +1,17 @@
 ---
 name: frontier-model-bench-maintenance
-description: "Maintain the Frontier Model Bench registry and evidence-backed benchmark data: audit missing or stale observations, run public-source adapters, prepare candidate diffs, and validate the static index without silently changing approved history."
+description: "Maintain Frontier Model Bench: fetch source-backed public scores, preserve evidence and history, update the focused catalog/order, validate and publish routine updates under the owner's standing authorization without promoting unverified results to approved."
 ---
 
 # Frontier Model Bench Maintenance
 
 Use this skill when the user asks to refresh the Frontier Model Bench, fill missing scores, inspect leaderboard changes, update the model catalog, or prepare a maintenance PR.
+
+## Standing publication authorization
+
+On 2026-09-07 the repository owner instructed: “以后直接发布，有问题再改”. Routine public/reported evidence updates, source-backed catalog additions, presentation ordering, and relevant corrections should therefore be committed and pushed to this repository's existing GitHub Pages flow after validation, without another review request. This replaces the old candidate-only publication gate, not the distinction between public reports and approved observations. It does not authorize paid evaluation, writes to other repositories, or bypassing access/branch protections.
+
+Read the publication contract in `docs/maintenance-plan.md` section 0. Check status/diff, publish only task-owned changes, verify the exact pushed SHA's CI/Pages and live data, then report meaningful changes briefly. No semantic change means no publication or notification. Fix discovered problems directly within this task's scope; preserve history and use forward fixes or a scoped revert commit, never force-push/hard-reset. Ask only when ambiguity, user changes, permissions, or an unsafe recovery genuinely prevent progress.
 
 ## Scope and invariants
 
@@ -16,7 +22,7 @@ Use this skill when the user asks to refresh the Frontier Model Bench, fill miss
 - Never turn `candidate` into `approved` implicitly. Do not overwrite an observation; append a new row and mark the old row superseded/retracted when a correction is accepted.
 - Missing is `value: null` with a reason (or no observation), never `0`, `—`, or an invented estimate. Unknown parameters, price, latency and context remain null.
 - Every promoted value needs a source URL/ID, benchmark version, metric/unit, protocol, observed/published dates when known, evidence level, and comparability. Preserve raw source snapshots only when their license permits redistribution; otherwise keep URL, locator, retrieval metadata and hash.
-- Adapter output may be annotated `exact_alias` only when the CLI finds one exact catalog id/name/alias; never promote a fuzzy or ambiguous match without human review.
+- Adapter output may be annotated `exact_alias` only when the CLI finds one exact catalog id/name/alias. Do not guess ambiguous identities; preserve unresolved model refs outside the canonical matrix. Existing heuristic/public mappings must keep their uncertainty labels.
 
 ## Operating modes
 
@@ -24,6 +30,7 @@ Use this skill when the user asks to refresh the Frontier Model Bench, fill miss
 2. **Fetch** — use the repository adapters (`python3 scripts/fetch.py list` and `python3 scripts/fetch.py check --dry-run` when available). Prefer official APIs, official Git repositories/raw JSON, and reproducible benchmark exports. Save immutable raw metadata and candidate records; do not edit approved observations in place.
 3. **Review/promotion** — first make a bounded review packet with `python3 scripts/review_candidates.py --input-dir artifacts/fetch --output-dir artifacts/review --limit 50`. Compare candidate rows against the source locator and protocol. The packet is a read-only scaffold with `decision: pending`; it never promotes a row. Promote only source-backed rows after human review, with a small auditable diff. Keep provider self-reports at the appropriate evidence tier and mark cross-protocol comparisons conditional.
 4. **Catalog maintenance** — add a concrete release/endpoint only when an official identity source exists. Keep aliases and speed/reasoning variants explicit; do not inflate family counts by treating an alias as a new model.
+5. **Public publication** — select substantive new/changed source results, not locator/retrieval-only ID churn. Save a versioned source receipt, merge with the complete public/unmapped/alternatives history via `scripts/merge_public_evidence.py`, check prior IDs/hashes are retained, rebuild and validate, then commit/push directly and verify deployment. Unknown protocol details stay unknown with `conditional` comparability; this mode does not need human canonical promotion or a rerun of each reported score. Keep incomplete candidates separately and publish the other valid updates.
 
 ## Arena and leaderboard policy
 
@@ -39,7 +46,8 @@ After any data or adapter change, run:
 ```bash
 python3 scripts/build_derived.py
 python3 scripts/validate_data.py --strict
+python3 -m unittest discover -s tests -q
 git diff --check
 ```
 
-If a browser-facing change is involved, smoke-test Model Atlas, System Runs, preset mode switching, details/source links, missing-value semantics and a narrow mobile viewport. Report exact counts, source failures, candidate files, commit/PR status and anything still requiring the user's decision. Do not claim the refresh is complete until the generated index, CI and (when requested) the live Pages URL have been checked.
+For data-only updates use the existing runtime/semantic harnesses to check ordering, score/source details and missing-value semantics; no screenshot or redesign is needed. Browser interaction testing is for explicitly requested QA or actual interaction changes. Report relevant counts and failures, without asking the owner to approve an ordinary publication. Do not claim completion until the generated index, CI and live Pages data have been checked.
