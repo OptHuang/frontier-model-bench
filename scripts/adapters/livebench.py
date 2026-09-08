@@ -118,6 +118,7 @@ class LiveBenchAdapter(Adapter):
         )
         if response.error:
             run.errors.append(response.error)
+            return run
         if response.status is not None and not (200 <= response.status < 300):
             run.errors.append(f"HTTP status {response.status}")
             return run

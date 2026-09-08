@@ -104,6 +104,10 @@ python3 scripts/validate_data.py --strict
 
 ## 3. 日常、每周、每月节奏
 
+### 下载完整性（2026-09-09）
+
+HTTP 200 不代表完整快照。下载器在有 `Content-Length` 的非 chunked 响应上核对实际字节数，并将提前 EOF、IncompleteRead 和大小越界记为来源失败，不把部分 payload 交给解析器。LiveBench 在下载出错后立即停止，避免截断的末行产生假模型名或假缺失分数。正常分段读取、无长度头和 chunked 传输仍受大小上限保护；无长度头时不凭空声称已验证总字节数。失败可做有界重试，保留每次 receipt；重试的完整结果与历史合并，失败或部分输入不发布，不清空旧分数。
+
 ### 每日：发现与健康检查
 
 - 查看最近一次 `maintenance.yml` 的 `summary.md`。

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import http.client
 import urllib.error
 import urllib.request
 from dataclasses import dataclass, field
@@ -67,11 +68,34 @@ class HttpClient:
         request = urllib.request.Request(url, headers=request_headers, method="GET")
         try:
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                body = self._read_bounded(response)
                 response_headers = {
                     str(k).lower(): str(v) for k, v in response.headers.items()
                 }
                 status = getattr(response, "status", None) or response.getcode()
+                try:
+                    body = self._read_bounded(response)
+                    # A sized read may reach early EOF without IncompleteRead.
+                    # CSV parsers can accept the resulting partial final row,
+                    # so verify transport completeness before any parser sees it.
+                    length = response_headers.get("content-length")
+                    chunked = response_headers.get("transfer-encoding", "").lower().split(",")[-1].strip() == "chunked"
+                    if length is not None and not chunked:
+                        if not length.strip().isascii() or not length.strip().isdigit():
+                            raise ValueError("invalid Content-Length")
+                        expected = int(length)
+                        if len(body) != expected:
+                            raise ValueError(
+                                f"incomplete response: expected {expected} bytes, received {len(body)}"
+                            )
+                except (OSError, ValueError, http.client.HTTPException) as exc:
+                    # Retain status/headers for diagnostics, but never expose a
+                    # partial payload as candidate input or a valid snapshot.
+                    return HttpResponse(
+                        url=response.geturl(),
+                        status=int(status) if status is not None else None,
+                        headers=response_headers,
+                        error=f"response read error: {exc}",
+                    )
                 return HttpResponse(
                     url=response.geturl(),
                     status=int(status) if status is not None else None,
