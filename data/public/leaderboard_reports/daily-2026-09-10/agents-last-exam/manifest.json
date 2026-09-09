@@ -1,0 +1,27 @@
+{
+  "candidate_count": 168,
+  "candidates_truncated": false,
+  "errors": [],
+  "headers": {
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-type": "application/json"
+  },
+  "http_status": 200,
+  "metadata": {
+    "selection": "Current-catalog semantic new/changed public disclosures; not reproduced or approved",
+    "original_candidate_count": 1690
+  },
+  "not_modified": false,
+  "parser_version": "0.1.0",
+  "payload_bytes": 285715,
+  "payload_sha256": "10bbb05152db6c8c86d963e3b1877e1ff0991f34f74608f844c49d4c3ae028c8",
+  "requested_url": "https://agents-last-exam.org/api/demo/leaderboard",
+  "resolved_url": "https://agents-last-exam.org/api/demo/leaderboard",
+  "retrieved_at": "2026-09-09T17:01:04Z",
+  "saved_payload": null,
+  "schema_version": "source-fetch-manifest@0.1",
+  "snapshot_dir": "agents-last-exam/snapshots/20260909T170104Z-10bbb05152db6c8c",
+  "source_id": "agents-last-exam",
+  "warnings": [],
+  "written_candidate_count": 168
+}
