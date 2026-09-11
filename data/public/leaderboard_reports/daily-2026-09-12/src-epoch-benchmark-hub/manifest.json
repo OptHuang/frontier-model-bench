@@ -1,0 +1,42 @@
+{
+  "candidate_count": 3,
+  "candidates_truncated": false,
+  "errors": [],
+  "headers": {
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-length": "2283215",
+    "content-type": "application/zip",
+    "etag": "\"8cad7db381795bb4b0437a70cf143cb8\""
+  },
+  "http_status": 200,
+  "metadata": {
+    "csv_files": 85,
+    "selection": "Current-catalog semantic new/changed public disclosures; not reproduced or approved",
+    "original_candidate_count": 5988
+  },
+  "not_modified": false,
+  "parser_version": "epoch@0.2.0",
+  "payload_bytes": 2283215,
+  "payload_sha256": "53276c26a4caa50f291299bbb198314f173f7a9726957f94dacc701db374645e",
+  "requested_url": "https://epoch.ai/data/benchmark_data.zip",
+  "resolved_url": "https://epoch.ai/data/benchmark_data.zip",
+  "retrieved_at": "2026-09-11T17:01:36Z",
+  "saved_payload": null,
+  "schema_version": "source-fetch-manifest@0.1",
+  "snapshot_dir": "src-epoch-benchmark-hub/snapshots/20260911T170136Z-53276c26a4caa50f",
+  "source_id": "src-epoch-benchmark-hub",
+  "warnings": [
+    "benchmark_metadata.csv: no model/score column; skipped",
+    "cad_eval_external.csv: no model/score column; skipped",
+    "cybench_external.csv: no model/score column; skipped",
+    "epoch_capabilities_index/eci_scores.csv: no model/score column; skipped",
+    "epoch_capabilities_index/edi_scores.csv: no model/score column; skipped",
+    "epoch_capabilities_index/processed_data_for_eci.csv: no model/score column; skipped",
+    "exploitbench_external.csv: no model/score column; skipped",
+    "fictionlivebench_external.csv: no model/score column; skipped",
+    "model_metadata.csv: no model/score column; skipped",
+    "posttrainbench_external.csv: no model/score column; skipped",
+    "video_mme_external.csv: no model/score column; skipped"
+  ],
+  "written_candidate_count": 3
+}
